@@ -287,11 +287,11 @@ architecture behavioral of cpu is
 			-- control signal
 			ALURes 		: in STD_LOGIC_VECTOR(1 downto 0);
 			-- input 
-			result 		: in STD_LOGIC_VECTOR(15 downto 0);
+			ALUResult 	: in STD_LOGIC_VECTOR(15 downto 0);
 			PC 			: in STD_LOGIC_VECTOR(15 downto 0);
 			RPC 		: in STD_LOGIC_VECTOR(15 downto 0);
 			-- output
-			ALUResult	: out STD_LOGIC_VECTOR(15 downto 0);
+			ALUMuxResult: out STD_LOGIC_VECTOR(15 downto 0);
 		);
 	end component;
 
@@ -311,8 +311,8 @@ architecture behavioral of cpu is
 			BranchOp 	: in STD_LOGIC_VECTOR(1 downto 0);
 			-- input
 			reg1 		: in STD_LOGIC_VECTOR(15 downto 0);
-			EX_ALURes 	: in STD_LOGIC_VECTOR(15 downto 0);
 			MEM_ALURes 	: in STD_LOGIC_VECTOR(15 downto 0);
+			WB_ALURes 	: in STD_LOGIC_VECTOR(15 downto 0);
 			-- output
 			BranchJudge : out STD_LOGIC
 		);
@@ -400,7 +400,7 @@ architecture behavioral of cpu is
 			MemToReg: in STD_LOGIC;
 			-- input
 			rdata 		: in STD_LOGIC_VECTOR(15 downto 0);
-			result		: in STD_LOGIC_VECTOR(15 downto 0);
+			ALUResult	: in STD_LOGIC_VECTOR(15 downto 0);
 			-- oiutput
 			wdata 		: out STD_LOGIC_VECTOR(15 downto 0);
 		);
@@ -437,19 +437,19 @@ architecture behavioral of cpu is
 	signal IDEXFlush	: STD_LOGIC;
 
 	-- PCRegister
-	signal PC 	 		: STD_LOGIC_VECTOR(15 downto 0);
+	signal IF_PC 	 	: STD_LOGIC_VECTOR(15 downto 0);
 	
 	-- PCAdder
-	signal NPC 		 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal IF_NPC 		 : STD_LOGIC_VECTOR(15 downto 0);
 
 	-- RPCAdder
-	signal RPC 		 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal IF_RPC 		 : STD_LOGIC_VECTOR(15 downto 0);
 
 	-- PCMux
-	signal PCOut 		: STD_LOGIC_VECTOR(15 downto 0);
+	signal IF_PCOut 	: STD_LOGIC_VECTOR(15 downto 0);
 
 	-- InstructionMemory
-	signal inst 			: STD_LOGIC_VECTOR(15 downto 0);
+	signal IF_inst 		: STD_LOGIC_VECTOR(15 downto 0);
 
 	-- IFIDRegister
 	signal ID_PC 		: STD_LOGIC_VECTOR(15 downto 0);
@@ -457,12 +457,12 @@ architecture behavioral of cpu is
 	signal ID_RPC		: STD_LOGIC_VECTOR(15 downto 0);
 
 	-- Registers
-	signal reg1 		: STD_LOGIC_VECTOR(15 downto 0);
-	signal reg2 		: STD_LOGIC_VECTOR(15 downto 0);
+	signal ID_reg1 		: STD_LOGIC_VECTOR(15 downto 0);
+	signal ID_reg2 		: STD_LOGIC_VECTOR(15 downto 0);
 
 	-- ImmUnit
-	signal immOut 		: STD_LOGIC_VECTOR(15 downto 0);
-
+	signal ID_immOut 		: STD_LOGIC_VECTOR(15 downto 0);
+ID_
 	-- IDEXRegister
 	signal EX_RegDst	: STD_LOGIC_VECTOR(3 downto 0);
 	signal EX_ALUOp 	: STD_LOGIC_VECTOR(3 downto 0);
@@ -490,17 +490,16 @@ architecture behavioral of cpu is
 	signal ALUSrc2 		: STD_LOGIC_VECTOR(15 downto 0);
 
 	-- ALU
-	signal result	 	: STD_LOGIC_VECTOR(15 downto 0);
-	signal zero 		: STD_LOGIC;
-
-	-- ALUResMux
 	signal ALUResult	: STD_LOGIC_VECTOR(15 downto 0);
 
+	-- ALUResMux
+	signal ALUMuxResult	: STD_LOGIC_VECTOR(15 downto 0);
+
 	-- PCImmAdder
-	signal PCAddImm		: STD_LOGIC_VECTOR(15 downto 0);
+	signal EX_PCAddImm	: STD_LOGIC_VECTOR(15 downto 0);
 
 	-- BranchMux
-	signal BranchJudge  : STD_LOGIC;
+	signal EX_BranchJudge: STD_LOGIC;
 
 	-- EXMEMRegister
 	signal MEM_RegDst 	: STD_LOGIC_VECTOR(3 downto 0);
@@ -511,10 +510,10 @@ architecture behavioral of cpu is
 	signal MEM_MemToRead: STD_LOGIC;
 	signal MEM_RegWrite : STD_LOGIC;
 	signal MEM_ALURes 	: STD_LOGIC_VECTOR(15 downto 0);
-	signal reg2 		: STD_LOGIC_VECTOR(15 downto 0);
+	signal MEM_reg2 	: STD_LOGIC_VECTOR(15 downto 0);
 
 	-- DataMemory
-	signal rdata 		: STD_LOGIC_VECTOR(15 downto 0);
+	signal MEM_rdata 	: STD_LOGIC_VECTOR(15 downto 0);
 
 	-- MEMWBRegister
 	signal WB_RegDst	: STD_LOGIC_VECTOR(15 downto 0);
@@ -524,7 +523,7 @@ architecture behavioral of cpu is
 	signal WB_ALURes 	: STD_LOGIC_VECTOR(15 downto 0);
 
 	-- WriteDataMux
-	signal wdata 		: STD_LOGIC_VECTOR(15 downto 0);
+	signal WB_wdata 	: STD_LOGIC_VECTOR(15 downto 0);
 
 
 begin
@@ -533,7 +532,21 @@ begin
 	port map(
 		rst 		=> rst,
 		inst 		=> EX_inst,
-		controlSignal=> controlSignal
+		RegSrcA		=> RegSrcA,
+		RegSrcB 	=> RegSrcB,
+		ImmSrc		=> ImmSrc,
+		ExtendOp 	=> ExtendOp,
+		RegDst 		=> RegDst,
+		ALUOp 		=> ALUOp,
+		ALUSrcB 	=> ALUSrcB,
+		ALURes 		=> ALURes,
+		Jump 		=> Jump,
+		BranchOp 	=> BranchOp,
+		Branch 		=> Branch,
+		MemRead 	=> MemRead,
+		MemWrite 	=> MemWrite,
+		MemToReg 	=> MemToReg,
+		RegWrite 	=> RegWrite
 	); 
 
 	u2 : ForwardingUnit
@@ -562,30 +575,30 @@ begin
 	port map(
 		clk 		=> clk,
 		rst 		=> rst,
-		PCIn 		=> PCOut,
-		PCOut 		=> PC
+		PCIn 		=> IF_PCOut,
+		PCOut 		=> IF_PC
 	);
 
 	u5 : PCAdder
 	port map(
-		PC			=> PC,
-		NPC 		=> NPC
+		PC			=> IF_PC,
+		NPC 		=> IF_NPC
 	);
 
 	u6 : RPCAdder
 	port map(
-		PC 			=> PC,
-		RPC 		=> RPC
+		PC 			=> IF_PC,
+		RPC 		=> IF_RPC
 	);
 
 	u7 : PCMux
 	port map(
 		Jump 		=> EX_Jump,
-		BranchJudge => BranchJudge
+		BranchJudge => EX_BranchJudge
 		PCStall		=> PCStall,
-		PC 			=> PC,
-		NPC 		=> NPC,
-		PCAddImm 	=> PCAddImm,
+		PC 			=> IF_PC,
+		NPC 		=> IF_NPC,
+		PCAddImm 	=> EX_PCAddImm,
 		reg1 		=> EX_reg1
 		PCOut 		=> PCOut
 	);
@@ -599,17 +612,17 @@ begin
 		Ram2EN 		=> Ram2EN,
 		Ram2Addr	=> Ram2Addr,
 		Ram2Data 	=> Ram2Data,
-		PC 			=> PC,
-		inst 		=> inst
+		PC 			=> IF_PC,
+		inst 		=> IF_inst
 	);
 
 	u9 : IFIDRegister
 	port map(
 		clk 		=> clk,
 		rst 		=> rst,
-		IF_PC 		=> PC,
-		IF_inst 	=> inst,
-		IF_RPC		=> RPC,
+		IF_PC 		=> IF_NPC,
+		IF_inst 	=> iF_inst,
+		IF_RPC		=> IF_RPC,
 		ID_PC 		=> ID_PC,
 		ID_inst		=> ID_inst,
 		ID_RPC 		=> ID_RPC
@@ -619,13 +632,13 @@ begin
 	port map(
 		clk 		=> clk,
 		rst 		=> rst,
-		RegWrite 	=> RegWrite,
+		RegWrite 	=> WB_RegWrite,
 		raddr1 		=> RegSrcA,
 		raddr2 		=> RegSrcB,
 		waddr 		=> WB_RegDst,
-		wdata 		=> wdata,
-		reg1 		=> reg1,
-		reg2 		=> reg2
+		wdata 		=> WB_wdata,
+		reg1 		=> EX_reg1,
+		reg2 		=> EX_reg2
 	);
 
 	u11 : ImmUnit
@@ -633,7 +646,7 @@ begin
 		ImmSrc 		=> ImmSrc,
 		ExtendOp 	=> ExtendOp,
 		inst 		=> ID_inst,
-		immOut 		=> immOut
+		immOut 		=> ID_immOut
 	);
 
 	u12 : IDEXRegister
@@ -681,5 +694,117 @@ begin
 	port map(
 		ForwardA	=> ForwardA,
 		reg1 		=> EX_reg1,
+		MEM_ALURes	=> MEM_ALURes,
+		WB_ALURes 	=> WB_wdata,
+		src1		=> ALUSrc1
+	);
 
+	u14 : ALUSrcMux2
+	port map(
+		ForwardB 	=> ForwardB,
+		ALUSrcB 	=> EX_ALUSrcB,
+		reg2 		=> EX_reg2,
+		MEM_ALURes 	=> MEM_ALURes,
+		WB_ALURes 	=> WB_ALURes,
+		imm 		=> EX_imm,
+		src2 		=> ALUSrc2
+	);
+
+	u15 : ALU
+	port map(
+		src1 		=> ALUSrc1,
+		src2 		=> ALUSrc2,
+		ALUOp 		=> EX_ALUOp,
+		result 		=> ALUResult
+	);
+
+	u16 : ALUResMux
+	port map(
+		ALURes 		=> EX_ALURes,
+		ALUResult 	=> ALUResult,
+		PC 			=> EX_PC,
+		RPC 		=> EX_RPC,
+		ALUMuxResult=> ALUMuxResult,
+	);
+
+	u17 : PCImmAdder
+	port map(
+		PCIn		=> EX_PC,
+		imm 		=> EX_imm,
+		PCOut 		=> EX_PCAddImm
+	);
+
+	u18 : BranchMux
+	port map(
+		ForwardA 	=> ForwardA,
+		Branch 		=> EX_Branch,
+		BranchOp 	=> EX_BranchOp,
+		reg1 		=> EX_reg1,
+		MEM_ALURes 	=> MEM_ALURes,
+		WB_ALURes	=> WB_ALURes,
+		BranchJudge => EX_BranchJudge
+	);
+
+	u19 : EXMEMRegister
+	port map(
+		clk 		=> clk,
+		rst 		=> rst,
+		EX_RegDst 	=> EX_RegDst,
+		EX_BranchOp => EX_BranchOp,
+		EX_Branch 	=> EX_Branch,
+		EX_MemRead 	=> EX_MemRead,
+		EX_MemWrite => EX_MemWrite,
+		EX_MemToRead=> EX_MemToRead,
+		EX_RegWrite => EX_RegWrite,
+		EX_ALURes 	=> ALUMuxResult,
+		EX_reg2 	=> EX_reg2
+		MEM_RegDst 	=> MEM_RegDst,
+		MEM_BranchOp=> MEM_BranchOp,
+		MEM_Branch  => MEM_Branch,
+		MEM_MemRead => MEM_MemRead,
+		MEM_MemWrite=> MEM_MemWrite,
+		MEM_MemToRead=>MEM_MemToRead,
+		MEM_RegWrite=> MEM_RegWrite,
+		MEM_ALURes	=> MEM_ALURes,
+		MEM_reg2 	=> MEM_reg2
+	);
+
+	u20 : DataMemory
+	port map(
+		clk 		=> clk,
+		rst 		=> rst,
+		MemWrite 	=> MEM_MemWrite,
+		MemRead 	=> MEM_MemRead,
+		Ram1OE 		=> Ram1OE,
+		Ram1WE		=> Ram1WE,
+		Ram1EN		=> Ram1EN,
+		Ram1Addr	=> Ram1Addr,
+		Ram1Data	=> Ram1Data,
+		addr 		=> MEM_ALURes,
+		wdata 		=> MEM_reg2,
+		rdata 		=> MEM_rdata
+	);
+
+	u21 : MEMWBRegister
+	port map(
+		clk 		=> clk,
+		rst 		=> rst,
+		MEM_RegDst  => WB_RegDst,
+		MEM_MemToRead=>WB_MemToRead,
+		MEM_RegWrite=> WB_RegWrite,
+		MEM_rdata	=> WB_rdata,
+		MEM_ALURes 	=> WB_ALURes,
+		WB_RegDst	=> WB_RegDst,
+		WB_MemToRead=> WB_MemToRead,
+		WB_RegWrite => WB_RegWrite,
+		WB_rdata 	=> WB_rdata,
+		WB_ALURes	=> WB_ALURes
+	);
+
+	u22 : WriteDataMux
+	port map(
+		MemToReg 	=> WB_MemToRead,
+		rdata 		=> WB_rdata,
+		ALUresult 	=> WB_ALURes,
+		wdata 		=> WB_wdata
 	);
