@@ -38,7 +38,7 @@ entity PCMux is
            PCimm 		: in  STD_LOGIC_VECTOR(15 downto 0);
            ALURes 		: in  STD_LOGIC_VECTOR(15 downto 0);
            PCOut 		: sout  STD_LOGIC_VECTOR(15 downto 0)
-			  ) ;
+	) ;
 end PCMux;
 
 architecture Behavioral of PCMux is

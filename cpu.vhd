@@ -303,7 +303,7 @@ architecture behavioral of cpu is
 		);
 	end component;
 
-	component BranchMux
+	component BranchUnit
 		port(
 			-- control signal
 			ForwardA	: in STD_LOGIC_VECTOR(1 downto 0);
@@ -498,7 +498,7 @@ ID_
 	-- PCImmAdder
 	signal EX_PCAddImm	: STD_LOGIC_VECTOR(15 downto 0);
 
-	-- BranchMux
+	-- BranchUnit
 	signal EX_BranchJudge: STD_LOGIC;
 
 	-- EXMEMRegister
@@ -734,7 +734,7 @@ begin
 		PCOut 		=> EX_PCAddImm
 	);
 
-	u18 : BranchMux
+	u18 : BranchUnit
 	port map(
 		ForwardA 	=> ForwardA,
 		Branch 		=> EX_Branch,

@@ -31,16 +31,17 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity IFIDRegister is
     Port ( 
-			rst 		: in STD_LOGIC;
-			clk 		: in STD_LOGIC;
-			-- input
-			IF_PC		: in STD_LOGIC_VECTOR(15 downto 0);
-			IF_IR		: in STD_LOGIC_VECTOR(15 downto 0);
-			IF_RPC		: in STD_LOGIC_VECTOR(15 downto 0);
-			-- output
-			ID_PC		: out STD_LOGIC_VECTOR(15 downto 0);
-			ID_IR		: out STD_LOGIC_VECTOR(15 downto 0);
-			ID_RPC		: out STD_LOGIC_VECTOR(15 downto 0));
+		rst 		: in STD_LOGIC;
+		clk 		: in STD_LOGIC;
+		-- input
+		IF_PC		: in STD_LOGIC_VECTOR(15 downto 0);
+		IF_inst		: in STD_LOGIC_VECTOR(15 downto 0);
+		IF_RPC		: in STD_LOGIC_VECTOR(15 downto 0);
+		-- output
+		ID_PC		: out STD_LOGIC_VECTOR(15 downto 0);
+		ID_inst		: out STD_LOGIC_VECTOR(15 downto 0);
+		ID_RPC		: out STD_LOGIC_VECTOR(15 downto 0)
+	);
 end IFIDRegister;
 
 architecture Behavioral of IFIDRegister is
@@ -53,7 +54,7 @@ end component;
 
 begin
 	u0:LATCH_16BIT port map(CLK, IF_PC, ID_PC);
-	u1:LATCH_16BIT port map(CLK, IF_IR, ID_IR);
+	u1:LATCH_16BIT port map(CLK, IF_inst, ID_inst);
 	u2:LATCH_16BIT port map(CLK, IF_RPC, ID_RPC);
 end Behavioral;
 

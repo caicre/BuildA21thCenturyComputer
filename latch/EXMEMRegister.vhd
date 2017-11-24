@@ -30,31 +30,30 @@ use IEEE.STD_LOGIC_1164.ALL;
 --use UNISIM.VComponents.all;
 
 entity EXMEMRegister is
-port(
-	clk			: in STD_LOGIC;
-	rst			: in STD_LOGIC;
-	-- input control signal
-	EX_BranchOp	: in STD_LOGIC_VECTOR(1 downto 0);
-	EX_Branch	: in STD_LOGIC;
-	EX_MemRead	: in STD_LOGIC;
-	EX_MemWrite	: in STD_LOGIC;
-	EX_MemToRead: in STD_LOGIC;
-	EX_RegWrite	: in STD_LOGIC;
-	-- input
-	EX_ALURes	: in STD_LOGIC_VECTOR(15 downto 0);
-	EX_rdata2	: in STD_LOGIC_VECTOR(15 downto 0);
-	EX_waddr		: in STD_LOGIC_VECTOR(3 downto 0);
-	-- output control signal
-	MEM_BranchOp:	out STD_LOGIC_VECTOR(1 downto 0);
-	MEM_Branch	:	out STD_LOGIC;
-	MEM_MemRead	:	out STD_LOGIC;
-	MEM_MemWrite:	out STD_LOGIC;
-	MEM_MemToRead:	out STD_LOGIC;
-	MEM_RegWrite:	out STD_LOGIC;
-	-- output
-	MEM_ALURes	: out STD_LOGIC_VECTOR(15 downto 0);
-	MEM_rdata2	: out STD_LOGIC_VECTOR(15 downto 0);
-	MEM_waddr	: out STD_LOGIC_VECTOR(3 downto 0));
+	port(
+		clk			: in STD_LOGIC;
+		rst			: in STD_LOGIC;
+		-- input control signal
+		EX_BranchOp	: in STD_LOGIC_VECTOR(1 downto 0);
+		EX_Branch	: in STD_LOGIC;
+		EX_MemRead	: in STD_LOGIC;
+		EX_MemWrite	: in STD_LOGIC;
+		EX_MemToRead: in STD_LOGIC;
+		EX_RegWrite	: in STD_LOGIC;
+		-- input
+		EX_ALURes	: in STD_LOGIC_VECTOR(15 downto 0);
+		EX_rdata2	: in STD_LOGIC_VECTOR(15 downto 0);
+		-- output control signal
+		MEM_BranchOp:	out STD_LOGIC_VECTOR(1 downto 0);
+		MEM_Branch	:	out STD_LOGIC;
+		MEM_MemRead	:	out STD_LOGIC;
+		MEM_MemWrite:	out STD_LOGIC;
+		MEM_MemToRead:	out STD_LOGIC;
+		MEM_RegWrite:	out STD_LOGIC;
+		-- output
+		MEM_ALURes	: out STD_LOGIC_VECTOR(15 downto 0);
+		MEM_rdata2	: out STD_LOGIC_VECTOR(15 downto 0)
+	);
 end EXMEMRegister;
 
 
@@ -93,6 +92,5 @@ begin
 	u6:LATCH_1BIT port map(clk, EX_RegWrite, MEM_RegWrite);
 	u7:LATCH_16BIT port map(clk, EX_ALURes, MEM_ALURes);
 	u8:LATCH_16BIT port map(clk, EX_rdata2, MEM_rdata2);
-	u9:LATCH_4BIT port map(clk, EX_waddr, MEM_waddr);
 	
 end Behavioral;
