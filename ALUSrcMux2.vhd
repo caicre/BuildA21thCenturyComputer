@@ -33,8 +33,8 @@ entity ALUSrcMux2 is
     Port ( ForwardB     : in  STD_LOGIC_VECTOR(1  downto 0);
            ALUSrcB      : in  STD_LOGIC ;
            reg2         : in  STD_LOGIC_VECTOR(15 downto 0);
-           EX_ALURes    : in  STD_LOGIC_VECTOR(15 downto 0);
            MEM_ALURes   : in  STD_LOGIC_VECTOR(15 downto 0);
+           WB_ALURes    : in  STD_LOGIC_VECTOR(15 downto 0);
            imm          : in  STD_LOGIC_VECTOR(15 downto 0);
            src2         : out STD_LOGIC_VECTOR(15 downto 0));
 end ALUSrcMux2;
@@ -46,10 +46,15 @@ begin
     begin
         all_control := ForwardB & ALUSrcB ; 
         case ForwardB is
-            when "000" => src2 <= reg2 ;
-            when "010" | "011" => src2 <= EX_ALURes ;
-            when "100" | "101" => src2 <= MEM_ALURes ;
-            when "001" => src2 <= imm ;
+            when "00" => 
+                if (ALUSrcB = '0') then
+                    src2 <= reg2;
+                else
+                    src2 <= imm;
+                end if;
+            when "01" => src2 <= MEM_ALURes ;
+            when "11" => src2 <= WB_ALURes ;
+            when others => src2 <= reg2;
         end case ;
     end process ;
 end Behavioral;

@@ -32,8 +32,8 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity ALUSrcMux1 is
     Port ( ForwardA     : in  STD_LOGIC_VECTOR(1  downto 0);
            reg1         : in  STD_LOGIC_VECTOR(15 downto 0);
-           EX_ALURes    : in  STD_LOGIC_VECTOR(15 downto 0);
            MEM_ALURes   : in  STD_LOGIC_VECTOR(15 downto 0);
+           WB_ALURes    : in  STD_LOGIC_VECTOR(15 downto 0);
            src1         : out STD_LOGIC_VECTOR(15 downto 0));
 end ALUSrcMux1;
 
@@ -44,8 +44,8 @@ begin
     begin 
         case ForwardA is
             when "00" => src1 <= reg1 ;
-            when "01" => src1 <= EX_ALURes ;
-            when "10" => src1 <= MEM_ALURes ;
+            when "01" => src1 <= MEM_ALURes ;
+            when "10" => src1 <= WB_ALURes ;
         end case ;
     end process ;
 end Behavioral;

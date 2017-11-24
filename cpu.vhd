@@ -38,7 +38,22 @@ architecture behavioral of cpu is
 		port(
 			rst 		: in STD_LOGIC;
 			inst		: in STD_LOGIC_VECTOR(15 downto 0);
-			controlSignal: out STD_LOGIC_VECTOR(30 downto 0)
+			--
+			RegSrcA		: out STD_LOGIC_VECTOR(3 downto 0);
+			RegSrcB		: out STD_LOGIC_VECTOR(3 downto 0);
+			ImmSrc 		: out STD_LOGIC_VECTOR(2 downto 0);
+			ExtendOp 	: out STD_LOGIC;
+			RegDst 		: out STD_LOGIC_VECTOR(3 downto 0);
+			ALUOp 		: out STD_LOGIC_VECTOR(3 downto 0);
+			ALUSrcB 	: out STD_LOGIC;
+			ALURes 		: out STD_LOGIC_VECTOR(1 downto 0);
+			Jump 		: out STD_LOGIC;
+			BranchOp 	: out STD_LOGIC_VECTOR(1 downto 0);
+			Branch 		: out STD_LOGIC;
+			MemRead 	: out STD_LOGIC;
+			MemWrite 	: out STD_LOGIC;
+			MemToReg 	: out STD_LOGIC;
+			RegWrite 	: out STD_LOGIC
 		);
 	end component;
 
@@ -102,14 +117,14 @@ architecture behavioral of cpu is
 	component PCMux
 		port(
 			-- control signal
-			jump		: in STD_LOGIC;
-			branchJudge	: in STD_LOGIC;
+			Jump		: in STD_LOGIC;
+			BranchJudge	: in STD_LOGIC;
 			PCStall		: in STD_LOGIC;
 			--
 			PC 			: in STD_LOGIC_VECTOR(15 downto 0);
-			nextPC		: in STD_LOGIC_VECTOR(15 downto 0);
-			PCimm		: in STD_LOGIC_VECTOR(15 downto 0);
-			ALURes 	    : in STD_LOGIC_VECTOR(15 downto 0);
+			NPC			: in STD_LOGIC_VECTOR(15 downto 0);
+			PCAddImm	: in STD_LOGIC_VECTOR(15 downto 0);
+			reg1 	    : in STD_LOGIC_VECTOR(15 downto 0);
 			--
 			PCOut		: out STD_LOGIC_VECTOR(15 downto 0)
 
@@ -135,15 +150,15 @@ architecture behavioral of cpu is
 
 	component IFIDRegister
 		port(
-			rst 		: in STD_LOGIC;
 			clk 		: in STD_LOGIC;
+			rst 		: in STD_LOGIC;
 			-- input
 			IF_PC		: in STD_LOGIC_VECTOR(15 downto 0);
-			IF_IR		: in STD_LOGIC_VECTOR(15 downto 0);
+			IF_inst		: in STD_LOGIC_VECTOR(15 downto 0);
 			IF_RPC		: in STD_LOGIC_VECTOR(15 downto 0);
 			-- output
 			ID_PC		: out STD_LOGIC_VECTOR(15 downto 0);
-			ID_IR		: out STD_LOGIC_VECTOR(15 downto 0);
+			ID_inst		: out STD_LOGIC_VECTOR(15 downto 0);
 			ID_RPC		: out STD_LOGIC_VECTOR(15 downto 0)
 		);
 	end component;
@@ -234,8 +249,8 @@ architecture behavioral of cpu is
 			ForwardA	: in STD_LOGIC_VECTOR(1 downto 0);
 			-- input
 			reg1		: in STD_LOGIC_VECTOR(15 downto 0);
-			EX_ALURes	: in STD_LOGIC_VECTOR(15 downto 0);
 			MEM_ALURes	: in STD_LOGIC_VECTOR(15 downto 0);
+			WB_ALURes	: in STD_LOGIC_VECTOR(15 downto 0);
 			-- output
 			src1		: out STD_LOGIC_VECTOR(15 downto 0)
 		);
@@ -248,8 +263,8 @@ architecture behavioral of cpu is
 			ALUSrcB		: in STD_LOGIC
 			-- input
 			reg2		: in STD_LOGIC_VECTOR(15 downto 0);
-			EX_ALURes	: in STD_LOGIC_VECTOR(15 downto 0);
 			MEM_ALURes	: in STD_LOGIC_VECTOR(15 downto 0);
+			WB_ALURes	: in STD_LOGIC_VECTOR(15 downto 0);
 			imm 		: in STD_LOGIC_VECTOR(15 downto 0)
 			-- output
 			src2		: out STD_LOGIC_VECTOR(15 downto 0)
@@ -395,7 +410,22 @@ architecture behavioral of cpu is
 	--         signals            
 	----------------------------
 	-- Controller
-	signal controlSignal: STD_LOGIC_VECTOR(30 downto 0);
+	signal RegSrcA		: STD_LOGIC_VECTOR(3 downto 0);
+	signal RegSrcA		: STD_LOGIC_VECTOR(3 downto 0);
+	signal RegSrcB		: STD_LOGIC_VECTOR(3 downto 0);
+	signal ImmSrc 		: STD_LOGIC_VECTOR(2 downto 0);
+	signal ExtendOp 	: STD_LOGIC;
+	signal RegDst 		: STD_LOGIC_VECTOR(3 downto 0);
+	signal ALUOp 		: STD_LOGIC_VECTOR(3 downto 0);
+	signal ALUSrcB 		: STD_LOGIC;
+	signal ALURes 		: STD_LOGIC_VECTOR(1 downto 0);
+	signal Jump 		: STD_LOGIC;
+	signal BranchOp 	: STD_LOGIC_VECTOR(1 downto 0);
+	signal Branch 		: STD_LOGIC;
+	signal MemRead 		: STD_LOGIC;
+	signal MemWrite 	: STD_LOGIC;
+	signal MemToReg 	: STD_LOGIC;
+	signal RegWrite 	: STD_LOGIC;
 
 	-- ForwardingUnit
 	signal ForwardA		: STD_LOGIC_VECTOR(1 downto 0);
@@ -423,7 +453,7 @@ architecture behavioral of cpu is
 
 	-- IFIDRegister
 	signal ID_PC 		: STD_LOGIC_VECTOR(15 downto 0);
-	signal ID_IR		: STD_LOGIC_VECTOR(15 downto 0);
+	signal ID_inst		: STD_LOGIC_VECTOR(15 downto 0);
 	signal ID_RPC		: STD_LOGIC_VECTOR(15 downto 0);
 
 	-- Registers
@@ -502,7 +532,7 @@ begin
 	u1 : Controller
 	port map(
 		rst 		=> rst,
-		inst 		=> inst,
+		inst 		=> EX_inst,
 		controlSignal=> controlSignal
 	); 
 
@@ -521,8 +551,8 @@ begin
 	port map(
 		EX_MemRead 	=> EX_MemRead,
 		EX_RegDst 	=> EX_RegDst,
-		raddr1 		=> inst(30 downto 27),
-		raddr2 		=> inst(26 downto 23),
+		raddr1 		=> EX_inst(30 downto 27),
+		raddr2 		=> EX_inst(26 downto 23),
 		PCStall 	=> PCStall,
 		IFIDStall 	=> IFIDStall,
 		IDEXFlush 	=> IDEXFlush
@@ -542,6 +572,114 @@ begin
 		NPC 		=> NPC
 	);
 
-	u6 : 
+	u6 : RPCAdder
+	port map(
+		PC 			=> PC,
+		RPC 		=> RPC
+	);
 
+	u7 : PCMux
+	port map(
+		Jump 		=> EX_Jump,
+		BranchJudge => BranchJudge
+		PCStall		=> PCStall,
+		PC 			=> PC,
+		NPC 		=> NPC,
+		PCAddImm 	=> PCAddImm,
+		reg1 		=> EX_reg1
+		PCOut 		=> PCOut
+	);
 
+	u8 : InstructionMemory
+	port map(
+		clk 		=> clk,
+		rst 		=> rst,
+		Ram2OE 		=> Ram2OE,
+		Ram2WE 		=> Ram2WE,
+		Ram2EN 		=> Ram2EN,
+		Ram2Addr	=> Ram2Addr,
+		Ram2Data 	=> Ram2Data,
+		PC 			=> PC,
+		inst 		=> inst
+	);
+
+	u9 : IFIDRegister
+	port map(
+		clk 		=> clk,
+		rst 		=> rst,
+		IF_PC 		=> PC,
+		IF_inst 	=> inst,
+		IF_RPC		=> RPC,
+		ID_PC 		=> ID_PC,
+		ID_inst		=> ID_inst,
+		ID_RPC 		=> ID_RPC
+	);
+
+	u10 : Registers
+	port map(
+		clk 		=> clk,
+		rst 		=> rst,
+		RegWrite 	=> RegWrite,
+		raddr1 		=> RegSrcA,
+		raddr2 		=> RegSrcB,
+		waddr 		=> WB_RegDst,
+		wdata 		=> wdata,
+		reg1 		=> reg1,
+		reg2 		=> reg2
+	);
+
+	u11 : ImmUnit
+	port map(
+		ImmSrc 		=> ImmSrc,
+		ExtendOp 	=> ExtendOp,
+		inst 		=> ID_inst,
+		immOut 		=> immOut
+	);
+
+	u12 : IDEXRegister
+	port map(
+		clk 		=> clk,
+		rst 		=> rst,
+		ID_RegDst 	=> RegDst,
+		ID_ALUOp 	=> ALUOp,
+		ID_ALUSrcB 	=> ALUSrcB,
+		ID_ALURes 	=> ALURes,
+		ID_Jump 	=> Jump,
+		ID_BranchOp => BranchOp,
+		ID_Branch 	=> Branch,
+		ID_MemRead 	=> MemRead,
+		ID_MemWrite => MemWrite,
+		ID_MemToRead=> MemToReg,
+		ID_RegWrite	=> RegWrite,
+		ID_PC 		=> ID_PC.
+		ID_reg1		=> reg1,
+		ID_reg2 	=> reg2,
+		ID_raddr1 	=> raddr1,
+		ID_raddr2	=> raddr2,
+		ID_imm 		=> immOut,
+		ID_RPC 		=> ID_RPC,
+		EX_RegDst	=> EX_Reg,
+		EX_ALUOp 	=> EX_ALUOp,
+		EX_ALUSrcB  => EX_ALUSrcB,
+		EX_ALURes	=> EX_ALURes,
+		EX_Jump 	=> EX_Jump,
+		EX_BranchOp => EX_BranchOp,
+		EX_Branch 	=> EX_Branch.
+		EX_MemRead 	=> EX_MemRead,
+		EX_MemToRead=> EX_MemToRead,
+		EX_RegWrite => EX_RegWrite,
+		EX_PC 		=> EX_PC,
+		EX_reg1 	=> EX_reg1,
+		EX_reg2 	=> EX_reg2,
+		EX_raddr1 	=> EX_raddr1,
+		EX_raddr2 	=> EX_raddr2,
+		EX_imm 		=> EX_imm,
+		EX_RPC 		=> EX_RPC
+	);
+
+	u13 : ALUSrcMux1
+	port map(
+		ForwardA	=> ForwardA,
+		reg1 		=> EX_reg1,
+
+	);
