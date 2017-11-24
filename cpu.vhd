@@ -38,18 +38,19 @@ architecture behavioral of cpu is
 		port(
 			rst 		: in STD_LOGIC;
 			inst		: in STD_LOGIC_VECTOR(15 downto 0);
-			controlSignal: out STD_LOGIC_VECTOR(31 downto 0)
+			controlSignal: out STD_LOGIC_VECTOR(30 downto 0)
 		);
 	end component;
 
 	component ForwardingUnit
 		port(
 			-- control signal
-			EX_RegDst	: in STD_LOGIC_VECTOR(3 downto 0);
+			EX_ALUSrcB	: in STD_LOGIC;
 			MEM_RegDst	: in STD_LOGIC_VECTOR(3 downto 0);
+			WB_RegDst	: in STD_LOGIC_VECTOR(3 downto 0);
 			-- input
-			raddr1 		: in STD_LOGIC_VECTOR(3 downto 0);
-			raddr2 		: in STD_LOGIC_VECTOR(3 downto 0);
+			EX_raddr1 	: in STD_LOGIC_VECTOR(3 downto 0);
+			EX_raddr2 	: in STD_LOGIC_VECTOR(3 downto 0);
 			-- output
 			ForwardA	: out STD_LOGIC_VECTOR(1 downto 0);
 			ForwardB 	: out STD_LOGIC_VECTOR(1 downto 0)
@@ -86,15 +87,15 @@ architecture behavioral of cpu is
 
 	component PCAdder
 		port(
-			PCIn		: in STD_LOGIC_VECTOR(15 downto 0);
-			PCOut		: out STD_LOGIC_VECTOR(15 downto 0)
+			PC 			: in STD_LOGIC_VECTOR(15 downto 0);
+			NPC 		: out STD_LOGIC_VECTOR(15 downto 0)
 		);
 	end component;
 
 	component RPCAdder
 		port(
-			PCIn		: in STD_LOGIC_VECTOR(15 downto 0);
-			PCOut		: out STD_LOGIC_VECTOR(15 downto 0)
+			PC 			: in STD_LOGIC_VECTOR(15 downto 0);
+			RPC 		: out STD_LOGIC_VECTOR(15 downto 0)
 		);
 	end component;
 
@@ -128,7 +129,7 @@ architecture behavioral of cpu is
 			-- input
 			PC 			: in STD_LOGIC_VECTOR(15 downto 0);
 			-- output
-			IR 			: out STD_LOGIC_VECTOR(15 downto 0)
+			inst 			: out STD_LOGIC_VECTOR(15 downto 0)
 		);
 	end component;
 
@@ -393,20 +394,32 @@ architecture behavioral of cpu is
 	----------------------------
 	--         signals            
 	----------------------------
+	-- Controller
+	signal controlSignal: STD_LOGIC_VECTOR(30 downto 0);
+
+	-- ForwardingUnit
+	signal ForwardA		: STD_LOGIC_VECTOR(1 downto 0);
+	signal ForwardB 	: STD_LOGIC_VECTOR(1 downto 0);
+
+	-- HazardDetectionUnit
+	signal PCStall 		: STD_LOGIC;
+	signal IFIDStall	: STD_LOGIC;
+	signal IDEXFlush	: STD_LOGIC;
+
 	-- PCRegister
 	signal PC 	 		: STD_LOGIC_VECTOR(15 downto 0);
-	_
+	
 	-- PCAdder
-	signal PCAddOne 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal NPC 		 	: STD_LOGIC_VECTOR(15 downto 0);
 
 	-- RPCAdder
-	signal PCAddTwo 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal RPC 		 	: STD_LOGIC_VECTOR(15 downto 0);
 
 	-- PCMux
 	signal PCOut 		: STD_LOGIC_VECTOR(15 downto 0);
 
 	-- InstructionMemory
-	signal IR 			: STD_LOGIC_VECTOR(15 downto 0);
+	signal inst 			: STD_LOGIC_VECTOR(15 downto 0);
 
 	-- IFIDRegister
 	signal ID_PC 		: STD_LOGIC_VECTOR(15 downto 0);
@@ -456,5 +469,79 @@ architecture behavioral of cpu is
 	-- PCImmAdder
 	signal PCAddImm		: STD_LOGIC_VECTOR(15 downto 0);
 
+	-- BranchMux
+	signal BranchJudge  : STD_LOGIC;
+
 	-- EXMEMRegister
-	signal MEM_BranchOp	: STD_
+	signal MEM_RegDst 	: STD_LOGIC_VECTOR(3 downto 0);
+	signal MEM_BranchOp	: STD_LOGIC_VECTOR(1 downto 0);
+	signal MEM_Branch 	: STD_LOGIC;
+	signal MEM_MemRead 	: STD_LOGIC;
+	signal MEM_MemWrite : STD_LOGIC;
+	signal MEM_MemToRead: STD_LOGIC;
+	signal MEM_RegWrite : STD_LOGIC;
+	signal MEM_ALURes 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal reg2 		: STD_LOGIC_VECTOR(15 downto 0);
+
+	-- DataMemory
+	signal rdata 		: STD_LOGIC_VECTOR(15 downto 0);
+
+	-- MEMWBRegister
+	signal WB_RegDst	: STD_LOGIC_VECTOR(15 downto 0);
+	signal WB_MemToRead : STD_LOGIC;
+	signal WB_RegWrite 	: STD_LOGIC;
+	signal WB_rdata 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal WB_ALURes 	: STD_LOGIC_VECTOR(15 downto 0);
+
+	-- WriteDataMux
+	signal wdata 		: STD_LOGIC_VECTOR(15 downto 0);
+
+
+begin
+	
+	u1 : Controller
+	port map(
+		rst 		=> rst,
+		inst 		=> inst,
+		controlSignal=> controlSignal
+	); 
+
+	u2 : ForwardingUnit
+	port map(
+		EX_ALUSrcB	=> EX_ALUSrcB,
+		MEM_RegDst	=> EX_RegDst,
+		WB_RegDst	=> MEM_RegDst,
+		EX_raddr1 	=> EX_raddr1,
+		EX_raddr2	=> EX_raddr2,
+		ForwardA	=> ForwardA,
+		ForwardB	=> ForwardB
+	);
+
+	u3 : HazardDetectionUnit
+	port map(
+		EX_MemRead 	=> EX_MemRead,
+		EX_RegDst 	=> EX_RegDst,
+		raddr1 		=> inst(30 downto 27),
+		raddr2 		=> inst(26 downto 23),
+		PCStall 	=> PCStall,
+		IFIDStall 	=> IFIDStall,
+		IDEXFlush 	=> IDEXFlush
+	);
+
+	u4 : PCRegister
+	port map(
+		clk 		=> clk,
+		rst 		=> rst,
+		PCIn 		=> PCOut,
+		PCOut 		=> PC
+	);
+
+	u5 : PCAdder
+	port map(
+		PC			=> PC,
+		NPC 		=> NPC
+	);
+
+	u6 : 
+
+
