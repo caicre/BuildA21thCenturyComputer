@@ -1,4 +1,4 @@
-file_in = open('Controller.vhd', 'r')
+file_in = open('ControllerOld.vhd', 'r')
 file_out = open('ControllerTransition.vhd', 'w')
 
 signal_list = [	'RegSrcA', 	'RegSrcB', 	'ImmSrc', 	'ExtendOp',
@@ -25,6 +25,8 @@ for line in file_in:
 			end_pos = line.find(',', start_pos)
 			content = line[start_pos: end_pos]
 
+			tab_num = line.count('\t')
+
 			while True:
 				if content.find('"') != -1:
 					content = content[1:len(content)-1]
@@ -32,13 +34,13 @@ for line in file_in:
 						signal = signal_list[signal_i]
 						signal_content = content[:signal_len_list[signal_i]]
 
-						file_out.write('\t\t\t\t\t' + signal + ' <= "' + signal_content + '";\n')
+						file_out.write('\t'*tab_num + signal + ' <= "' + signal_content + '";\n')
 
 						content = content[signal_len_list[signal_i]:]
 						signal_i += 1
 				else:
 					signal = signal_list[signal_i]
-					file_out.write('\t\t\t\t\t' + signal + ' <= ' + content + ';\n')
+					file_out.write('\t'*tab_num + signal + ' <= ' + content + ';\n')
 					signal_i +=1
 
 				if signal_i == 15:
