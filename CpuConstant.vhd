@@ -5,43 +5,48 @@ package CpuConstant is
 
 	-- command(15 downto 11)
 
-	constant PRE5_ADDIU: std_logic_vector(4 downto 0) := 	"01001";
-	constant PRE5_ADDIU3: std_logic_vector(4 downto 0) := 	"01000";
-	constant PRE5_ADDSP: std_logic_vector(4 downto 0) := 	"01100";
-	constant PRE5_ADDU: std_logic_vector(4 downto 0) := 	"11100";
-	constant PRE5_AND: std_logic_vector(4 downto 0) := 		"11101";
+	constant PRE5_ADDIU: std_logic_vector(4 downto 0) := 		"01001";
+	constant PRE5_ADDIU3: std_logic_vector(4 downto 0) := 		"01000";
 
-	constant PRE5_B: std_logic_vector(4 downto 0) := 		"00010";
-	constant PRE5_BEQZ: std_logic_vector(4 downto 0) := 	"00100";
-	constant PRE5_BNEZ: std_logic_vector(4 downto 0) := 	"00101";
-	constant PRE5_BTEQZ: std_logic_vector(4 downto 0) := 	"01100";
-	constant PRE5_CMP: std_logic_vector(4 downto 0) := 		"11101";
+	constant PRE5_B: std_logic_vector(4 downto 0) := 			"00010";
+	constant PRE5_BEQZ: std_logic_vector(4 downto 0) := 		"00100";
+	constant PRE5_BNEZ: std_logic_vector(4 downto 0) := 		"00101";
 
-	constant PRE5_JR: std_logic_vector(4 downto 0) := 		"11101";
-	constant PRE5_LI: std_logic_vector(4 downto 0) := 		"01101";
-	constant PRE5_LW: std_logic_vector(4 downto 0) := 		"10011";
-	constant PRE5_LW_SP: std_logic_vector(4 downto 0) := 	"10010";
-	constant PRE5_MFIH: std_logic_vector(4 downto 0) := 	"11110";
+	constant PRE5_LI: std_logic_vector(4 downto 0) := 			"01101";
+	constant PRE5_LW: std_logic_vector(4 downto 0) := 			"10011";
+	constant PRE5_LW_SP: std_logic_vector(4 downto 0) := 		"10010";
+	constant PRE5_MFIH: std_logic_vector(4 downto 0) := 		"11110";
 
-	constant PRE5_MFPC: std_logic_vector(4 downto 0) := 	"11101";
-	constant PRE5_MTIH: std_logic_vector(4 downto 0) := 	"11110";
-	constant PRE5_MTSP: std_logic_vector(4 downto 0) := 	"01100";
-	constant PRE5_NOP: std_logic_vector(4 downto 0) := 		"00001";
-	constant PRE5_OR: std_logic_vector(4 downto 0) := 		"11101";
+	constant PRE5_NOP: std_logic_vector(4 downto 0) := 			"00001";
 
-	constant PRE5_SLL: std_logic_vector(4 downto 0) := 		"00110";
-	constant PRE5_SRA: std_logic_vector(4 downto 0) := 		"00110";
-	constant PRE5_SUBU: std_logic_vector(4 downto 0) := 	"11100";
-	constant PRE5_SW: std_logic_vector(4 downto 0) := 		"11011";
-	constant PRE5_SW_SP: std_logic_vector(4 downto 0) := 	"11010";
+	constant PRE5_SW: std_logic_vector(4 downto 0) := 			"11011";
+	constant PRE5_SW_SP: std_logic_vector(4 downto 0) := 		"11010";
 
-	constant PRE5_JALR: std_logic_vector(4 downto 0) := 	"11101";
-	constant PRE5_JRRA: std_logic_vector(4 downto 0) := 	"11101";
-	constant PRE5_MOVE: std_logic_vector(4 downto 0) := 	"01111";
-	constant PRE5_SLTU: std_logic_vector(4 downto 0) := 	"11101";
-	constant PRE5_SW_RS: std_logic_vector(4 downto 0) := 	"01100";
+	constant PRE5_MOVE: std_logic_vector(4 downto 0) := 		"01111";
 
-	constant PRE5_NOP: std_logic_vector(4 downto 0) := 		"00001";
+	------------------
+	constant PRE5_ADDU_SUBU: std_logic_vector(4 downto 0) := 	"11100";
+	constant PRE5_SLL_SRA: std_logic_vector(4 downto 0) := 		"00110";
+	------------------
+
+	----- PRE5 is 11101
+	constant SUF5_AND: std_logic_vector(4 downto 0) :=			"01100"
+	constant SUF5_CMP: std_logic_vector(4 downto 0) :=			"01010"
+	constant SUF5_OR: std_logic_vector(4 downto 0) :=			"01101"
+	constant SUF5_SLTU: std_logic_vector(4 downto 0) :=			"00011"
+
+	constant SUF8_JR: std_logic_vector(4 downto 0) :=			"00000000"
+	constant SUF8_MFPC: std_logic_vector(4 downto 0) :=			"01000000"
+	constant SUF8_JALR: std_logic_vector(4 downto 0) :=			"11000000"
+	------------------
+
+
+	constant PRE8_SW_RS: std_logic_vector(4 downto 0) := 		"01100010";
+	constant PRE8_ADDSP: std_logic_vector(7 downto 0) := 		"01100011";
+	constant PRE8_BTEQZ: std_logic_vector(4 downto 0) := 		"01100000";
+	constant PRE8_MTSP: std_logic_vector(4 downto 0) := 		"01100100";
+
+	constant JRRA: std_logic_vector(15 downto 0) := 			"1110100000100000";
 
 	-- RegSrcA, RegSrcB
 	-- 通用寄存器的值为 0000 - 0111
