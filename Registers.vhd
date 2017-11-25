@@ -82,8 +82,7 @@ begin
         state <= "00";
     elsif (clk'event and clk = '1') then -- WHICH SIGNAL?
         case state is
-            --when "00" => sta
-            te <= "01" ;
+            --when "00" => state <= "01" ;
             --when "01" => state <= "10" ;
             when "00" => 
                 if (RegWrite = '1') then --for now, 1 is to write

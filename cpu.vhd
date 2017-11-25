@@ -291,7 +291,7 @@ architecture behavioral of cpu is
 			PC 			: in STD_LOGIC_VECTOR(15 downto 0);
 			RPC 		: in STD_LOGIC_VECTOR(15 downto 0);
 			-- output
-			ALUMuxResult: out STD_LOGIC_VECTOR(15 downto 0);
+			ALUMuxResult: out STD_LOGIC_VECTOR(15 downto 0)
 		);
 	end component;
 
@@ -367,7 +367,7 @@ architecture behavioral of cpu is
 			addr 		: in STD_LOGIC_VECTOR(15 downto 0);
 			wdata 		: in STD_LOGIC_VECTOR(15 downto 0);
 			-- output
-			rdata 		: out STD_LOGIC_VECTOR(15 downto 0);
+			rdata 		: out STD_LOGIC_VECTOR(15 downto 0)
 		);
 	end component;
 
@@ -388,7 +388,7 @@ architecture behavioral of cpu is
 			WB_RegWrite : out STD_LOGIC;
 			-- output
 			WB_rdata 	: out STD_LOGIC_VECTOR(15 downto 0);
-			WB_ALURes	: out STD_LOGIC_VECTOR(15 downto 0);
+			WB_ALURes	: out STD_LOGIC_VECTOR(15 downto 0)
 		);
 	end component;
 	----------------------------
@@ -402,7 +402,7 @@ architecture behavioral of cpu is
 			rdata 		: in STD_LOGIC_VECTOR(15 downto 0);
 			ALUResult	: in STD_LOGIC_VECTOR(15 downto 0);
 			-- oiutput
-			wdata 		: out STD_LOGIC_VECTOR(15 downto 0);
+			wdata 		: out STD_LOGIC_VECTOR(15 downto 0)
 		);
 	end component;
 
@@ -724,7 +724,7 @@ begin
 		ALUResult 	=> ALUResult,
 		PC 			=> EX_PC,
 		RPC 		=> EX_RPC,
-		ALUMuxResult=> ALUMuxResult,
+		ALUMuxResult=> ALUMuxResult
 	);
 
 	u17 : PCImmAdder
