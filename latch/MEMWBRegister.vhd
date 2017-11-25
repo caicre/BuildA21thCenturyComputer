@@ -31,22 +31,22 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity MEMWBRegister is
     Port ( 
-			clk 		: in STD_LOGIC;
-			rst 		: in STD_LOGIC;
-			-- input control signal
-			MEM_MemToRead: in STD_LOGIC;
-			MEM_RegWrite: in STD_LOGIC;
-			-- input
-			MEM_rdata 	: in STD_LOGIC_VECTOR(15 downto 0);
-			MEM_ALURes	: in STD_LOGIC_VECTOR(15 downto 0);
-			MEM_waddr	: in STD_LOGIC_VECTOR(3 downto 0);
-			-- output control signal
-			WB_MemToRead: out STD_LOGIC;
-			WB_RegWrite : out STD_LOGIC;
-			-- output
-			WB_rdata 	: out STD_LOGIC_VECTOR(15 downto 0);
-			WB_ALURes	: out STD_LOGIC_VECTOR(15 downto 0);
-			WB_waddr	: out STD_LOGIC_VECTOR(3 downto 0));
+		clk 		: in STD_LOGIC;
+		rst 		: in STD_LOGIC;
+		-- input control signal
+		MEM_MemToRead: in STD_LOGIC;
+		MEM_RegWrite: in STD_LOGIC;
+		-- input
+		MEM_rdata 	: in STD_LOGIC_VECTOR(15 downto 0);
+		MEM_ALURes	: in STD_LOGIC_VECTOR(15 downto 0);
+		MEM_waddr	: in STD_LOGIC_VECTOR(3 downto 0);
+		-- output control signal
+		WB_MemToRead: out STD_LOGIC;
+		WB_RegWrite : out STD_LOGIC;
+		-- output
+		WB_rdata 	: out STD_LOGIC_VECTOR(15 downto 0);
+		WB_ALURes	: out STD_LOGIC_VECTOR(15 downto 0);
+	);
 end MEMWBRegister;
 
 
@@ -75,6 +75,5 @@ begin
 	u1:LATCH_1BIT port map(CLK, MEM_RegWrite, WB_RegWrite);
 	u2:LATCH_16BIT port map(CLK, MEM_rdata, WB_rdata);
 	u3:LATCH_16BIT port map(CLK, MEM_ALURes, WB_ALURes);
-	u4:LATCH_4BIT port map(CLK, MEM_waddr, WB_waddr);
 end Behavioral;
 

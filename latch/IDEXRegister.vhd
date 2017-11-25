@@ -53,7 +53,6 @@ entity IDEXRegister is
 		ID_raddr2	: in STD_LOGIC_VECTOR(3 downto 0);
 		ID_imm		: in STD_LOGIC_VECTOR(15 downto 0);
 		ID_RPC 		: in STD_LOGIC_VECTOR(15 downto 0);
-		ID_waddr	: in STD_LOGIC_VECTOR(3 downto 0);
 		-- output control signal
 		EX_RegDst	: out STD_LOGIC_VECTOR(3 downto 0);
 		EX_ALUOp	: out STD_LOGIC_VECTOR(3 downto 0);
@@ -74,7 +73,7 @@ entity IDEXRegister is
 		EX_raddr2	: out STD_LOGIC_VECTOR(3 downto 0);
 		EX_imm		: out STD_LOGIC_VECTOR(15 downto 0);
 		EX_RPC 		: out STD_LOGIC_VECTOR(15 downto 0);
-		EX_waddr	: out STD_LOGIC_VECTOR(3 downto 0));
+	);
 end IDEXRegister;
 
 
@@ -123,6 +122,5 @@ begin
 	u15:LATCH_4BIT port map(CLK, ID_raddr2, EX_raddr2);
 	u16:LATCH_16BIT port map(CLK, ID_imm, EX_imm);
 	u17:LATCH_16BIT port map(CLK, ID_RPC, EX_RPC);
-	u18:LATCH_4BIT port map(CLK, ID_waddr, EX_waddr);
 end Behavioral;
 

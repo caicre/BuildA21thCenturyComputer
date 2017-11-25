@@ -32,20 +32,20 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity WriteDataMux is
     Port ( MemToReg : in  STD_LOGIC ;
            rdata    : in  STD_LOGIC_VECTOR(15 DOWNTO 0);
-           result   : in  STD_LOGIC_VECTOR(15 DOWNTO 0);
+           ALUResult   : in  STD_LOGIC_VECTOR(15 DOWNTO 0);
            wdata    : out  STD_LOGIC_VECTOR(15 DOWNTO 0));
 end WriteDataMux;
 
 architecture Behavioral of WriteDataMux is
 
 begin
-	process(MemToReg, rdata, result)
+	process(MemToReg, rdata, ALUResult)
 	begin 
 		case MemToReg is
 			when "0" =>
 				wdata <= rdata ;
 			when "1" =>
-			    wdata <= result ;
+			    wdata <= ALUResult ;
 		end case ;
 	end process ;
 end Behavioral;

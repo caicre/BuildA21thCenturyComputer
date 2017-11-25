@@ -31,15 +31,20 @@ use CpuConstant.all;
 --use UNISIM.VComponents.all;
 
 entity Registers is
-    Port ( clk      : in  STD_LOGIC;
-           rst      : in  STD_LOGIC;
-           raddr1   : in  STD_LOGIC_VECTOR (3 DOWNTO 0);
-           raddr2   : in  STD_LOGIC_VECTOR (3 DOWNTO 0);
-           waddr    : in  STD_LOGIC_VECTOR (3 DOWNTO 0);
-           wdata    : in  STD_LOGIC_VECTOR (15 DOWNTO 0);
-           reg1     : out  STD_LOGIC_VECTOR (15 DOWNTO 0);
-           reg2     : out  STD_LOGIC_VECTOR (15 DOWNTO 0);
-           RegWrite : in  STD_LOGIC);
+    port(
+        clk         : in STD_LOGIC;
+        rst         : in STD_LOGIC;
+        -- control signal
+        RegWrite    : in STD_LOGIC;
+        -- input
+        raddr1      : in STD_LOGIC_VECTOR(3 downto 0);
+        raddr2      : in STD_LOGIC_VECTOR(3 downto 0);
+        waddr       : in STD_LOGIC_VECTOR(3 downto 0);
+        wdata       : in STD_LOGIC_VECTOR(15 downto 0);
+        -- output
+        reg1        : out STD_LOGIC_VECTOR(15 downto 0);
+        reg2        : out STD_LOGIC_VECTOR(15 downto 0)
+    );
 end Registers;
 
 architecture Behavioral of Registers is

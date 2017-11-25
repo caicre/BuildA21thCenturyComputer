@@ -31,21 +31,21 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity ALUResMux is
     Port ( ALURes       : in  STD_LOGIC_VECTOR(1 DOWNTO 0);
-           result       : in  STD_LOGIC_VECTOR(15 DOWNTO 0);
+           ALUResult       : in  STD_LOGIC_VECTOR(15 DOWNTO 0);
            PC           : in  STD_LOGIC_VECTOR(15 DOWNTO 0);
            RPC          : in  STD_LOGIC_VECTOR(15 DOWNTO 0);
-           ALUResult    : out  STD_LOGIC_VECTOR(15 DOWNTO 0) );
+           ALUMuxALUResult    : out  STD_LOGIC_VECTOR(15 DOWNTO 0) );
 end ALUResMux;
 
 architecture Behavioral of ALUResMux is
 
 begin
-    process (ALURes, result, PC, RPC)
+    process (ALURes, ALUResult, PC, RPC)
     begin 
         case ALURes is
-            when "00" => ALUResult <= result ;
-            when "01" => ALUResult <= PC ;
-            when "10" => ALUResult <= RPC ;
+            when "00" => ALUMuxALUResult <= ALUResult ;
+            when "01" => ALUMuxALUResult <= PC ;
+            when "10" => ALUMuxALUResult <= RPC ;
         end case ;
     end process ;
 
