@@ -59,7 +59,7 @@ begin
 		else
 			case inst(15 downto 11) is
 				when PRE5_ADDIU =>
-					controlerSignal <= (rx, REG_NO,"0010", rx, "00011000", "0000001");
+					controlerSignal <= (rx, REG_NO, "0010", rx, "00011000", "0000001");
 				when PRE5_ADDIU3 =>
 					controlerSignal <= (rx, ry, "1000", ry, "00011000", "0000001");
 				when PRE5_ADDSP =>
