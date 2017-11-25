@@ -293,7 +293,6 @@ begin
 					MemWrite <= '0';
 					MemToReg <= '0';
 					RegWrite <= '1';
-
 				when PRE5_NOP =>
 					RegSrcA <= REG_NO;
 					RegSrcB <= REG_NO;
