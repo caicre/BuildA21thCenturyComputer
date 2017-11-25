@@ -39,13 +39,14 @@ entity MEMWBRegister is
 		-- input
 		MEM_rdata 	: in STD_LOGIC_VECTOR(15 downto 0);
 		MEM_ALURes	: in STD_LOGIC_VECTOR(15 downto 0);
-		MEM_waddr	: in STD_LOGIC_VECTOR(3 downto 0);
+		MEM_RegDst	: in STD_LOGIC_VECTOR(3 downto 0);
 		-- output control signal
 		WB_MemToRead: out STD_LOGIC;
 		WB_RegWrite : out STD_LOGIC;
 		-- output
 		WB_rdata 	: out STD_LOGIC_VECTOR(15 downto 0);
-		WB_ALURes	: out STD_LOGIC_VECTOR(15 downto 0);
+		WB_RegDst	: out STD_LOGIC_VECTOR(3 downto 0);
+		WB_ALURes	: out STD_LOGIC_VECTOR(15 downto 0)
 	);
 end MEMWBRegister;
 
@@ -75,5 +76,6 @@ begin
 	u1:LATCH_1BIT port map(CLK, MEM_RegWrite, WB_RegWrite);
 	u2:LATCH_16BIT port map(CLK, MEM_rdata, WB_rdata);
 	u3:LATCH_16BIT port map(CLK, MEM_ALURes, WB_ALURes);
+	u4:LATCH_4BIT port map(CLK, MEM_RegDst, WB_RegDst);
 end Behavioral;
 

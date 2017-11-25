@@ -29,7 +29,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity BranchMux is
+entity BranchUnit is
     port(
         -- control signal
         ForwardA    : in STD_LOGIC_VECTOR(1 downto 0);
@@ -42,20 +42,21 @@ entity BranchMux is
         -- output
         BranchJudge : out STD_LOGIC
     );
-end BranchMux;
+end BranchUnit;
 
-architecture Behavioral of BranchMux is
+architecture Behavioral of BranchUnit is
 
 begin
-    process (Branch,BranchOp,ALUZero)
+    process (Branch,BranchOp, ForwardA, reg1, MEM_ALURes, WB_ALURes)
         variable reg        : STD_LOGIC_VECTOR(15 downto 0);
-        variable zero       : STD_LOGIC_VECTOR(15 downto 0) := others => 0;
+        variable zero       : STD_LOGIC_VECTOR(15 downto 0) := (others => '0');
     begin
         if (Branch = '1') then
             case ForwardA is
                 when "00" => reg := reg1;
                 when "01" => reg := MEM_ALURes;
                 when "10" => reg := WB_ALURes;
+					 when others => 
             end case;
             case BranchOp is
                 when "00" => BranchJudge <= '1';
@@ -66,11 +67,12 @@ begin
                         BranchJudge <= '0';
                     end if;
                 when "10" =>
-                    if (reg != zero) then
+                    if (reg /= zero) then
                         BranchJudge <= '1';
                     else 
                         BranchJudge <= '0';
                     end if;
+					 when others => 
             end case ;
         else 
             BranchJudge <= '0';

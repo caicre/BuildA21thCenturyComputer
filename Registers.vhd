@@ -79,33 +79,28 @@ begin
         IH <= (others => '0');			
         SP <= (others => '0');
         RA <= (others => '0');
-        state <= "00";
     elsif (clk'event and clk = '1') then -- WHICH SIGNAL?
-        case state is
-            --when "00" => state <= "01" ;
-            --when "01" => state <= "10" ;
-            when "00" => 
-                if (RegWrite = '1') then --for now, 1 is to write
-                    case waddr is
-                        when R0_ADDR => r0 <= wdata ;
-                        when R1_ADDR => r1 <= wdata ;
-                        when R2_ADDR => r2 <= wdata ;
-                        when R3_ADDR => r3 <= wdata ;
-                        when R4_ADDR => r4 <= wdata ;
-                        when R5_ADDR => r5 <= wdata ;
-                        when R6_ADDR => r5 <= wdata ;
-                        when R7_ADDR => r7 <= wdata ;
-                        when REG_SP => SP <= wdata ;
-                        when REG_T  => T  <= wdata ;
-                        when REG_IH => IH <= wdata ;
-                        when REG_RA => RA <= wdata ;
-                    end case ;
-                end if ;
-                state <= "00" ;
-        end case ;
-    end if ;
+		 if (RegWrite = '1') then --for now, 1 is to write
+			  case waddr is
+					when R0_ADDR => r0 <= wdata ;
+					when R1_ADDR => r1 <= wdata ;
+					when R2_ADDR => r2 <= wdata ;
+					when R3_ADDR => r3 <= wdata ;
+					when R4_ADDR => r4 <= wdata ;
+					when R5_ADDR => r5 <= wdata ;
+					when R6_ADDR => r5 <= wdata ;
+					when R7_ADDR => r7 <= wdata ;
+					when REG_SP => SP <= wdata ;
+					when REG_T  => T  <= wdata ;
+					when REG_IH => IH <= wdata ;
+					when REG_RA => RA <= wdata ;
+					when others => 
+			  end case ;
+		 end if ;
+	 end if ;
     end process ;
-
+	process (raddr1, r0, r1, r2, r3, r4, r5, r6, r7, SP, IH, RA, T)
+	begin
     if    (raddr1 = R0_ADDR) then 
         reg1 <= r0 ; 
     elsif (raddr1 = R1_ADDR) then
@@ -130,9 +125,10 @@ begin
         reg1 <= RA ;
     elsif (raddr1 = REG_T ) then
         reg1 <= T  ;
-
     end if ;
-
+    end process ;
+    process (raddr2, r0, r1, r2, r3, r4, r5, r6, r7, SP, IH, RA, T)
+	begin
     if    (raddr2 = R0_ADDR) then 
         reg2 <= r0 ; 
     elsif (raddr2 = R1_ADDR) then
@@ -157,8 +153,8 @@ begin
         reg2 <= RA ;
     elsif (raddr2 = REG_T ) then
         reg2 <= T  ;
-
     end if ;
+	end process ;
 
 end Behavioral;
 

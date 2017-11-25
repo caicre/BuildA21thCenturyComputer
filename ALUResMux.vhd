@@ -34,7 +34,7 @@ entity ALUResMux is
            ALUResult       : in  STD_LOGIC_VECTOR(15 DOWNTO 0);
            PC           : in  STD_LOGIC_VECTOR(15 DOWNTO 0);
            RPC          : in  STD_LOGIC_VECTOR(15 DOWNTO 0);
-           ALUMuxALUResult    : out  STD_LOGIC_VECTOR(15 DOWNTO 0) );
+           ALUMuxResult    : out  STD_LOGIC_VECTOR(15 DOWNTO 0) );
 end ALUResMux;
 
 architecture Behavioral of ALUResMux is
@@ -43,9 +43,10 @@ begin
     process (ALURes, ALUResult, PC, RPC)
     begin 
         case ALURes is
-            when "00" => ALUMuxALUResult <= ALUResult ;
-            when "01" => ALUMuxALUResult <= PC ;
-            when "10" => ALUMuxALUResult <= RPC ;
+            when "00" => ALUMuxResult <= ALUResult ;
+            when "01" => ALUMuxResult <= PC ;
+            when "10" => ALUMuxResult <= RPC ;
+				when others => 
         end case ;
     end process ;
 

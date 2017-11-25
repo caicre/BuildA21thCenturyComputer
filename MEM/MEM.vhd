@@ -29,29 +29,29 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity MEM is
+entity DataMemory is
     Port ( CLK : in  STD_LOGIC;
 			  RST : in	STD_LOGIC;
-           MemWrite : in  STD_LOGIC;					--为0时, 使能
+           MemWrite : in  STD_LOGIC;					--为0时, 使锟斤拷
            MemRead : in  STD_LOGIC;
            Addr : in  STD_LOGIC_VECTOR (15 downto 0);
-           WriteData : in  STD_LOGIC_VECTOR (15 downto 0);
-           ReadData : out  STD_LOGIC_VECTOR (15 downto 0);
+           WData : in  STD_LOGIC_VECTOR (15 downto 0);
+           RData : out  STD_LOGIC_VECTOR (15 downto 0);
 			  RAM1_ADDR : out  STD_LOGIC_VECTOR (17 downto 0);
            RAM1_DATA : inout  STD_LOGIC_VECTOR (15 downto 0);
            RAM1_OE : out  STD_LOGIC;
            RAM1_WE : out  STD_LOGIC;
            RAM1_EN : out  STD_LOGIC);
-end MEM;
+end DataMemory;
 
-architecture Behavioral of MEM is
+architecture Behavioral of DataMemory is
 
 component RAM1
 	port(CLK : in  STD_LOGIC;
 			  RST: in	STD_LOGIC;
            ADDR_IN : in  STD_LOGIC_VECTOR (17 downto 0);
            DATA_IN : in  STD_LOGIC_VECTOR (15 downto 0);
-           op : in  STD_LOGIC_VECTOR (1 downto 0); 		--op(1): 使能(使能:0, 非使能:1); op(0): 读或写 (0,1)
+           op : in  STD_LOGIC_VECTOR (1 downto 0); 		--op(1): 使锟斤拷(使锟斤拷:0, 锟斤拷使锟斤拷:1); op(0): 锟斤拷锟斤拷写 (0,1)
            DATA_OUT : out  STD_LOGIC_VECTOR (15 downto 0);
            RAM1_ADDR : out  STD_LOGIC_VECTOR (17 downto 0);
            RAM1_DATA : inout  STD_LOGIC_VECTOR (15 downto 0);
@@ -77,7 +77,7 @@ signal Addr_18bit : std_logic_vector (17 downto 0);
 begin
 	u0:LOGIC_RAM1_OP port map(MemWrite, MemRead, op);
 	u1:ZERO_EXTEND_18BIT port map(Addr, Addr_18bit);
-	u2:RAM1 port map(CLK, RST, Addr_18bit, WriteData, op, ReadData, RAM1_ADDR, RAM1_DATA, RAM1_OE, RAM1_WE, RAM1_EN);
+	u2:RAM1 port map(CLK, RST, Addr_18bit, WData, op, RData, RAM1_ADDR, RAM1_DATA, RAM1_OE, RAM1_WE, RAM1_EN);
 
 end Behavioral;
 

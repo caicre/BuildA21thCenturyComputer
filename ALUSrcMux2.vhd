@@ -40,9 +40,9 @@ entity ALUSrcMux2 is
 end ALUSrcMux2;
 
 architecture Behavioral of ALUSrcMux2 is
-shared variable all_control : in STD_LOGIC_VECTOR(2 downto 0) ;
+	shared variable all_control : STD_LOGIC_VECTOR(2 downto 0) ;
 begin
-    process (ForwardB, reg2, EX_ALURes, MEM_ALURes, src2)
+    process (ForwardB, reg2, WB_ALURes, MEM_ALURes)
     begin
         all_control := ForwardB & ALUSrcB ; 
         case ForwardB is

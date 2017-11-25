@@ -37,7 +37,7 @@ entity IDEXRegister is
 		ID_RegDst	: in STD_LOGIC_VECTOR(3 downto 0);
 		ID_ALUOp	: in STD_LOGIC_VECTOR(3 downto 0);
 		ID_ALUSrcB	: in STD_LOGIC;
-		ID_ALURes  	: in STD_LOGIC;
+		ID_ALURes  	: in STD_LOGIC_VECTOR(1 downto 0);
 		ID_Jump		: in STD_LOGIC;
 		ID_BranchOp	: in STD_LOGIC_VECTOR(1 downto 0);
 		ID_Branch 	: in STD_LOGIC;
@@ -57,7 +57,7 @@ entity IDEXRegister is
 		EX_RegDst	: out STD_LOGIC_VECTOR(3 downto 0);
 		EX_ALUOp	: out STD_LOGIC_VECTOR(3 downto 0);
 		EX_ALUSrcB	: out STD_LOGIC;
-		EX_ALURes  	: out STD_LOGIC;
+		EX_ALURes  	: out STD_LOGIC_VECTOR(1 downto 0);
 		EX_Jump		: out STD_LOGIC;
 		EX_BranchOp	: out STD_LOGIC_VECTOR(1 downto 0);
 		EX_Branch 	: out STD_LOGIC;
@@ -72,7 +72,7 @@ entity IDEXRegister is
 		EX_raddr1	: out STD_LOGIC_VECTOR(3 downto 0);
 		EX_raddr2	: out STD_LOGIC_VECTOR(3 downto 0);
 		EX_imm		: out STD_LOGIC_VECTOR(15 downto 0);
-		EX_RPC 		: out STD_LOGIC_VECTOR(15 downto 0);
+		EX_RPC 		: out STD_LOGIC_VECTOR(15 downto 0)
 	);
 end IDEXRegister;
 
@@ -82,7 +82,7 @@ architecture Behavioral of IDEXRegister is
 component LATCH_16BIT
 	port(CLK: in STD_LOGIC;
 			 D : in  STD_LOGIC_VECTOR (15 downto 0);
-          Q : out  STD_LOGIC_VECTOR (15 downto 0));
+          Q : out  STD_LOGIC_VECTOR (15 downto 0)) ;
 end component;
 
 component LATCH_4BIT
@@ -107,7 +107,7 @@ begin
 	u0:LATCH_4BIT port map(CLK, ID_RegDst, EX_RegDst);
 	u1:LATCH_4BIT port map(CLK, ID_ALUOp, EX_ALUOp);
 	u2:LATCH_1BIT port map(CLK, ID_ALUSrcB, EX_ALUSrcB);
-	u3:LATCH_1BIT port map(CLK, ID_ALURes, EX_ALURes);
+	u3:LATCH_2BIT port map(CLK, ID_ALURes, EX_ALURes);
 	u4:LATCH_1BIT port map(CLK, ID_Jump, EX_Jump);
 	u5:LATCH_2BIT port map(CLK, ID_BranchOp, EX_BranchOp);
 	u6:LATCH_1BIT port map(CLK, ID_Branch, EX_Branch);

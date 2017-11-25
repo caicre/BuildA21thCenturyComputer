@@ -30,30 +30,30 @@ use IEEE.STD_LOGIC_1164.ALL;
 --use UNISIM.VComponents.all;
 
 entity PCMux is
-    Port ( jump 		: in  STD_LOGIC;
+    Port ( Jump 		: in  STD_LOGIC;
            branchJudge 	: in  STD_LOGIC;
            PCStall 		: in  STD_LOGIC;
            PC 			: in  STD_LOGIC_VECTOR(15 downto 0);
-           nextPC 		: in  STD_LOGIC_VECTOR(15 downto 0);
-           PCimm 		: in  STD_LOGIC_VECTOR(15 downto 0);
-           ALURes 		: in  STD_LOGIC_VECTOR(15 downto 0);
-           PCOut 		: sout  STD_LOGIC_VECTOR(15 downto 0)
+           NPC 		: in  STD_LOGIC_VECTOR(15 downto 0);
+           PCAddImm 		: in  STD_LOGIC_VECTOR(15 downto 0);
+           reg1 		: in  STD_LOGIC_VECTOR(15 downto 0);
+           PCOut 		: out  STD_LOGIC_VECTOR(15 downto 0)
 	) ;
 end PCMux;
 
 architecture Behavioral of PCMux is
 	shared variable all_controllers : STD_LOGIC_VECTOR(2 downto 0) ;
 begin
-	process (jump,brachJudge,PCStall,PC,nextPC,PCimm,ALURes,PCOut)
+	process (Jump,branchJudge,PCStall,PC,NPC,PCAddImm,reg1)
 	begin
-		all_controllers := branchJudge & jump & PCStall ;
+		all_controllers := branchJudge & Jump & PCStall ;
 		case all_controllers is
-			when "000"  => PCOut <= nextPC ;
-			when "001"  => PCOut <= PCimm ;
-			when "010"  => PCOut <= ALURes ;
-			when "011"  => PCOut <= ALURes ;
-            when others => PCOut <= PC ;
-        end case ; 
+			when "000"  => PCOut <= NPC ;
+			when "001"  => PCOut <= PCAddImm ;
+			when "010"  => PCOut <= reg1 ;
+			when "011"  => PCOut <= reg1 ;
+         when others => PCOut <= PC ;
+      end case ; 
 	end process ;
 
 end Behavioral;

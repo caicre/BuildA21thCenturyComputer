@@ -32,13 +32,13 @@ for line in file_in:
 						signal = signal_list[signal_i]
 						signal_content = content[:signal_len_list[signal_i]]
 
-						file_out.write('\t\t\t\t\t' + signal + ' => "' + signal_content + '";\n')
+						file_out.write('\t\t\t\t\t' + signal + ' <= "' + signal_content + '";\n')
 
 						content = content[signal_len_list[signal_i]:]
 						signal_i += 1
 				else:
 					signal = signal_list[signal_i]
-					file_out.write('\t\t\t\t\t' + signal + ' => ' + content + ';\n')
+					file_out.write('\t\t\t\t\t' + signal + ' <= ' + content + ';\n')
 					signal_i +=1
 
 				if signal_i == 15:

@@ -2,9 +2,9 @@
 -- Company: 
 -- Engineer: 
 -- 
--- Create Date:    16:21:59 11/23/2017 
+-- Create Date:    23:02:42 11/25/2017 
 -- Design Name: 
--- Module Name:    ALUSrcMux1 - Behavioral 
+-- Module Name:    PCAdder - Behavioral 
 -- Project Name: 
 -- Target Devices: 
 -- Tool versions: 
@@ -19,7 +19,7 @@
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
 --use IEEE.NUMERIC_STD.ALL;
@@ -29,25 +29,18 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity ALUSrcMux1 is
-    Port ( ForwardA     : in  STD_LOGIC_VECTOR(1  downto 0);
-           reg1         : in  STD_LOGIC_VECTOR(15 downto 0);
-           MEM_ALURes   : in  STD_LOGIC_VECTOR(15 downto 0);
-           WB_ALURes    : in  STD_LOGIC_VECTOR(15 downto 0);
-           src1         : out STD_LOGIC_VECTOR(15 downto 0));
-end ALUSrcMux1;
+entity PCAdder is
+    Port ( PC : in  STD_LOGIC_VECTOR(15 DOWNTO 0);
+           NPC : out  STD_LOGIC_VECTOR(15 DOWNTO 0));
+end PCAdder;
 
-architecture Behavioral of ALUSrcMux1 is
+architecture Behavioral of PCAdder is
 
 begin
-    process (ForwardA, reg1, WB_ALURes, MEM_ALURes)
-    begin 
-        case ForwardA is
-            when "00" => src1 <= reg1 ;
-            when "01" => src1 <= MEM_ALURes ;
-            when "10" => src1 <= WB_ALURes ;
-				when others => 
-        end case ;
-    end process ;
+	process(PC)
+	begin
+		NPC <= PC + 1 ;
+	end process ;
+
 end Behavioral;
 

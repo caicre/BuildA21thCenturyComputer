@@ -50,11 +50,11 @@ begin
 	process(CLK, RST, op)
 	begin
 		if(RST = '0') then
-			RAM1_EN <= '1';
-			RAM1_OE <= '1';
-			RAM1_WE <= '1';
-			RAM1_ADDR <= "000000000000000000";
-			RAM1_DATA <= "0000000000000000";
+			RAM2_EN <= '1';
+			RAM2_OE <= '1';
+			RAM2_WE <= '1';
+			RAM2_ADDR <= "000000000000000000";
+			RAM2_DATA <= "0000000000000000";
 		end if;
 		
 		if(op(1) = '0') then
@@ -64,7 +64,7 @@ begin
 					RAM2_OE <= CLK;
 					RAM2_WE <= '1';
 					DATA_OUT <= RAM2_DATA;--是否上升沿时, 读取?? 或者一直连接DATA_OUT, 也没关系?
-					RAM1_DATA <= "ZZZZZZZZZZZZZZZZ";	--OE为0之前, 操作?
+					RAM2_DATA <= "ZZZZZZZZZZZZZZZZ";	--OE为0之前, 操作?
 				when '1' =>		--写入
 					RAM2_WE <= CLK;
 					RAM2_OE <= '1';

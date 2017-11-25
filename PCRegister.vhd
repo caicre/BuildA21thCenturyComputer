@@ -2,9 +2,9 @@
 -- Company: 
 -- Engineer: 
 -- 
--- Create Date:    16:21:59 11/23/2017 
+-- Create Date:    00:01:06 11/26/2017 
 -- Design Name: 
--- Module Name:    ALUSrcMux1 - Behavioral 
+-- Module Name:    PCRegister - Behavioral 
 -- Project Name: 
 -- Target Devices: 
 -- Tool versions: 
@@ -29,25 +29,24 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity ALUSrcMux1 is
-    Port ( ForwardA     : in  STD_LOGIC_VECTOR(1  downto 0);
-           reg1         : in  STD_LOGIC_VECTOR(15 downto 0);
-           MEM_ALURes   : in  STD_LOGIC_VECTOR(15 downto 0);
-           WB_ALURes    : in  STD_LOGIC_VECTOR(15 downto 0);
-           src1         : out STD_LOGIC_VECTOR(15 downto 0));
-end ALUSrcMux1;
+entity PCRegister is
+    Port ( clk : in  STD_LOGIC;
+           rst : in  STD_LOGIC;
+           PCIn : in  STD_LOGIC_VECTOR(15 DOWNTO 0);
+           PCOut : out  STD_LOGIC_VECTOR(15 DOWNTO 0));
+end PCRegister;
 
-architecture Behavioral of ALUSrcMux1 is
-
+architecture Behavioral of PCRegister is
 begin
-    process (ForwardA, reg1, WB_ALURes, MEM_ALURes)
-    begin 
-        case ForwardA is
-            when "00" => src1 <= reg1 ;
-            when "01" => src1 <= MEM_ALURes ;
-            when "10" => src1 <= WB_ALURes ;
-				when others => 
-        end case ;
-    end process ;
+
+process (clk, rst)
+begin
+	if(rst = '1') then
+		PCOut <= (others => '0') ;
+	elsif (clk'event and clk='1') then
+		PCOut <= PCIn ;
+	end if ;
+end process ;
+
 end Behavioral;
 

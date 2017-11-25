@@ -41,11 +41,18 @@ package CpuConstant is
 	constant PRE5_SLTU: std_logic_vector(4 downto 0) := 	"11101";
 	constant PRE5_SW_RS: std_logic_vector(4 downto 0) := 	"01100";
 
-	constant PRE5_NOP: std_logic_vector(4 downto 0) := 		"00001";
 
 	-- RegSrcA, RegSrcB
 	-- 通用寄存器的值为 0000 - 0111
 
+	constant R0_ADDR: std_logic_vector(3 downto 0) := 	"0000";
+	constant R1_ADDR: std_logic_vector(3 downto 0) := 	"0001";
+	constant R2_ADDR: std_logic_vector(3 downto 0) := 	"0010";
+	constant R3_ADDR: std_logic_vector(3 downto 0) := 	"0011";
+	constant R4_ADDR: std_logic_vector(3 downto 0) := 	"0100";
+	constant R5_ADDR: std_logic_vector(3 downto 0) := 	"0101";
+	constant R6_ADDR: std_logic_vector(3 downto 0) := 	"0110";
+	constant R7_ADDR: std_logic_vector(3 downto 0) := 	"0111";
 	constant REG_SP: std_logic_vector(3 downto 0) := 	"1000";
 	constant REG_T: std_logic_vector(3 downto 0) := 	"1001";
 	constant REG_IH: std_logic_vector(3 downto 0) := 	"1010";

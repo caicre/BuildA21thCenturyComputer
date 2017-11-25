@@ -8,10 +8,8 @@ entity ALU is
 		src1		: in STD_LOGIC_VECTOR(15 downto 0);
 		src2		: in STD_LOGIC_VECTOR(15 downto 0);
 		ALUOp		: in STD_LOGIC_VECTOR(3 downto 0);
-
-		result 		: out STD_LOGIC_VECTOR(15 downto 0);
-	);
-end component;
+		result 		: out STD_LOGIC_VECTOR(15 downto 0)) ;
+end ALU;
 
 architecture Behavioral of ALU is 
 	shared variable tmp		: STD_LOGIC_VECTOR(15 downto 0);
@@ -19,7 +17,7 @@ architecture Behavioral of ALU is
 begin
 	process(src1, src2, ALUop)
 	begin
-		case ALUUp is
+		case ALUOp is
 			when "0000" => -- src1, branch
 				result <= src1;
 			when "0001" => -- +
@@ -39,19 +37,19 @@ begin
 				end if;
 			when "0110" => -- sra
 				tmp := src1(15 downto 0);
-				if (Bsrc = zero) then 
+				if (src2 = zero) then 
 					result(15 downto 0) <= to_stdlogicvector(to_bitvector(tmp) sra 8);
 				else 
 					result <= to_stdlogicvector(to_bitvector(src1) sra conv_integer(src2));
 				end if;
 			when "0111" => -- cmp
-				if (src1 == src2) then
+				if (src1 = src2) then
 					result <= "0000000000000000";
 				else
 					result <= "0000000000000001";
 				end if;
 			when "1000" => -- sltu
-				if (src1 < src2)
+				if (src1 < src2) then
 					result <= "0000000000000000";
 				else
 					result <= "0000000000000001";

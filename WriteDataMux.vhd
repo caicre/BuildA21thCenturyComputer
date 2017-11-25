@@ -42,9 +42,9 @@ begin
 	process(MemToReg, rdata, ALUResult)
 	begin 
 		case MemToReg is
-			when "0" =>
+			when '0' =>
 				wdata <= rdata ;
-			when "1" =>
+			when others =>
 			    wdata <= ALUResult ;
 		end case ;
 	end process ;
