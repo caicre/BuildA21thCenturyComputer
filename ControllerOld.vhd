@@ -31,9 +31,9 @@ use CpuConstant.all;
 --use UNISIM.VComponents.all;
 
 entity Controller is
-	Port(	inst : in std_logic_vector(15 downto 0);
-			rst : in std_logic;
-			controlerSignal : out std_logic_vector(30 downto 0)
+	Port(	inst : 				in std_logic_vector(15 downto 0);
+			rst : 				in std_logic;
+			controlerSignal : 	out std_logic_vector(30 downto 0)
 	);
 end Controller;
 

@@ -34,7 +34,10 @@ for line in file_in:
 						signal = signal_list[signal_i]
 						signal_content = content[:signal_len_list[signal_i]]
 
-						file_out.write('\t'*tab_num + signal + ' <= "' + signal_content + '";\n')
+						if signal_len_list[signal_i] != 1:
+							file_out.write('\t'*tab_num + signal + ' <= "' + signal_content + '";\n')
+						else:
+							file_out.write('\t'*tab_num + signal + ' <= \'' + signal_content + '\';\n')
 
 						content = content[signal_len_list[signal_i]:]
 						signal_i += 1
