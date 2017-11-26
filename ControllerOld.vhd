@@ -130,7 +130,7 @@ begin
 							controlerSignal <= (REG_SP, REG_NO, "0010", REG_SP, "00011000", "0000001");
 						when PRE8_BTEQZ =>
 							controlerSignal <= (REG_T, REG_NO, "0000", REG_NO, "0000", "0000", "0110000");
-						when PRE5_MTSP =>
+						when PRE8_MTSP =>
 							controlerSignal <= (rx, REG_NO, "0000", REG_SP, "0000", "0000", "0000001");
 						when others =>
 							controlerSignal <= (REG_NO, REG_NO, "0000", REG_NO, "0000", "0000", "0000000");
