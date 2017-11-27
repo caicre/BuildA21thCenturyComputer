@@ -4,7 +4,10 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity cpu is
 	port(
 		rst			: in STD_LOGIC;
-		clk			: in STD_LOGIC;
+		clk 			: in STD_LOGIC;
+		--clk_board	: in STD_LOGIC;
+		--clk_button	: in STD_LOGIC;
+		--clksignal	: in STD_LOGIC;
 
 		-- Serial Port
 		dataReady	: in STD_LOGIC;
@@ -549,6 +552,8 @@ architecture Behavioral of cpu is
 	signal show1 : std_logic ;
 	signal show2 : std_logic ;
 	signal show3 : std_logic ;
+	
+	--signal clk : std_logic ;
 
 begin
 
@@ -565,7 +570,7 @@ begin
 	u1 : Controller
 	port map(
 		rst 		=> rst,
-		inst 		=> EX_inst,
+		inst 		=> ID_inst,
 		RegSrcA		=> RegSrcA,
 		RegSrcB 	=> RegSrcB,
 		ImmSrc		=> ImmSrc,
@@ -586,8 +591,8 @@ begin
 	u2 : ForwardingUnit
 	port map(
 		EX_ALUSrcB	=> EX_ALUSrcB,
-		MEM_RegDst	=> EX_RegDst,
-		WB_RegDst	=> MEM_RegDst,
+		MEM_RegDst	=> MEM_RegDst,
+		WB_RegDst	=> WB_RegDst,
 		EX_raddr1 	=> EX_raddr1,
 		EX_raddr2	=> EX_raddr2,
 		ForwardA	=> ForwardA,
@@ -598,8 +603,8 @@ begin
 	port map(
 		EX_MemRead 	=> EX_MemRead,
 		EX_RegDst 	=> EX_RegDst,
-		raddr1 		=> EX_raddr1,
-		raddr2 		=> EX_raddr2,
+		raddr1 		=> RegSrcA,
+		raddr2 		=> RegSrcB,
 		PCStall 	=> PCStall,
 		IFIDStall 	=> IFIDStall,
 		IDEXFlush 	=> IDEXFlush
@@ -624,7 +629,7 @@ begin
 		Ram2_EN 	=> Ram2_EN,	
 		Ram2_Addr 	=> Ram2_Addr,
 		Ram2_Data 	=> Ram2_Data,
-		PC 			=> IF_PC,
+		PC 			=> PCMuxOut,
 		inst 		=> IF_inst, --HERE was IF_inst, not right
 		data_ready 	=> dataReady, 
 		tbre 		=> tbre,
@@ -638,7 +643,7 @@ begin
 		clk 		=> clk1,
 		rst 		=> rst,
 		PCIn 		=> PCMuxOut,
-		PCOut 		=> IF_PC
+		PCOut 	=> IF_PC
 	);
 
 	u5 : PCAdder
@@ -843,12 +848,20 @@ begin
 		wdata 		=> WB_wdata
 	);
 	
-	process (IF_inst)
+--	process (clk_board,rst,clk_button,clksignal)
+--	begin
+--		if rst = '0' then clk <= '0' ;
+--		elsif clksignal = '0' then clk <= clk_board ;
+--		else clk <= clk_button ;
+--		end if ;
+--	end process ;
+	process (ID_inst,RegSrcA,WB_RegDst,RegDst)
 	begin
---		led(15 downto 8) <= IF_inst(15 downto 8) ;
---		led(7 downto 0) <= IF_NPC(7 downto 0) ;
-		led <= IF_NPC ;
-	end process ;
+		led(15 downto 8) <= ID_inst(15 downto 8) ;
+--		led(7 downto 4) <= RegSrcA(3 downto 0) ;
+--		led(3 downto 0) <= RegDst(3 downto 0) ;
+		led(7 downto 0) <= PCMuxOut(7 downto 0) ;
+ 	end process ;
 	
 	process (clk0,PCStall,EX_BranchJudge,EX_Jump)
 	begin

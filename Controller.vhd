@@ -126,7 +126,7 @@ begin
 					ALURes <= "00";
 					Jump <= '0';
 					BranchOp <= "00";
-					Branch <= '0';
+					Branch <= '1';
 					MemRead <= '0';
 					MemWrite <= '0';
 					MemToReg <= '0';
