@@ -38,7 +38,7 @@ architecture Behavioral of cpu is
 
 	component Clock
 		port(
-			rst		: in STD_LOGIC;
+			rst	: in STD_LOGIC;
 			clk 	: in STD_LOGIC;
 			clk0	: out STD_LOGIC;
 			clk1 	: out STD_LOGIC;
