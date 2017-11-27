@@ -119,7 +119,7 @@ begin
 				rdn <= '1';
 				
 				case mem_state is
-					when s0 =>
+					when s0 =>												--准备读指令
 					--	if PCKeep = '0' then
 					--		Ram2_Addr(15 downto 0) <= PCMuxOut;
 					--	elsif PCKeep ='1' then
@@ -131,14 +131,14 @@ begin
 						Ram2_Addr(15 downto 0) <= PC;
 						Ram2_Data <= (others => 'Z');
 						mem_state <= s1;
-					when s1 =>
+					when s1 =>												--读指令, 准备读写内存/串口
 						Ram2_OE <= '1';
 						inst <= Ram2_Data;
 						if(MemWrite = '1') then
-							if(addr = x"BF00") then	
+							if(addr = x"BF00") then	--准备写串口数据
 								Ram1_data(7 downto 0) <= wdata(7 downto 0);
 								wrn <= '0';
-							else
+							else					--准备写内存
 								Ram2_Addr(15 downto 0) <= addr;
 								Ram2_Data <= wdata;
 								Ram2_WE <= '0';
@@ -152,9 +152,9 @@ begin
 								Ram1_Data <= (others => 'Z');--故预先把ram1_data置为高阻
 								--	rflag <= '1'; --如果接下来要读，则可直接把rdn置'0'，省一个状态；要写，则rflag='0'，正常走写串口的流程
 								--end if;
-							elsif (addr = x"BF00") then
+							elsif (addr = x"BF00") then	--准备读串口数据
 								rdn <= '0';
-							else
+							else						--准备读内存
 								Ram2_Data <= (others => 'Z');
 								Ram2_Addr(15 downto 0) <= addr;
 								Ram2_OE <= '0';
@@ -163,20 +163,20 @@ begin
 						mem_state <= s2;
 						
 					when s2 =>
-						if(MemWrite = '1') then
-							if(addr = x"BF00") then	
+						if(MemWrite = '1') then			
+							if(addr = x"BF00") then		--写串口数据
 								wrn <= '1';
-							else
+							else						--写内存
 								Ram2_WE <= '1';
 							end if; 
 						elsif(MemRead = '1') then
-							if (addr = x"BF01") then		--读串口状态（已读出）
+							if (addr = x"BF01") then	--读串口状态（已读出）
 								null;
-							elsif(addr = x"BF00") then
+							elsif(addr = x"BF00") then	--读串口数据
 								rdn <= '1';
 								rdata(15 downto 8) <= (others => '0');
 								rdata(7 downto 0) <= Ram1_Data(7 downto 0);
-							else
+							else						--读内存
 								Ram2_OE <= '1';
 								rdata <= Ram2_Data;
 							end if;
