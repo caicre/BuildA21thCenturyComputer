@@ -110,10 +110,6 @@ begin
 			current_addr <= (others => '0');
 			
 		elsif (clk'event and clk = '1') then
-				FLASH_BYTE <= '1';
-				FLASH_VPEN <= '1';
-				FLASH_RP <= '1';
-				FLASH_CE <= '1';
 				Ram1_EN <= '1';
 				Ram1_OE <= '1';
 				Ram1_WE <= '1';
