@@ -31,24 +31,9 @@ use CpuConstant.all;
 --use UNISIM.VComponents.all;
 
 entity Controller is
-	Port(	inst : 		in std_logic_vector(15 downto 0);
-			rst : 		in std_logic;
-			RegSrcA : 	out std_logic_vector(3 downto 0);
-			RegSrcB : 	out std_logic_vector(3 downto 0);
-			ImmSrc : 	out std_logic_vector(2 downto 0);
-			ExtendOp : 	out std_logic;
-			RegDst : 	out std_logic_vector(3 downto 0);
-			ALUOp : 	out std_logic_vector(3 downto 0);
-			ALUSrcB : 	out std_logic;
-			ALURes : 	out std_logic_vector(1 downto 0);
-			Jump : 		out std_logic;
-			BranchOp : 	out std_logic_vector(1 downto 0);
-			Branch : 	out std_logic;
-			MemRead : 	out std_logic;
-			MemWrite : 	out std_logic;
-			MemToReg : 	out std_logic;
-			RegWrite : 	out std_logic
-			);
+	Port(	rst : 				in std_logic;
+			controlerSignal : 	out std_logic_vector(30 downto 0)
+	);
 end Controller;
 
 architecture Behavioral of Controller is
@@ -56,31 +41,17 @@ architecture Behavioral of Controller is
 begin
 	process(rst, inst)
 
-	variable rx: std_logic_vector(3 downto 0) := "0000";
-	variable ry: std_logic_vector(3 downto 0) := "0000";
-	variable rz: std_logic_vector(3 downto 0) := "0000";
+	variable rx: std_logic_vector(3 downto 0) := "0000"
+	variable ry: std_logic_vector(3 downto 0) := "0000"
+	variable rz: std_logic_vector(3 downto 0) := "0000"
 
 	begin
-		rx(2 downto 0) := inst(10 downto 8);
-		ry(2 downto 0) := inst(7 downto 5);
-		rz(2 downto 0) := inst(4 downto 2);
+		rx(2 downto 0) := inst(10 downto 8)
+		ry(2 downto 0) := inst(7 downto 5)
+		rz(2 downto 0) := inst(4 downto 2)
 		case inst(15 downto 11) is
 			when PRE5_ADDIU =>
-				RegSrcA <= rx;
-				RegSrcB <= REG_NO;
-				ImmSrc <= "001";
-				ExtendOp <= '0';
-				RegDst <= rx;
-				ALUOp <= "0001";
-				ALUSrcB <= '1';
-				ALURes <= "00";
-				Jump <= '0';
-				BranchOp <= "00";
-				Branch <= '0';
-				MemRead <= '0';
-				MemWrite <= '0';
-				MemToReg <= '0';
-				RegWrite <= '1';
+				controlerSignal <= (rx, REG_NO, "0010", rx, "00011000", "0000001");
 			when PRE5_ADDIU3 =>
 				RegSrcA <= rx;
 				RegSrcB <= ry;
@@ -226,45 +197,43 @@ begin
 				MemToReg <= '0';
 				RegWrite <= '0';
 			when PRE5_MFIH =>
-				if (inst(0) = '0') then --MFIH
-					RegSrcA <= REG_IH;
-					RegSrcB <= REG_NO;
-					ImmSrc <= "000";
-					ExtendOp <= '0';
-					RegDst <= rx;
-					ALUOp <= "0000";
-					ALUSrcB <= '0';
-					ALURes <= "00";
-					Jump <= '0';
-					BranchOp <= "00";
-					Branch <= '0';
-					MemRead <= '0';
-					MemWrite <= '0';
-					MemToReg <= '0';
-					RegWrite <= '1';
-				else 
-					RegSrcA <= rx;
-					RegSrcB <= REG_NO;
-					ImmSrc <= "000";
-					ExtendOp <= '0';
-					RegDst <= REG_IH;
-					ALUOp <= "0000";
-					ALUSrcB <= '0';
-					ALURes <= "00";
-					Jump <= '0';
-					BranchOp <= "00";
-					Branch <= '0';
-					MemRead <= '0';
-					MemWrite <= '0';
-					MemToReg <= '0';
-					RegWrite <= '1';
-				end if;
+				RegSrcA <= REG_IH;
+				RegSrcB <= REG_NO;
+				ImmSrc <= "000";
+				ExtendOp <= '0';
+				RegDst <= rx;
+				ALUOp <= "0000";
+				ALUSrcB <= '0';
+				ALURes <= "00";
+				Jump <= '0';
+				BranchOp <= "00";
+				Branch <= '0';
+				MemRead <= '0';
+				MemWrite <= '0';
+				MemToReg <= '0';
+				RegWrite <= '1';
 			when PRE5_MOVE =>
 				RegSrcA <= ry;
 				RegSrcB <= REG_NO;
 				ImmSrc <= "000";
 				ExtendOp <= '0';
 				RegDst <= rx;
+				ALUOp <= "0000";
+				ALUSrcB <= '0';
+				ALURes <= "00";
+				Jump <= '0';
+				BranchOp <= "00";
+				Branch <= '0';
+				MemRead <= '0';
+				MemWrite <= '0';
+				MemToReg <= '0';
+				RegWrite <= '1';
+			when PRE5_MTIH =>
+				RegSrcA <= rx;
+				RegSrcB <= REG_NO;
+				ImmSrc <= "000";
+				ExtendOp <= '0';
+				RegDst <= REG_IH;
 				ALUOp <= "0000";
 				ALUSrcB <= '0';
 				ALURes <= "00";
@@ -292,7 +261,7 @@ begin
 				MemToReg <= '0';
 				RegWrite <= '0';
 			when PRE5_SLL_SRA =>
-				case inst(1 downto 0) is
+				case inst(1 downto 0) =>
 					when "00" =>
 						RegSrcA <= ry;
 						RegSrcB <= REG_NO;
@@ -528,7 +497,7 @@ begin
 						end case;
 				end case;
 			when "01100" =>
-				case inst(15 downto 8) is
+				case inst(15 downto 7) is
 					when PRE8_SW_RS =>
 						RegSrcA <= REG_SP;
 						RegSrcB <= REG_RA;
