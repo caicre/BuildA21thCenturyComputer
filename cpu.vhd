@@ -114,7 +114,6 @@ architecture Behavioral of cpu is
 			-- input control signal
 			MemWrite 	: in STD_LOGIC;		--'1':写
 			MemRead 	: in STD_LOGIC;		--'1':读
-			IsMem		: in STD_LOGIC;		--'0': 只有IF操作 '1': 只有MEM操作(IF,ID,EX要停顿)
 			
 			-- RAM1							--为串口(BF00~BF03)
 			Ram1_OE 	: out STD_LOGIC;
@@ -479,8 +478,6 @@ architecture Behavioral of cpu is
 	signal IDEXFlush	: STD_LOGIC;
 
 	-- MemoryUnit
-	signal MEM_IsMem 	: STD_LOGIC;
-
 	signal Ram1_OE 		: STD_LOGIC;
 	signal Ram1_WE 		: STD_LOGIC;
 	signal Ram1_EN 		: STD_LOGIC;
