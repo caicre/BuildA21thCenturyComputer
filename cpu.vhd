@@ -5,7 +5,6 @@ entity cpu is
 	port(
 		rst			: in STD_LOGIC;
 		clk			: in STD_LOGIC;
-		clk_50		: in STD_LOGIC;
 
 		-- Serial Port
 		dataReady	: in STD_LOGIC;
@@ -26,18 +25,8 @@ entity cpu is
 		Ram2_WE		: out STD_LOGIC;
 		Ram2_EN		: out STD_LOGIC;
 		Ram2_Addr	: out STD_LOGIC_VECTOR(17 downto 0);
-		Ram2_Data	: inout STD_LOGIC_VECTOR(15 downto 0);
+		Ram2_Data	: inout STD_LOGIC_VECTOR(15 downto 0)
 
-		-- Flash
-		FLASH_ADDR	: out STD_LOGIC_VECTOR(22 downto 0);
-		FLASH_DATA 	: inout STD_LOGIC_VECTOR(15 downto 0);
-		FLASH_BYTE 	: out STD_LOGIC;
-		FLASH_VPEN 	: out STD_LOGIC;
-		FLASH_RP 	: out STD_LOGIC;
-		FLASH_CE 	: out STD_LOGIC;
-		FLASH_OE 	: out STD_LOGIC;
-		FLASH_WE 	: out STD_LOGIC;
-		FLASH_FINISH : out STD_LOGIC
 	);
 end cpu;
 
@@ -144,21 +133,8 @@ architecture Behavioral of cpu is
 			tbre			: in STD_LOGIC;
 			tsre			: in STD_LOGIC;
 			wrn			: out STD_LOGIC;
-			rdn			: out STD_LOGIC;
-				
-			--FLASH								--¼à¿Ø³ÌÐò
-			FLASH_ADDR 	: out STD_LOGIC_VECTOR(22 downto 0);
-			FLASH_DATA	: inout STD_LOGIC_VECTOR(15 downto 0);
-			FLASH_BYTE	: out STD_LOGIC := '1';		--flash²Ù×÷Ä£Ê½, ³£ÖÃ'1'
-			FLASH_VPEN	: out STD_LOGIC := '1';		--flashÐ´±£»¤, ³£ÖÃ'1'
-			FLASH_RP		: out STD_LOGIC := '1';		--'1'±íÊ¾flash¹¤×÷, ³£ÖÃ'1'
-			FLASH_CE		: out STD_LOGIC := '0';		--flashÊ¹ÄÜ
-			FLASH_OE		: out STD_LOGIC := '1';		--flash¶ÁÊ¹ÄÜ, '0'ÓÐÐ§, Ã¿´Î¶¼²Ù×÷ºóÖµ'1'
-			FLASH_WE		: out STD_LOGIC := '1';		--flashÐ´Ê¹ÄÜ
-				
-			--output
-			FLASH_FINISH: out STD_LOGIC := '0'		--'0':Î´Íê³É	'1':Íê³É¶Á¼à¿Ø³ÌÐòµ½RAM2
-																	--ÕâÒª×ª¸ø¿ØÖÆÆ÷, Òª°ÑPC?IF?Í£¶Ù
+			rdn			: out STD_LOGIC
+			
 		);
 	end component;
 
@@ -625,7 +601,7 @@ begin
 
 	u30 : MemoryUnit
 	port map(
-		clk 		=> clk,
+		clk 		=> clk0,
 		rst 		=> rst,
 		MemWrite 	=> MEM_MemWrite,
 		MemRead 	=> MEM_MemRead,
@@ -648,21 +624,12 @@ begin
 		tbre 		=> tbre,
 		tsre 		=> tsre,
 		wrn 		=> wrn,
-		rdn 		=> rdn,
-		FLASH_ADDR 	=> FLASH_ADDR,
-		FLASH_DATA 	=> FLASH_DATA,
-		FLASH_BYTE 	=> FLASH_BYTE,
-		FLASH_VPEN	=> FLASH_VPEN,
-		FLASH_RP 	=> FLASH_RP,
-		FLASH_CE 	=> FLASH_CE,
-		FLASH_OE 	=> FLASH_OE,
-		FLASH_WE	=> FLASH_WE,
-		FLASH_FINISH=> FLASH_FINISH
+		rdn 		=> rdn
 	);
 
 	u4 : PCRegister
 	port map(
-		clk 		=> clk,
+		clk 		=> clk1,
 		rst 		=> rst,
 		PCIn 		=> IF_PCOut,
 		PCOut 		=> IF_PC
@@ -694,7 +661,7 @@ begin
 
 	u9 : IFIDRegister
 	port map(
-		clk 		=> clk,
+		clk 		=> clk1,
 		rst 		=> rst,
 		IF_PC 	=> IF_NPC,
 		IF_inst 	=> IF_inst,
@@ -706,7 +673,7 @@ begin
 
 	u10 : Registers
 	port map(
-		clk 		=> clk,
+		clk 		=> clk2,
 		rst 		=> rst,
 		RegWrite 	=> WB_RegWrite,
 		raddr1 		=> RegSrcA,
@@ -727,7 +694,7 @@ begin
 
 	u12 : IDEXRegister
 	port map(
-		clk 		=> clk,
+		clk 		=> clk1,
 		rst 		=> rst,
 		ID_RegDst 	=> RegDst,
 		ID_ALUOp 	=> ALUOp,
@@ -824,7 +791,7 @@ begin
 
 	u19 : EXMEMRegister
 	port map(
-		clk 		=> clk,
+		clk 		=> clk1,
 		rst 		=> rst,
 		EX_RegDst 	=> EX_RegDst,
 		EX_BranchOp => EX_BranchOp,
@@ -848,7 +815,7 @@ begin
 
 	u21 : MEMWBRegister
 	port map(
-		clk 		=> clk,
+		clk 		=> clk1,
 		rst 		=> rst,
 		MEM_RegDst  => MEM_RegDst,
 		MEM_MemToRead=>MEM_MemToRead,
