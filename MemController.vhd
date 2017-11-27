@@ -22,8 +22,8 @@ begin
 	begin
 		if(MemWrite = '1' or MemRead = '1') then
 			Addr <= DataAddr;
-			IFIDFlush <= '1'
-			PCStall <= '1'
+			IFIDFlush <= '1';
+			PCStall <= '1';
 		else
 			Addr <= PC;
 		end if;
