@@ -55,27 +55,30 @@ architecture Behavioral of MEMWBRegister is
 
 component LATCH_16BIT
 	port(CLK: in STD_LOGIC;
+			RST: in STD_LOGIC;
 			 D : in  STD_LOGIC_VECTOR (15 downto 0);
           Q : out  STD_LOGIC_VECTOR (15 downto 0));
 end component;
 
 component LATCH_4BIT
 	port(CLK: in STD_LOGIC;
+			RST: in STD_LOGIC;
 			 D : in  STD_LOGIC_VECTOR (3 downto 0);
           Q : out  STD_LOGIC_VECTOR (3 downto 0));
 end component;
 
 component LATCH_1BIT
 	port(CLK: in STD_LOGIC;
+			RST: in STD_LOGIC;
 			D: in STD_LOGIC;
 			Q: out STD_LOGIC);
 end component;
 
 begin
-	u0:LATCH_1BIT port map(CLK, MEM_MEMToRead, WB_MemToRead);
-	u1:LATCH_1BIT port map(CLK, MEM_RegWrite, WB_RegWrite);
-	u2:LATCH_16BIT port map(CLK, MEM_rdata, WB_rdata);
-	u3:LATCH_16BIT port map(CLK, MEM_ALURes, WB_ALURes);
-	u4:LATCH_4BIT port map(CLK, MEM_RegDst, WB_RegDst);
+	u0:LATCH_1BIT port map(clk, rst, MEM_MEMToRead, WB_MemToRead);
+	u1:LATCH_1BIT port map(clk, rst, MEM_RegWrite, WB_RegWrite);
+	u2:LATCH_16BIT port map(clk, rst, MEM_rdata, WB_rdata);
+	u3:LATCH_16BIT port map(clk, rst, MEM_ALURes, WB_ALURes);
+	u4:LATCH_4BIT port map(clk, rst, MEM_RegDst, WB_RegDst);
 end Behavioral;
 

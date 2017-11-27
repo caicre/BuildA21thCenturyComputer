@@ -48,13 +48,14 @@ architecture Behavioral of IFIDRegister is
 
 component LATCH_16BIT
 	port(CLK: in STD_LOGIC;
+			RST: in STD_LOGIC;
 			 D : in  STD_LOGIC_VECTOR (15 downto 0);
           Q : out  STD_LOGIC_VECTOR (15 downto 0));
 end component;
 
 begin
-	u0:LATCH_16BIT port map(CLK, IF_PC, ID_PC);
-	u1:LATCH_16BIT port map(CLK, IF_inst, ID_inst);
-	u2:LATCH_16BIT port map(CLK, IF_RPC, ID_RPC);
+	u0:LATCH_16BIT port map(clk, rst, IF_PC, ID_PC);
+	u1:LATCH_16BIT port map(clk, rst, IF_inst, ID_inst);
+	u2:LATCH_16BIT port map(clk, rst, IF_RPC, ID_RPC);
 end Behavioral;
 
