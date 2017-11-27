@@ -36,7 +36,8 @@ entity cpu is
 		FLASH_RP 	: out STD_LOGIC;
 		FLASH_CE 	: out STD_LOGIC;
 		FLASH_OE 	: out STD_LOGIC;
-		FLASH_WE 	: out STD_LOGIC
+		FLASH_WE 	: out STD_LOGIC;
+		FLASH_FINISH : out STD_LOGIC
 	);
 end cpu;
 
@@ -112,8 +113,8 @@ architecture Behavioral of cpu is
 			rst 		: in STD_LOGIC;		
 
 			-- input control signal
-			MemWrite 	: in STD_LOGIC;		--'1':ï¿½
-			MemRead 	: in STD_LOGIC;		--'1':ï¿½
+			MemWrite 	: in STD_LOGIC;		--'1':ï¿
+			MemRead 	: in STD_LOGIC;		--'1':ï¿
 			
 			-- RAM1							--ä¸ºä¸²ï¿½BF00~BF03)
 			Ram1_OE 	: out STD_LOGIC;
@@ -478,28 +479,8 @@ architecture Behavioral of cpu is
 	signal IDEXFlush	: STD_LOGIC;
 
 	-- MemoryUnit
---	signal Ram1_OE 		: STD_LOGIC;
---	signal Ram1_WE 		: STD_LOGIC;
---	signal Ram1_EN 		: STD_LOGIC;
---	signal Ram1_Addr 	: STD_LOGIC_VECTOR(17 downto 0);
---	signal Ram1_Data 	: STD_LOGIC_VECTOR(15 downto 0);
 	signal rdata 		: STD_LOGIC_VECTOR(15 downto 0);
---	signal Ram2_OE 		: STD_LOGIC;
---	signal Ram2_WE 		: STD_LOGIC;
---	signal Ram2_EN  	: STD_LOGIC;
---	signal Ram2_Addr 	: STD_LOGIC_VECTOR(17 downto 0);
---	signal Ram2_Data 	: STD_LOGIC_VECTOR(15 downto 0);
-	signal inst 		: STD_LOGIC_VECTOR(15 downto 0) ;
---	signal wrn 			: STD_LOGIC;
---	signal rdn 			: STD_LOGIC;
---	signal FLASH_ADDR	: STD_LOGIC_VECTOR(22 downto 0);
---	signal FLASH_DATA 	: STD_LOGIC_VECTOR(15 downto 0);
---	signal FLASH_BYTE 	: STD_LOGIC;
---	signal FLASH_VPEN 	: STD_LOGIC;
---	signal FLASH_RP 	: STD_LOGIC;
---	signal FLASH_CE 	: STD_LOGIC;
---	signal FLASH_OE 	: STD_LOGIC;
---	signal FLASH_WE 	: STD_LOGIC;
+	signal IF_inst 		: STD_LOGIC_VECTOR(15 downto 0) ;
 
 	-- PCRegister
 	signal IF_PC 	 	: STD_LOGIC_VECTOR(15 downto 0);
@@ -662,7 +643,7 @@ begin
 		Ram2_Addr 	=> Ram2_Addr,
 		Ram2_Data 	=> Ram2_Data,
 		PC 			=> IF_PC,
-		inst 		=> inst, --HERE was IF_inst, not right
+		inst 		=> IF_inst, --HERE was IF_inst, not right
 		data_ready 	=> dataReady, 
 		tbre 		=> tbre,
 		tsre 		=> tsre,
@@ -675,8 +656,8 @@ begin
 		FLASH_RP 	=> FLASH_RP,
 		FLASH_CE 	=> FLASH_CE,
 		FLASH_OE 	=> FLASH_OE,
-		FLASH_WE	=> FLASH_WE
-		--FLASH_FINISH=> FLASH_FINISH
+		FLASH_WE	=> FLASH_WE,
+		FLASH_FINISH=> FLASH_FINISH
 	);
 
 	u4 : PCRegister
@@ -716,7 +697,7 @@ begin
 		clk 		=> clk,
 		rst 		=> rst,
 		IF_PC 	=> IF_NPC,
-		IF_inst 	=> inst,
+		IF_inst 	=> IF_inst,
 		IF_RPC	=> IF_RPC,
 		ID_PC		=> ID_PC,
 		ID_inst	=> ID_inst,
@@ -776,6 +757,7 @@ begin
 		EX_MemRead 	=> EX_MemRead,
 		EX_MemToRead=> EX_MemToRead,
 		EX_RegWrite => EX_RegWrite,
+		EX_MemWrite => Ex_MemWrite,
 		EX_PC 		=> EX_PC,
 		EX_reg1 	=> EX_reg1,
 		EX_reg2 	=> EX_reg2,
@@ -871,7 +853,7 @@ begin
 		MEM_RegDst  => MEM_RegDst,
 		MEM_MemToRead=>MEM_MemToRead,
 		MEM_RegWrite=> MEM_RegWrite,
-		MEM_rdata	=> MEM_rdata,
+		MEM_rdata	=> rdata,
 		MEM_ALURes 	=> MEM_ALURes,
 		WB_RegDst	=> WB_RegDst,
 		WB_MemToRead=> WB_MemToRead,
