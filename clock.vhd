@@ -17,6 +17,7 @@ architecture Behavioral of clock is
 begin
 	process(clk, rst)
 	begin
+		clk0 <= clk ;
 		if (rst = '0') then
 			clk0 <= '0';
 			clk1 <= '0';
