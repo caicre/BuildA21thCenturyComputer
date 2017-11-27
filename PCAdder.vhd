@@ -37,10 +37,7 @@ end PCAdder;
 architecture Behavioral of PCAdder is
 
 begin
-	process(PC)
-	begin
 		NPC <= PC + 1 ;
-	end process ;
 
 end Behavioral;
 

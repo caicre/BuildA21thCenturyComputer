@@ -546,6 +546,9 @@ architecture Behavioral of cpu is
 	-- WriteDataMux
 	signal WB_wdata 	: STD_LOGIC_VECTOR(15 downto 0);
 
+	signal show1 : std_logic ;
+	signal show2 : std_logic ;
+	signal show3 : std_logic ;
 
 begin
 
@@ -618,7 +621,7 @@ begin
 		rdata 		=> rdata, --HERE was MEM_rdata
 		Ram2_OE 	=> Ram2_OE,
 		Ram2_WE 	=> Ram2_WE,
-		Ram2_EN 	=> Ram2_EN,
+		Ram2_EN 	=> Ram2_EN,	
 		Ram2_Addr 	=> Ram2_Addr,
 		Ram2_Data 	=> Ram2_Data,
 		PC 			=> IF_PC,
@@ -842,15 +845,17 @@ begin
 	
 	process (IF_inst)
 	begin
-		led <= IF_inst ;
+		led(15 downto 8) <= IF_inst(15 downto 8) ;
+		led(7 downto 0) <= IF_PC(7 downto 0) ;
 	end process ;
 	
-	process (clk0,clk1,clk2,clk3)
+	process (clk0,PCStall,EX_BranchJudge,EX_Jump)
 	begin
 		showclk(0) <= clk0 ;
-		showclk(1) <= clk1 ;
-		showclk(2) <= clk2 ;
-		showclk(3) <= clk3 ;
+		showclk(1) <= PCStall ;
+		showclk(2) <= EX_BranchJudge ;
+		showclk(3) <= EX_Jump ;
+
 	end process ;
 	
 	

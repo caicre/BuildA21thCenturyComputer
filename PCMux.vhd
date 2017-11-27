@@ -44,9 +44,9 @@ end PCMux;
 architecture Behavioral of PCMux is
 	shared variable all_controllers : STD_LOGIC_VECTOR(2 downto 0) ;
 begin
-	process (Jump,branchJudge,PCStall,PC,NPC,PCAddImm,reg1)
+	process (Jump, branchJudge, PCStall, PC, NPC, PCAddImm, reg1)
 	begin
-		all_controllers := branchJudge & Jump & PCStall ;
+		all_controllers := PCStall & Jump & branchJudge;
 		case all_controllers is
 			when "000"  => PCOut <= NPC ;
 			when "001"  => PCOut <= PCAddImm ;
@@ -55,6 +55,5 @@ begin
          when others => PCOut <= PC ;
       end case ; 
 	end process ;
-
 end Behavioral;
 

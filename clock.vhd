@@ -23,6 +23,7 @@ begin
 			clk1 <= '0';
 			clk2 <= '0';
 			clk3 <= '0';
+			count <= 0 ;
 		elsif rising_edge(clk) then
 			case count is
 				when 0 =>
