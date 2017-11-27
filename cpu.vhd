@@ -26,7 +26,7 @@ entity cpu is
 		Ram2_WE		: out STD_LOGIC;
 		Ram2_EN		: out STD_LOGIC;
 		Ram2_Addr	: out STD_LOGIC_VECTOR(17 downto 0);
-		Ram2_Data	: inout STD_LOGIC_VECTOR(15 downto 0)
+		Ram2_Data	: inout STD_LOGIC_VECTOR(15 downto 0);
 
 		-- Flash
 		FLASH_ADDR	: out STD_LOGIC_VECTOR(22 downto 0);
@@ -36,7 +36,7 @@ entity cpu is
 		FLASH_RP 	: out STD_LOGIC;
 		FLASH_CE 	: out STD_LOGIC;
 		FLASH_OE 	: out STD_LOGIC;
-		FLASH_WE 	: out STD_LOGIC;
+		FLASH_WE 	: out STD_LOGIC
 	);
 end cpu;
 
@@ -112,10 +112,10 @@ architecture Behavioral of cpu is
 			rst 		: in STD_LOGIC;		
 
 			-- input control signal
-			MemWrite 	: in STD_LOGIC;		--'1':写
-			MemRead 	: in STD_LOGIC;		--'1':读
+			MemWrite 	: in STD_LOGIC;		--'1':�
+			MemRead 	: in STD_LOGIC;		--'1':�
 			
-			-- RAM1							--为串口(BF00~BF03)
+			-- RAM1							--为串�BF00~BF03)
 			Ram1_OE 	: out STD_LOGIC;
 			Ram1_WE 	: out STD_LOGIC;
 			Ram1_EN 	: out STD_LOGIC;
@@ -478,28 +478,28 @@ architecture Behavioral of cpu is
 	signal IDEXFlush	: STD_LOGIC;
 
 	-- MemoryUnit
-	signal Ram1_OE 		: STD_LOGIC;
-	signal Ram1_WE 		: STD_LOGIC;
-	signal Ram1_EN 		: STD_LOGIC;
-	signal Ram1_Addr 	: STD_LOGIC_VECTOR(17 downto 0);
-	signal Ram1_Data 	: STD_LOGIC_VECTOR(15 downto 0);
+--	signal Ram1_OE 		: STD_LOGIC;
+--	signal Ram1_WE 		: STD_LOGIC;
+--	signal Ram1_EN 		: STD_LOGIC;
+--	signal Ram1_Addr 	: STD_LOGIC_VECTOR(17 downto 0);
+--	signal Ram1_Data 	: STD_LOGIC_VECTOR(15 downto 0);
 	signal rdata 		: STD_LOGIC_VECTOR(15 downto 0);
-	signal Ram2_OE 		: STD_LOGIC;
-	signal Ram2_WE 		: STD_LOGIC;
-	signal Ram2_EN  	: STD_LOGIC;
-	signal Ram2_Addr 	: STD_LOGIC_VECTOR(17 downto 0);
-	signal Ram2_Data 	: STD_LOGIC_VECTOR(15 downto 0);
-	signal inst 		: STD_LOGIC_VECTOR(15 downto 0);
-	signal wrn 			: STD_LOGIC;
-	signal rdn 			: STD_LOGIC;
-	signal FLASH_ADDR	: STD_LOGIC_VECTOR(22 downto 0);
-	signal FLASH_DATA 	: STD_LOGIC_VECTOR(15 downto 0);
-	signal FLASH_BYTE 	: STD_LOGIC;
-	signal FLASH_VPEN 	: STD_LOGIC;
-	signal FLASH_RP 	: STD_LOGIC;
-	signal FLASH_CE 	: STD_LOGIC;
-	signal FLASH_OE 	: STD_LOGIC;
-	signal FLASH_WE 	: STD_LOGIC;
+--	signal Ram2_OE 		: STD_LOGIC;
+--	signal Ram2_WE 		: STD_LOGIC;
+--	signal Ram2_EN  	: STD_LOGIC;
+--	signal Ram2_Addr 	: STD_LOGIC_VECTOR(17 downto 0);
+--	signal Ram2_Data 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal inst 		: STD_LOGIC_VECTOR(15 downto 0) ;
+--	signal wrn 			: STD_LOGIC;
+--	signal rdn 			: STD_LOGIC;
+--	signal FLASH_ADDR	: STD_LOGIC_VECTOR(22 downto 0);
+--	signal FLASH_DATA 	: STD_LOGIC_VECTOR(15 downto 0);
+--	signal FLASH_BYTE 	: STD_LOGIC;
+--	signal FLASH_VPEN 	: STD_LOGIC;
+--	signal FLASH_RP 	: STD_LOGIC;
+--	signal FLASH_CE 	: STD_LOGIC;
+--	signal FLASH_OE 	: STD_LOGIC;
+--	signal FLASH_WE 	: STD_LOGIC;
 
 	-- PCRegister
 	signal IF_PC 	 	: STD_LOGIC_VECTOR(15 downto 0);
@@ -655,15 +655,15 @@ begin
 		Ram1_Data 	=> Ram1_Data,
 		addr 		=> MEM_ALURes,
 		wdata 		=> MEM_reg2,
-		rdata 		=> MEM_rdata,
+		rdata 		=> rdata, --HERE was MEM_rdata
 		Ram2_OE 	=> Ram2_OE,
 		Ram2_WE 	=> Ram2_WE,
 		Ram2_EN 	=> Ram2_EN,
 		Ram2_Addr 	=> Ram2_Addr,
 		Ram2_Data 	=> Ram2_Data,
 		PC 			=> IF_PC,
-		insst 		=> IF_inst,
-		data_ready 	=> data_ready,
+		inst 		=> inst, --HERE was IF_inst, not right
+		data_ready 	=> dataReady, 
 		tbre 		=> tbre,
 		tsre 		=> tsre,
 		wrn 		=> wrn,
@@ -672,11 +672,11 @@ begin
 		FLASH_DATA 	=> FLASH_DATA,
 		FLASH_BYTE 	=> FLASH_BYTE,
 		FLASH_VPEN	=> FLASH_VPEN,
-		FLAHS_RP 	=> FLASH_RP,
+		FLASH_RP 	=> FLASH_RP,
 		FLASH_CE 	=> FLASH_CE,
 		FLASH_OE 	=> FLASH_OE,
-		FLASH_WE	=> FLASH_WE,
-		FLASH_FINISH=> FLASH_FINISH
+		FLASH_WE	=> FLASH_WE
+		--FLASH_FINISH=> FLASH_FINISH
 	);
 
 	u4 : PCRegister
@@ -716,7 +716,7 @@ begin
 		clk 		=> clk,
 		rst 		=> rst,
 		IF_PC 	=> IF_NPC,
-		IF_inst 	=> IF_inst,
+		IF_inst 	=> inst,
 		IF_RPC	=> IF_RPC,
 		ID_PC		=> ID_PC,
 		ID_inst	=> ID_inst,
@@ -732,7 +732,7 @@ begin
 		raddr2 		=> RegSrcB,
 		waddr 		=> WB_RegDst,
 		wdata 		=> WB_wdata,
-		reg1 		=> ID_reg1, --Think this is wrong, was EX_reg1/EX_reg2
+		reg1 		=> ID_reg1, 
 		reg2 		=> ID_reg2
 	);
 
@@ -752,7 +752,7 @@ begin
 		ID_ALUOp 	=> ALUOp,
 		ID_ALUSrcB 	=> ALUSrcB,
 		ID_ALURes 	=> ALURes,
-		ID_Jump 		=> Jump,
+		ID_Jump 	=> Jump,
 		ID_BranchOp => BranchOp,
 		ID_Branch 	=> Branch,
 		ID_MemRead 	=> MemRead,
@@ -762,8 +762,8 @@ begin
 		ID_PC 		=> ID_PC,
 		ID_reg1		=> ID_reg1,
 		ID_reg2 	=> ID_reg2,
-		ID_raddr1 	=> RegSrcA, --not sure
-		ID_raddr2	=> RegSrcB, --not sure
+		ID_raddr1 	=> RegSrcA, 
+		ID_raddr2	=> RegSrcB, 
 		ID_imm 		=> ID_immOut,
 		ID_RPC 		=> ID_RPC,
 		EX_RegDst	=> EX_RegDst,
@@ -868,11 +868,11 @@ begin
 	port map(
 		clk 		=> clk,
 		rst 		=> rst,
-		MEM_RegDst  => WB_RegDst,
-		MEM_MemToRead=>WB_MemToRead,
-		MEM_RegWrite=> WB_RegWrite,
-		MEM_rdata	=> WB_rdata,
-		MEM_ALURes 	=> WB_ALURes,
+		MEM_RegDst  => MEM_RegDst,
+		MEM_MemToRead=>MEM_MemToRead,
+		MEM_RegWrite=> MEM_RegWrite,
+		MEM_rdata	=> MEM_rdata,
+		MEM_ALURes 	=> MEM_ALURes,
 		WB_RegDst	=> WB_RegDst,
 		WB_MemToRead=> WB_MemToRead,
 		WB_RegWrite => WB_RegWrite,
