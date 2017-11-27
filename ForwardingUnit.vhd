@@ -33,6 +33,7 @@ entity ForwardingUnit is
     port(
       -- control signal
       EX_ALUSrcB  : in STD_LOGIC;
+      EX_MemWrite : in STD_LOGIC;
       MEM_RegDst  : in STD_LOGIC_VECTOR(3 downto 0);
       WB_RegDst : in STD_LOGIC_VECTOR(3 downto 0);
       -- input
@@ -40,14 +41,15 @@ entity ForwardingUnit is
       EX_raddr2   : in STD_LOGIC_VECTOR(3 downto 0);
       -- output
       ForwardA  : out STD_LOGIC_VECTOR(1 downto 0);
-      ForwardB  : out STD_LOGIC_VECTOR(1 downto 0)
+      ForwardB  : out STD_LOGIC_VECTOR(1 downto 0);
+      ForwardWriteMem : out STD_LOGIC_VECTOR(1 downto 0)
     );
 end ForwardingUnit;
 
 architecture Behavioral of ForwardingUnit is
 
 begin
-    process(EX_raddr1,EX_raddr2,MEM_RegDst,WB_RegDst,EX_ALUSrcB)
+    process(EX_raddr1,EX_raddr2,MEM_RegDst,WB_RegDst,EX_ALUSrcB,EX_MemWrite)
     begin 
         if (EX_raddr1 = MEM_RegDst) then
             ForwardA <= "01" ;
@@ -63,6 +65,15 @@ begin
         elsif (EX_raddr2 = WB_RegDst) then
             ForwardB <= "10" ;
         else ForwardB <= "00" ;
+        end if ;
+        if (EX_MemWrite = '1') then 
+            if (EX_raddr2 = MEM_RegDst) then 
+                ForwardWriteMem <= "01" ;
+            elsif (EX_raddr2 = WB_RegDst) then 
+                ForwardWriteMem <= "10" ;
+            else ForwardWriteMem <= "00" ;
+            end if ;
+        else ForwardWriteMem <= "00" ;
         end if ;
 	end process ;
         

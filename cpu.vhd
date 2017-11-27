@@ -77,6 +77,7 @@ architecture Behavioral of cpu is
 		port(
 			-- control signal
 			EX_ALUSrcB	: in STD_LOGIC;
+			EX_MemWrite : in STD_LOGIC;
 			MEM_RegDst	: in STD_LOGIC_VECTOR(3 downto 0);
 			WB_RegDst	: in STD_LOGIC_VECTOR(3 downto 0);
 			-- input
@@ -84,7 +85,8 @@ architecture Behavioral of cpu is
 			EX_raddr2 	: in STD_LOGIC_VECTOR(3 downto 0);
 			-- output
 			ForwardA	: out STD_LOGIC_VECTOR(1 downto 0);
-			ForwardB 	: out STD_LOGIC_VECTOR(1 downto 0)
+			ForwardB 	: out STD_LOGIC_VECTOR(1 downto 0);
+			ForwardWriteMem : out STD_LOGIC_VECTOR(1 downto 0) 
 		);
 	end component;
 
@@ -311,7 +313,18 @@ architecture Behavioral of cpu is
 			src2		: out STD_LOGIC_VECTOR(15 downto 0)
 		);
 	end component;
-
+	component WriteMemMux
+		port(
+			-- control signal
+			ForwardWriteMem	: in STD_LOGIC_VECTOR(1 downto 0);
+			-- input
+			reg2		: in STD_LOGIC_VECTOR(15 downto 0);
+			MEM_ALURes	: in STD_LOGIC_VECTOR(15 downto 0);
+			WB_ALURes	: in STD_LOGIC_VECTOR(15 downto 0);
+			-- output
+			MemWriteData		: out STD_LOGIC_VECTOR(15 downto 0)
+		);
+	end component;
 	component ALU
 		port(
 			-- input
@@ -455,6 +468,7 @@ architecture Behavioral of cpu is
 	-- ForwardingUnit
 	signal ForwardA		: STD_LOGIC_VECTOR(1 downto 0);
 	signal ForwardB 	: STD_LOGIC_VECTOR(1 downto 0);
+	signal ForwardWriteMem 	: STD_LOGIC_VECTOR(1 downto 0);
 
 	-- HazardDetectionUnit
 	signal PCStall 		: STD_LOGIC;
@@ -504,6 +518,7 @@ architecture Behavioral of cpu is
 	signal EX_PC 		: STD_LOGIC_VECTOR(15 downto 0);
 	signal EX_reg1 		: STD_LOGIC_VECTOR(15 downto 0);
 	signal EX_reg2 		: STD_LOGIC_VECTOR(15 downto 0);
+	signal EX_MemWriteData 		: STD_LOGIC_VECTOR(15 downto 0);
 	signal EX_raddr1 	: STD_LOGIC_VECTOR(3 downto 0);
 	signal EX_raddr2	: STD_LOGIC_VECTOR(3 downto 0);
 	signal EX_imm 		: STD_LOGIC_VECTOR(15 downto 0);
@@ -591,12 +606,14 @@ begin
 	u2 : ForwardingUnit
 	port map(
 		EX_ALUSrcB	=> EX_ALUSrcB,
+		EX_MemWrite => EX_MemWrite,
 		MEM_RegDst	=> MEM_RegDst,
 		WB_RegDst	=> WB_RegDst,
 		EX_raddr1 	=> EX_raddr1,
 		EX_raddr2	=> EX_raddr2,
 		ForwardA	=> ForwardA,
-		ForwardB	=> ForwardB
+		ForwardB	=> ForwardB,
+		ForwardWriteMem => ForwardWriteMem
 	);
 
 	u3 : HazardDetectionUnit
@@ -764,6 +781,15 @@ begin
 		imm 		=> EX_imm,
 		src2 		=> ALUSrc2
 	);
+	
+	u145 : WriteMemMux
+	port map(
+		ForwardWriteMem	=> ForwardWriteMem,
+		reg2 		=> EX_reg2,
+		MEM_ALURes	=> MEM_ALURes,
+		WB_ALURes 	=> WB_wdata,
+		MemWriteData	=> EX_MemWriteData
+	);
 
 	u15 : ALU
 	port map(
@@ -812,7 +838,7 @@ begin
 		EX_MemToRead=> EX_MemToRead,
 		EX_RegWrite => EX_RegWrite,
 		EX_ALURes 	=> ALUMuxResult,
-		EX_reg2 	=> EX_reg2,
+		EX_reg2 	=> EX_MemWriteData,
 		MEM_RegDst 	=> MEM_RegDst,
 		MEM_BranchOp=> MEM_BranchOp,
 		MEM_Branch  => MEM_Branch,
