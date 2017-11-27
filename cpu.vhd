@@ -5,7 +5,6 @@ entity cpu is
 	port(
 		rst			: in STD_LOGIC;
 		clk			: in STD_LOGIC;
-		clk_50		: in STD_LOGIC;
 
 		-- Serial Port
 		dataReady	: in STD_LOGIC;
@@ -22,17 +21,27 @@ entity cpu is
 		Ram1_Data	: inout STD_LOGIC_VECTOR(15 downto 0);
 
 		--RAM2
-		Ram2OE		: out STD_LOGIC;
-		Ram2WE		: out STD_LOGIC;
-		Ram2EN		: out STD_LOGIC;
-		Ram2Addr	: out STD_LOGIC_VECTOR(17 downto 0);
-		Ram2Data	: inout STD_LOGIC_VECTOR(15 downto 0)
+		Ram2_OE		: out STD_LOGIC;
+		Ram2_WE		: out STD_LOGIC;
+		Ram2_EN		: out STD_LOGIC;
+		Ram2_Addr	: out STD_LOGIC_VECTOR(17 downto 0);
+		Ram2_Data	: inout STD_LOGIC_VECTOR(15 downto 0)
 
-		-- Flash
 	);
 end cpu;
 
 architecture Behavioral of cpu is
+
+	component Clock
+		port(
+			rst		: in STD_LOGIC;
+			clk 	: in STD_LOGIC;
+			clk0	: out STD_LOGIC;
+			clk1 	: out STD_LOGIC;
+			clk2	: out STD_LOGIC;
+			clk3 	: out STD_LOGIC
+		);
+	end component;
 
 	component Controller
 		port(
@@ -87,6 +96,48 @@ architecture Behavioral of cpu is
 		);
 	end component;
 
+	component MemoryUnit is
+		port(
+			clk 		: in STD_LOGIC;
+			rst 		: in STD_LOGIC;		
+
+			-- input control signal
+			MemWrite 	: in STD_LOGIC;		--'1':�
+			MemRead 	: in STD_LOGIC;		--'1':�
+			
+			-- RAM1							--为串�BF00~BF03)
+			Ram1_OE 	: out STD_LOGIC;
+			Ram1_WE 	: out STD_LOGIC;
+			Ram1_EN 	: out STD_LOGIC;
+			Ram1_Addr	: out STD_LOGIC_VECTOR(17 downto 0);
+			Ram1_Data	: inout STD_LOGIC_VECTOR(15 downto 0);
+			-- input
+			addr 		: in STD_LOGIC_VECTOR(15 downto 0);
+			wdata 		: in STD_LOGIC_VECTOR(15 downto 0);
+			-- output
+			rdata 		: out STD_LOGIC_VECTOR(15 downto 0);	
+				
+			-- RAM2								--¼à¿Ø³ÌÐò(0000~3FFF), ÓÃ»§³ÌÐò(4000~FFFF), ÏµÍ³Êý¾Ý(8000~BEFF), ÓÃ»§Êý¾Ý(C000~FFFF)
+			Ram2_OE		: out STD_LOGIC;
+			Ram2_WE 		: out STD_LOGIC;
+			Ram2_EN 		: out STD_LOGIC;
+			Ram2_Addr 	: out STD_LOGIC_VECTOR(17 downto 0);
+			Ram2_Data	: inout STD_LOGIC_VECTOR(15 downto 0);
+			-- input
+			PC 			: in STD_LOGIC_VECTOR(15 downto 0);
+			-- output
+			inst 			: out STD_LOGIC_VECTOR(15 downto 0);
+				
+			--´®¿Ú
+			data_ready	: in STD_LOGIC;
+			tbre			: in STD_LOGIC;
+			tsre			: in STD_LOGIC;
+			wrn			: out STD_LOGIC;
+			rdn			: out STD_LOGIC
+			
+		);
+	end component;
+
 	--component 
 	----------------------------
 	--          IF            
@@ -128,23 +179,6 @@ architecture Behavioral of cpu is
 			--
 			PCOut		: out STD_LOGIC_VECTOR(15 downto 0)
 
-		);
-	end component;
-
-	component InstructionMemory
-		port(
-			clk 		: in STD_LOGIC;
-			rst 		: in STD_LOGIC;
-			-- RAM2
-			Ram2_OE		: out STD_LOGIC;
-			Ram2_WE 		: out STD_LOGIC;
-			Ram2_EN 		: out STD_LOGIC;
-			Ram2_Addr 	: out STD_LOGIC_VECTOR(17 downto 0);
-			Ram2_Data	: inout STD_LOGIC_VECTOR(15 downto 0);
-			-- input
-			PC 			: in STD_LOGIC_VECTOR(15 downto 0);
-			-- output
-			inst 			: out STD_LOGIC_VECTOR(15 downto 0)
 		);
 	end component;
 
@@ -350,27 +384,6 @@ architecture Behavioral of cpu is
 	--          MEM            
 	----------------------------
 
-	component DataMemory 
-		port(
-			clk 		: in STD_LOGIC;
-			rst 		: in STD_LOGIC;
-			-- input control signal
-			MemWrite 	: in STD_LOGIC;
-			MemRead 	: in STD_LOGIC;
-			-- RAM1
-			Ram1_OE 		: out STD_LOGIC;
-			Ram1_WE 		: out STD_LOGIC;
-			Ram1_EN 		: out STD_LOGIC;
-			Ram1_Addr	: out STD_LOGIC_VECTOR(17 downto 0);
-			Ram1_Data	: inout STD_LOGIC_VECTOR(15 downto 0);
-			-- input
-			addr 		: in STD_LOGIC_VECTOR(15 downto 0);
-			wdata 		: in STD_LOGIC_VECTOR(15 downto 0);
-			-- output
-			rdata 		: out STD_LOGIC_VECTOR(15 downto 0)
-		);
-	end component;
-
 	component MEMWBRegister 
 		port(
 			clk 		: in STD_LOGIC;
@@ -409,6 +422,12 @@ architecture Behavioral of cpu is
 	----------------------------
 	--         signals            
 	----------------------------
+	-- Clock
+	signal clk0 		: STD_LOGIC;
+	signal clk1 		: STD_LOGIC;
+	signal clk2 		: STD_LOGIC;
+	signal clk3 		: STD_LOGIC;
+
 	-- Controller
 	signal RegSrcA		: STD_LOGIC_VECTOR(3 downto 0);
 	signal RegSrcB		: STD_LOGIC_VECTOR(3 downto 0);
@@ -435,6 +454,10 @@ architecture Behavioral of cpu is
 	signal IFIDStall	: STD_LOGIC;
 	signal IDEXFlush	: STD_LOGIC;
 
+	-- MemoryUnit
+	signal rdata 		: STD_LOGIC_VECTOR(15 downto 0);
+	signal IF_inst 		: STD_LOGIC_VECTOR(15 downto 0) ;
+
 	-- PCRegister
 	signal IF_PC 	 	: STD_LOGIC_VECTOR(15 downto 0);
 	signal PCOut		: STD_LOGIC_VECTOR(15 downto 0);
@@ -447,9 +470,6 @@ architecture Behavioral of cpu is
 
 	-- PCMux
 	signal IF_PCOut 	: STD_LOGIC_VECTOR(15 downto 0);
-
-	-- InstructionMemory
-	signal IF_inst 		: STD_LOGIC_VECTOR(15 downto 0);
 
 	-- IFIDRegister
 	signal ID_PC 		: STD_LOGIC_VECTOR(15 downto 0);
@@ -513,9 +533,6 @@ architecture Behavioral of cpu is
 	signal MEM_ALURes 	: STD_LOGIC_VECTOR(15 downto 0);
 	signal MEM_reg2 	: STD_LOGIC_VECTOR(15 downto 0);
 
-	-- DataMemory
-	signal MEM_rdata 	: STD_LOGIC_VECTOR(15 downto 0);
-
 	-- MEMWBRegister
 	signal WB_RegDst	: STD_LOGIC_VECTOR(3 downto 0);
 	signal WB_MemToRead : STD_LOGIC;
@@ -528,6 +545,16 @@ architecture Behavioral of cpu is
 
 
 begin
+
+	u0 : Clock
+	port map(
+		rst 		=> rst,
+		clk 		=> clk,
+		clk0 		=> clk0,
+		clk1 		=> clk1,
+		clk2 		=> clk2,
+		clk3 		=> clk3
+	);
 	
 	u1 : Controller
 	port map(
@@ -572,9 +599,37 @@ begin
 		IDEXFlush 	=> IDEXFlush
 	);
 
+	u30 : MemoryUnit
+	port map(
+		clk 		=> clk0,
+		rst 		=> rst,
+		MemWrite 	=> MEM_MemWrite,
+		MemRead 	=> MEM_MemRead,
+		Ram1_OE 	=> Ram1_OE,
+		Ram1_WE 	=> Ram1_WE,
+		Ram1_EN 	=> Ram1_EN,
+		Ram1_Addr 	=> Ram1_Addr,
+		Ram1_Data 	=> Ram1_Data,
+		addr 		=> MEM_ALURes,
+		wdata 		=> MEM_reg2,
+		rdata 		=> rdata, --HERE was MEM_rdata
+		Ram2_OE 	=> Ram2_OE,
+		Ram2_WE 	=> Ram2_WE,
+		Ram2_EN 	=> Ram2_EN,
+		Ram2_Addr 	=> Ram2_Addr,
+		Ram2_Data 	=> Ram2_Data,
+		PC 			=> IF_PC,
+		inst 		=> IF_inst, --HERE was IF_inst, not right
+		data_ready 	=> dataReady, 
+		tbre 		=> tbre,
+		tsre 		=> tsre,
+		wrn 		=> wrn,
+		rdn 		=> rdn
+	);
+
 	u4 : PCRegister
 	port map(
-		clk 		=> clk,
+		clk 		=> clk1,
 		rst 		=> rst,
 		PCIn 		=> IF_PCOut,
 		PCOut 		=> IF_PC
@@ -604,22 +659,9 @@ begin
 		PCOut 		=> PCOut
 	);
 
-	u8 : InstructionMemory
-	port map(
-		clk 		=> clk,
-		rst 		=> rst,
-		Ram2_OE 		=> Ram2OE,
-		Ram2_WE 		=> Ram2WE,
-		Ram2_EN 		=> Ram2EN,
-		Ram2_Addr	=> Ram2Addr,
-		Ram2_Data 	=> Ram2Data,
-		PC 			=> IF_PC,
-		inst 		=> IF_inst
-	);
-
 	u9 : IFIDRegister
 	port map(
-		clk 		=> clk,
+		clk 		=> clk1,
 		rst 		=> rst,
 		IF_PC 	=> IF_NPC,
 		IF_inst 	=> IF_inst,
@@ -631,14 +673,14 @@ begin
 
 	u10 : Registers
 	port map(
-		clk 		=> clk,
+		clk 		=> clk2,
 		rst 		=> rst,
 		RegWrite 	=> WB_RegWrite,
 		raddr1 		=> RegSrcA,
 		raddr2 		=> RegSrcB,
 		waddr 		=> WB_RegDst,
 		wdata 		=> WB_wdata,
-		reg1 		=> ID_reg1, --Think this is wrong, was EX_reg1/EX_reg2
+		reg1 		=> ID_reg1, 
 		reg2 		=> ID_reg2
 	);
 
@@ -652,13 +694,13 @@ begin
 
 	u12 : IDEXRegister
 	port map(
-		clk 		=> clk,
+		clk 		=> clk1,
 		rst 		=> rst,
 		ID_RegDst 	=> RegDst,
 		ID_ALUOp 	=> ALUOp,
 		ID_ALUSrcB 	=> ALUSrcB,
 		ID_ALURes 	=> ALURes,
-		ID_Jump 		=> Jump,
+		ID_Jump 	=> Jump,
 		ID_BranchOp => BranchOp,
 		ID_Branch 	=> Branch,
 		ID_MemRead 	=> MemRead,
@@ -667,21 +709,22 @@ begin
 		ID_RegWrite	=> RegWrite,
 		ID_PC 		=> ID_PC,
 		ID_reg1		=> ID_reg1,
-		ID_reg2 		=> ID_reg2,
-		ID_raddr1 	=> RegSrcA, --not sure
-		ID_raddr2	=> RegSrcB, --not sure
+		ID_reg2 	=> ID_reg2,
+		ID_raddr1 	=> RegSrcA, 
+		ID_raddr2	=> RegSrcB, 
 		ID_imm 		=> ID_immOut,
 		ID_RPC 		=> ID_RPC,
 		EX_RegDst	=> EX_RegDst,
 		EX_ALUOp 	=> EX_ALUOp,
 		EX_ALUSrcB  => EX_ALUSrcB,
 		EX_ALURes	=> EX_ALURes,
-		EX_Jump 		=> EX_Jump,
+		EX_Jump 	=> EX_Jump,
 		EX_BranchOp => EX_BranchOp,
 		EX_Branch 	=> EX_Branch,
 		EX_MemRead 	=> EX_MemRead,
 		EX_MemToRead=> EX_MemToRead,
 		EX_RegWrite => EX_RegWrite,
+		EX_MemWrite => Ex_MemWrite,
 		EX_PC 		=> EX_PC,
 		EX_reg1 	=> EX_reg1,
 		EX_reg2 	=> EX_reg2,
@@ -748,7 +791,7 @@ begin
 
 	u19 : EXMEMRegister
 	port map(
-		clk 		=> clk,
+		clk 		=> clk1,
 		rst 		=> rst,
 		EX_RegDst 	=> EX_RegDst,
 		EX_BranchOp => EX_BranchOp,
@@ -770,31 +813,15 @@ begin
 		MEM_reg2 	=> MEM_reg2
 	);
 
-	u20 : DataMemory
-	port map(
-		clk 		=> clk,
-		rst 		=> rst,
-		MemWrite 	=> MEM_MemWrite,
-		MemRead 	=> MEM_MemRead,
-		Ram1_OE 		=> Ram1_OE,
-		Ram1_WE		=> Ram1_WE,
-		Ram1_EN		=> Ram1_EN,
-		Ram1_Addr	=> Ram1_Addr,
-		Ram1_Data	=> Ram1_Data,
-		addr 		=> MEM_ALURes,
-		wdata 		=> MEM_reg2,
-		rdata 		=> MEM_rdata
-	);
-
 	u21 : MEMWBRegister
 	port map(
-		clk 		=> clk,
+		clk 		=> clk1,
 		rst 		=> rst,
-		MEM_RegDst  => WB_RegDst,
-		MEM_MemToRead=>WB_MemToRead,
-		MEM_RegWrite=> WB_RegWrite,
-		MEM_rdata	=> WB_rdata,
-		MEM_ALURes 	=> WB_ALURes,
+		MEM_RegDst  => MEM_RegDst,
+		MEM_MemToRead=>MEM_MemToRead,
+		MEM_RegWrite=> MEM_RegWrite,
+		MEM_rdata	=> rdata,
+		MEM_ALURes 	=> MEM_ALURes,
 		WB_RegDst	=> WB_RegDst,
 		WB_MemToRead=> WB_MemToRead,
 		WB_RegWrite => WB_RegWrite,

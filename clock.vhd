@@ -1,4 +1,4 @@
-library IEEE:
+library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
 entity clock is
@@ -36,6 +36,10 @@ begin
 					clk1 <= '0';
 					clk2 <= '0';
 					clk3 <= '1';
+				when others =>
+					clk1 <= '0';
+					clk2 <= '0';
+					clk3 <= '0';					
 			end case;
 
 			if (count = 2) then

@@ -40,7 +40,7 @@ architecture Behavioral of LATCH_1BIT is
 begin
 	process(CLK, D)
 	begin
-		if CLK'EVENT and CLK = '0'
+		if CLK'EVENT and CLK = '1'
 			then Q <= D;
 		end if;
 	end process;
