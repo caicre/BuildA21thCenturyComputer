@@ -31,6 +31,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity LATCH_16BIT is
     Port ( CLK : in  STD_LOGIC;
+		   RST: in STD_LOGIC;
            D : in  STD_LOGIC_VECTOR (15 downto 0);
            Q : out  STD_LOGIC_VECTOR (15 downto 0));
 end LATCH_16BIT;
@@ -40,13 +41,14 @@ architecture Behavioral of LATCH_16BIT is
 
 component LATCH_1BIT
 	port(CLK: in STD_LOGIC;
+			RST: in STD_LOGIC;
 			D: in STD_LOGIC;
 			Q: out STD_LOGIC);
 end component;
 
 begin
 	u0: for i in 0 to 15 generate
-		ux:LATCH_1BIT port map(CLK, D(i), Q(i));
+		ux:LATCH_1BIT port map(CLK, RST, D(i), Q(i));
 	end generate;
 end Behavioral;
 

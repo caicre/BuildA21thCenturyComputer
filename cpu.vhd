@@ -25,8 +25,12 @@ entity cpu is
 		Ram2_WE		: out STD_LOGIC;
 		Ram2_EN		: out STD_LOGIC;
 		Ram2_Addr	: out STD_LOGIC_VECTOR(17 downto 0);
-		Ram2_Data	: inout STD_LOGIC_VECTOR(15 downto 0)
-
+		Ram2_Data	: inout STD_LOGIC_VECTOR(15 downto 0) ;
+		
+		--LED
+		led			: out STD_LOGIC_VECTOR(15 downto 0) ;
+		showclk		: out STD_LOGIC_VECTOR(3 downto 0)
+		
 	);
 end cpu;
 
@@ -460,7 +464,6 @@ architecture Behavioral of cpu is
 
 	-- PCRegister
 	signal IF_PC 	 	: STD_LOGIC_VECTOR(15 downto 0);
-	signal PCOut		: STD_LOGIC_VECTOR(15 downto 0);
 	
 	-- PCAdder
 	signal IF_NPC 		 : STD_LOGIC_VECTOR(15 downto 0);
@@ -469,7 +472,7 @@ architecture Behavioral of cpu is
 	signal IF_RPC 		 : STD_LOGIC_VECTOR(15 downto 0);
 
 	-- PCMux
-	signal IF_PCOut 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal PCMuxOut 	: STD_LOGIC_VECTOR(15 downto 0);
 
 	-- IFIDRegister
 	signal ID_PC 		: STD_LOGIC_VECTOR(15 downto 0);
@@ -631,7 +634,7 @@ begin
 	port map(
 		clk 		=> clk1,
 		rst 		=> rst,
-		PCIn 		=> IF_PCOut,
+		PCIn 		=> PCMuxOut,
 		PCOut 		=> IF_PC
 	);
 
@@ -656,7 +659,7 @@ begin
 		NPC 		=> IF_NPC,
 		PCAddImm 	=> EX_PCAddImm,
 		reg1 		=> EX_reg1,
-		PCOut 		=> PCOut
+		PCOut 		=> PCMuxOut
 	);
 
 	u9 : IFIDRegister
@@ -836,5 +839,19 @@ begin
 		ALUresult 	=> WB_ALURes,
 		wdata 		=> WB_wdata
 	);
+	
+	process (IF_inst)
+	begin
+		led <= IF_inst ;
+	end process ;
+	
+	process (clk0,clk1,clk2,clk3)
+	begin
+		showclk(0) <= clk0 ;
+		showclk(1) <= clk1 ;
+		showclk(2) <= clk2 ;
+		showclk(3) <= clk3 ;
+	end process ;
+	
 	
 end Behavioral;

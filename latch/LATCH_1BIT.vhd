@@ -31,6 +31,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity LATCH_1BIT is
     Port ( CLK : in  STD_LOGIC;
+		   RST: in STD_LOGIC;
            D : in  STD_LOGIC;
            Q : out  STD_LOGIC);
 end LATCH_1BIT;
@@ -40,7 +41,9 @@ architecture Behavioral of LATCH_1BIT is
 begin
 	process(CLK, D)
 	begin
-		if CLK'EVENT and CLK = '1'
+		if RST = '0'
+			then Q <= '0';
+		elsif CLK'EVENT and CLK = '1'
 			then Q <= D;
 		end if;
 	end process;

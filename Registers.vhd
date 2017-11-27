@@ -61,7 +61,6 @@ architecture Behavioral of Registers is
 	signal IH : std_logic_vector(15 downto 0);
 	signal SP : std_logic_vector(15 downto 0);
 	signal RA : std_logic_vector(15 downto 0);
-	signal state : std_logic_vector(1 downto 0) ; --PROBLEM ABOUT T = n*T0
 	
 begin
     process (clk,rst) -- WRITE

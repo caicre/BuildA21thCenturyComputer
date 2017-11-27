@@ -81,46 +81,50 @@ architecture Behavioral of IDEXRegister is
 
 component LATCH_16BIT
 	port(CLK: in STD_LOGIC;
+			RST: in STD_LOGIC;
 			 D : in  STD_LOGIC_VECTOR (15 downto 0);
           Q : out  STD_LOGIC_VECTOR (15 downto 0)) ;
 end component;
 
 component LATCH_4BIT
 	port(CLK: in STD_LOGIC;
+			RST: in STD_LOGIC;
 			 D : in  STD_LOGIC_VECTOR (3 downto 0);
           Q : out  STD_LOGIC_VECTOR (3 downto 0));
 end component;
 
 component LATCH_2BIT
 	port(CLK: in STD_LOGIC;
+			RST: in STD_LOGIC;
 			 D : in  STD_LOGIC_VECTOR (1 downto 0);
           Q : out  STD_LOGIC_VECTOR (1 downto 0));
 end component;
 
 component LATCH_1BIT
 	port(CLK: in STD_LOGIC;
+			RST: in STD_LOGIC;
 			D: in STD_LOGIC;
 			Q: out STD_LOGIC);
 end component;
 
 begin
-	u0:LATCH_4BIT port map(CLK, ID_RegDst, EX_RegDst);
-	u1:LATCH_4BIT port map(CLK, ID_ALUOp, EX_ALUOp);
-	u2:LATCH_1BIT port map(CLK, ID_ALUSrcB, EX_ALUSrcB);
-	u3:LATCH_2BIT port map(CLK, ID_ALURes, EX_ALURes);
-	u4:LATCH_1BIT port map(CLK, ID_Jump, EX_Jump);
-	u5:LATCH_2BIT port map(CLK, ID_BranchOp, EX_BranchOp);
-	u6:LATCH_1BIT port map(CLK, ID_Branch, EX_Branch);
-	u7:LATCH_1BIT port map(CLK, ID_MemRead, EX_MemRead);
-	u8:LATCH_1BIT port map(CLK, ID_MemWrite, EX_MemWrite);
-	u9:LATCH_1BIT port map(CLK, ID_MemToRead, EX_MemToRead);
-	u10:LATCH_1BIT port map(CLK, ID_RegWrite, EX_RegWrite);
-	u11:LATCH_16BIT port map(CLK, ID_PC, EX_PC);
-	u12:LATCH_16BIT port map(CLK, ID_reg1, EX_reg1);
-	u13:LATCH_16BIT port map(CLK, ID_reg2, EX_reg2);
-	u14:LATCH_4BIT port map(CLK, ID_raddr1, EX_raddr1);
-	u15:LATCH_4BIT port map(CLK, ID_raddr2, EX_raddr2);
-	u16:LATCH_16BIT port map(CLK, ID_imm, EX_imm);
-	u17:LATCH_16BIT port map(CLK, ID_RPC, EX_RPC);
+	u0:LATCH_4BIT port map(clk, rst, ID_RegDst, EX_RegDst);
+	u1:LATCH_4BIT port map(clk, rst, ID_ALUOp, EX_ALUOp);
+	u2:LATCH_1BIT port map(clk, rst, ID_ALUSrcB, EX_ALUSrcB);
+	u3:LATCH_2BIT port map(clk, rst, ID_ALURes, EX_ALURes);
+	u4:LATCH_1BIT port map(clk, rst, ID_Jump, EX_Jump);
+	u5:LATCH_2BIT port map(clk, rst, ID_BranchOp, EX_BranchOp);
+	u6:LATCH_1BIT port map(clk, rst, ID_Branch, EX_Branch);
+	u7:LATCH_1BIT port map(clk, rst, ID_MemRead, EX_MemRead);
+	u8:LATCH_1BIT port map(clk, rst, ID_MemWrite, EX_MemWrite);
+	u9:LATCH_1BIT port map(clk, rst, ID_MemToRead, EX_MemToRead);
+	u10:LATCH_1BIT port map(clk, rst, ID_RegWrite, EX_RegWrite);
+	u11:LATCH_16BIT port map(clk, rst, ID_PC, EX_PC);
+	u12:LATCH_16BIT port map(clk, rst, ID_reg1, EX_reg1);
+	u13:LATCH_16BIT port map(clk, rst, ID_reg2, EX_reg2);
+	u14:LATCH_4BIT port map(clk, rst, ID_raddr1, EX_raddr1);
+	u15:LATCH_4BIT port map(clk, rst, ID_raddr2, EX_raddr2);
+	u16:LATCH_16BIT port map(clk, rst, ID_imm, EX_imm);
+	u17:LATCH_16BIT port map(clk, rst, ID_RPC, EX_RPC);
 end Behavioral;
 
