@@ -110,16 +110,16 @@ architecture Behavioral of cpu is
 		port(
 			clk 		: in STD_LOGIC;
 			rst 		: in STD_LOGIC;		
-				
+
 			-- input control signal
-			MemWrite : in STD_LOGIC;		--'1':Ð´
-			MemRead 	: in STD_LOGIC;		--'1':¶Á
-			IsMem		: in STD_LOGIC;		--'0': Ö»ÓÐIF²Ù×÷ '1': Ö»ÓÐMEM²Ù×÷(IF,ID,EXÒªÍ£¶Ù)
-				
-			-- RAM1								--Îª´®¿Ú(BF00~BF03)
-			Ram1_OE 		: out STD_LOGIC;
-			Ram1_WE 		: out STD_LOGIC;
-			Ram1_EN 		: out STD_LOGIC;
+			MemWrite 	: in STD_LOGIC;		--'1':写
+			MemRead 	: in STD_LOGIC;		--'1':读
+			IsMem		: in STD_LOGIC;		--'0': 只有IF操作 '1': 只有MEM操作(IF,ID,EX要停顿)
+			
+			-- RAM1							--为串口(BF00~BF03)
+			Ram1_OE 	: out STD_LOGIC;
+			Ram1_WE 	: out STD_LOGIC;
+			Ram1_EN 	: out STD_LOGIC;
 			Ram1_Addr	: out STD_LOGIC_VECTOR(17 downto 0);
 			Ram1_Data	: inout STD_LOGIC_VECTOR(15 downto 0);
 			-- input
@@ -479,6 +479,8 @@ architecture Behavioral of cpu is
 	signal IDEXFlush	: STD_LOGIC;
 
 	-- MemoryUnit
+	signal MEM_IsMem 	: STD_LOGIC;
+
 	signal Ram1_OE 		: STD_LOGIC;
 	signal Ram1_WE 		: STD_LOGIC;
 	signal Ram1_EN 		: STD_LOGIC;
@@ -589,6 +591,7 @@ architecture Behavioral of cpu is
 
 
 begin
+
 	u0 : Clock
 	port map(
 		rst 		=> rst,
@@ -640,6 +643,43 @@ begin
 		PCStall 	=> PCStall,
 		IFIDStall 	=> IFIDStall,
 		IDEXFlush 	=> IDEXFlush
+	);
+
+	u30 : MemoryUnit
+	port map(
+		clk 		=> clk,
+		rst 		=> rst,
+		MemWrite 	=> MEM_MemWrite,
+		MemRead 	=> MEM_MemRead,
+		Ram1_OE 	=> Ram1_OE,
+		Ram1_WE 	=> Ram1_WE,
+		Ram1_EN 	=> Ram1_EN,
+		Ram1_Addr 	=> Ram1_Addr,
+		Ram1_Data 	=> Ram1_Data,
+		addr 		=> MEM_ALURes,
+		wdata 		=> MEM_reg2,
+		rdata 		=> MEM_rdata,
+		Ram2_OE 	=> Ram2_OE,
+		Ram2_WE 	=> Ram2_WE,
+		Ram2_EN 	=> Ram2_EN,
+		Ram2_Addr 	=> Ram2_Addr,
+		Ram2_Data 	=> Ram2_Data,
+		PC 			=> IF_PC,
+		insst 		=> IF_inst,
+		data_ready 	=> data_ready,
+		tbre 		=> tbre,
+		tsre 		=> tsre,
+		wrn 		=> wrn,
+		rdn 		=> rdn,
+		FLASH_ADDR 	=> FLASH_ADDR,
+		FLASH_DATA 	=> FLASH_DATA,
+		FLASH_BYTE 	=> FLASH_BYTE,
+		FLASH_VPEN	=> FLASH_VPEN,
+		FLAHS_RP 	=> FLASH_RP,
+		FLASH_CE 	=> FLASH_CE,
+		FLASH_OE 	=> FLASH_OE,
+		FLASH_WE	=> FLASH_WE,
+		FLASH_FINISH=> FLASH_FINISH
 	);
 
 	u4 : PCRegister
