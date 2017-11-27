@@ -41,18 +41,8 @@ end ALUSrcMux2;
 
 architecture Behavioral of ALUSrcMux2 is
 begin
-    process (ForwardB, reg2, WB_ALURes, MEM_ALURes, ALUSrcB, imm)
-    begin
-        case ForwardB is
-            when "00" => 
-                if (ALUSrcB = '0') then
-                    src2 <= reg2;
-                else
-                    src2 <= imm;
-                end if;
-            when "01" => src2 <= MEM_ALURes ;
-            when "10" => src2 <= WB_ALURes ;
-            when others => src2 <= reg2;
-        end case ;
-    end process ;
+    src2 <= WB_ALURes when ForwardB = "10" else
+            MEM_ALURes when ForwardB = "01" else
+            imm when ForwardB = "00" and ALUSrcB = '1' else
+            reg2 ;
 end Behavioral;

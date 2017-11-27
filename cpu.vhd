@@ -845,8 +845,9 @@ begin
 	
 	process (IF_inst)
 	begin
-		led(15 downto 8) <= IF_inst(15 downto 8) ;
-		led(7 downto 0) <= IF_PC(7 downto 0) ;
+--		led(15 downto 8) <= IF_inst(15 downto 8) ;
+--		led(7 downto 0) <= IF_NPC(7 downto 0) ;
+		led <= IF_NPC ;
 	end process ;
 	
 	process (clk0,PCStall,EX_BranchJudge,EX_Jump)

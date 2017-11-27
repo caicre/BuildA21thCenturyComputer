@@ -40,14 +40,8 @@ end ALUSrcMux1;
 architecture Behavioral of ALUSrcMux1 is
 
 begin
-    process (ForwardA, reg1, WB_ALURes, MEM_ALURes)
-    begin 
-        case ForwardA is
-            when "00" => src1 <= reg1 ;
-            when "01" => src1 <= MEM_ALURes ;
-            when "10" => src1 <= WB_ALURes ;
-				when others => 
-        end case ;
-    end process ;
+    src1 <= WB_ALURes when ForwardA = "10" else
+            MEM_ALURes when ForwardA = "01" else
+            reg1 ;
 end Behavioral;
 
