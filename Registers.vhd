@@ -43,7 +43,20 @@ entity Registers is
         wdata       : in STD_LOGIC_VECTOR(15 downto 0);
         -- output
         reg1        : out STD_LOGIC_VECTOR(15 downto 0);
-        reg2        : out STD_LOGIC_VECTOR(15 downto 0)
+        reg2        : out STD_LOGIC_VECTOR(15 downto 0);
+
+        showreg_r0  : out STD_LOGIC_VECTOR(15 downto 0);
+        showreg_r1  : out STD_LOGIC_VECTOR(15 downto 0);
+        showreg_r2  : out STD_LOGIC_VECTOR(15 downto 0);
+        showreg_r3  : out STD_LOGIC_VECTOR(15 downto 0);
+        showreg_r4  : out STD_LOGIC_VECTOR(15 downto 0);
+        showreg_r5  : out STD_LOGIC_VECTOR(15 downto 0);
+        showreg_r6  : out STD_LOGIC_VECTOR(15 downto 0);
+        showreg_r7  : out STD_LOGIC_VECTOR(15 downto 0);
+        showreg_T  : out STD_LOGIC_VECTOR(15 downto 0);
+        showreg_IH  : out STD_LOGIC_VECTOR(15 downto 0);
+        showreg_SP  : out STD_LOGIC_VECTOR(15 downto 0);
+        showreg_RA  : out STD_LOGIC_VECTOR(15 downto 0)
     );
 end Registers;
 
@@ -155,5 +168,17 @@ begin
     end if ;
 	end process ;
 
+    showreg_r0 <= r0 ;
+    showreg_r1 <= r1 ;
+    showreg_r2 <= r2 ;
+    showreg_r3 <= r3 ;
+    showreg_r4 <= r4 ;
+    showreg_r5 <= r5 ;
+    showreg_r6 <= r6 ;
+    showreg_r7 <= r7 ;
+    showreg_T  <= T ;
+    showreg_SP <= SP ;
+    showreg_RA <= RA ;
+    showreg_IH <= IH ;
 end Behavioral;
 

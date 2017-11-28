@@ -111,8 +111,8 @@ architecture Behavioral of cpu is
 			rst 		: in STD_LOGIC;		
 
 			-- input control signal
-			MemWrite 	: in STD_LOGIC;		--'1':ï¿
-			MemRead 	: in STD_LOGIC;		--'1':ï¿
+			MemWrite 	: in STD_LOGIC;		--'1':ï¿½
+			MemRead 	: in STD_LOGIC;		--'1':ï¿½
 			
 			-- RAM1							--ä¸ºä¸²ï¿½BF00~BF03)
 			Ram1_OE 	: out STD_LOGIC;
@@ -221,7 +221,20 @@ architecture Behavioral of cpu is
 			wdata 		: in STD_LOGIC_VECTOR(15 downto 0);
 			-- output
 			reg1 		: out STD_LOGIC_VECTOR(15 downto 0);
-			reg2 		: out STD_LOGIC_VECTOR(15 downto 0)
+			reg2 		: out STD_LOGIC_VECTOR(15 downto 0);
+			
+			showreg_r0  : out STD_LOGIC_VECTOR(15 downto 0);
+			showreg_r1  : out STD_LOGIC_VECTOR(15 downto 0);
+			showreg_r2  : out STD_LOGIC_VECTOR(15 downto 0);
+			showreg_r3  : out STD_LOGIC_VECTOR(15 downto 0);
+			showreg_r4  : out STD_LOGIC_VECTOR(15 downto 0);
+			showreg_r5  : out STD_LOGIC_VECTOR(15 downto 0);
+			showreg_r6  : out STD_LOGIC_VECTOR(15 downto 0);
+			showreg_r7  : out STD_LOGIC_VECTOR(15 downto 0);
+			showreg_T  : out STD_LOGIC_VECTOR(15 downto 0);
+			showreg_IH  : out STD_LOGIC_VECTOR(15 downto 0);
+			showreg_SP  : out STD_LOGIC_VECTOR(15 downto 0);
+			showreg_RA  : out STD_LOGIC_VECTOR(15 downto 0)
 		);
 	end component;
 
@@ -500,6 +513,19 @@ architecture Behavioral of cpu is
 	signal ID_reg1 		: STD_LOGIC_VECTOR(15 downto 0);
 	signal ID_reg2 		: STD_LOGIC_VECTOR(15 downto 0);
 
+	signal showreg_r0 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal showreg_r1 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal showreg_r2 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal showreg_r3 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal showreg_r4 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal showreg_r5 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal showreg_r6 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal showreg_r7 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal showreg_T 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal showreg_SP 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal showreg_IH 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal showreg_RA 	: STD_LOGIC_VECTOR(15 downto 0);
+
 	-- ImmUnit
 	signal ID_immOut 		: STD_LOGIC_VECTOR(15 downto 0);
 --ID_
@@ -709,7 +735,20 @@ begin
 		waddr 		=> WB_RegDst,
 		wdata 		=> WB_wdata,
 		reg1 		=> ID_reg1, 
-		reg2 		=> ID_reg2
+		reg2 		=> ID_reg2,
+		showreg_r0  => showreg_r0,
+		showreg_r1  => showreg_r1,
+		showreg_r2  => showreg_r2,
+		showreg_r3  => showreg_r3,
+		showreg_r4  => showreg_r4,
+		showreg_r5  => showreg_r5,
+		showreg_r6  => showreg_r6,
+		showreg_r7  => showreg_r7,
+		showreg_SP  => showreg_SP,
+		showreg_IH  => showreg_IH,
+		showreg_T  => showreg_T,
+		showreg_RA  => showreg_RA
+
 	);
 
 	u11 : ImmUnit
