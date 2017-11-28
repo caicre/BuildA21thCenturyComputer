@@ -62,18 +62,14 @@ begin
 	begin
 		if(rst = '0') then
 			MEM_RegDst <= (others => '0');
-			MEM_BranchOp <= (others => '0');
-			MEM_Branch <= (others => '0');
-			MEM_MemRead <= (others => '0');
-			MEM_MemWrite <= (others => '0');
-			MEM_MemToRead <= (others => '0');
-			MEM_RegWrite <= (others => '0');
+			MEM_MemRead <= '0';
+			MEM_MemWrite <= '0';
+			MEM_MemToRead <= '0';
+			MEM_RegWrite <= '0';
 			MEM_ALURes <= (others => '0');
 			MEM_reg2 <= (others => '0');
 		elsif(clk'event and clk='1') then
 			MEM_RegDst <= EX_RegDst;
-			MEM_BranchOp <= EX_BranchOp;
-			MEM_Branch <= EX_Branch;
 			MEM_MemRead <= EX_MemRead;
 			MEM_MemWrite <= EX_MemWrite;
 			MEM_MemToRead <= EX_MemToRead;

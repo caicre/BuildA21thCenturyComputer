@@ -87,15 +87,15 @@ begin
 		if(rst = '0') then
 			EX_RegDst <= (others => '0');
 			EX_ALUOp <= (others => '0');
-			EX_ALUSrcB <= (others => '0');
+			EX_ALUSrcB <= '0' ;
 			EX_ALURes <= (others => '0');
-			EX_Jump <= (others => '0');
-			EX_BranchOp <= (others => '0');
-			EX_Branch <= (others => '0');
-			EX_MemRead <= (others => '0');
-			EX_MemWrite <= (others => '0');
-			EX_MemToRead <= (others => '0');
-			EX_RegWrite <= (others => '0');
+			EX_Jump <=  '0' ;
+			EX_BranchOp <= (others => '0') ;
+			EX_Branch <=  '0' ;
+			EX_MemRead <=  '0' ;
+			EX_MemWrite <=  '0' ;
+			EX_MemToRead <=  '0' ;
+			EX_RegWrite <=  '0' ;
 			EX_PC <= (others => '0');
 			EX_reg1 <= (others => '0');
 			EX_reg2 <= (others => '0');
@@ -107,15 +107,15 @@ begin
 			if(IDEXFlush = '1') then
 				EX_RegDst <= (others => '0');
 				EX_ALUOp <= (others => '0');
-				EX_ALUSrcB <= (others => '0');
+				EX_ALUSrcB <= '0' ;
 				EX_ALURes <= (others => '0');
-				EX_Jump <= (others => '0');
-				EX_BranchOp <= (others => '0');
-				EX_Branch <= (others => '0');
-				EX_MemRead <= (others => '0');
-				EX_MemWrite <= (others => '0');
-				EX_MemToRead <= (others => '0');
-				EX_RegWrite <= (others => '0');
+				EX_Jump <=  '0' ;
+				EX_BranchOp <= (others => '0') ;
+				EX_Branch <=  '0' ;
+				EX_MemRead <=  '0' ;
+				EX_MemWrite <=  '0' ;
+				EX_MemToRead <=  '0' ;
+				EX_RegWrite <=  '0' ;
 				EX_PC <= (others => '0');
 				EX_reg1 <= (others => '0');
 				EX_reg2 <= (others => '0');
@@ -139,7 +139,7 @@ begin
 				EX_reg1 <= ID_reg1;
 				EX_reg2 <= ID_reg2;
 				EX_raddr1 <= ID_raddr1;
-				EX_raddr2 <= ID_radd2;
+				EX_raddr2 <= ID_raddr2;
 				EX_imm <= ID_imm;
 				EX_RPC <= ID_RPC;
 			end if;

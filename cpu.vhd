@@ -48,12 +48,12 @@ architecture Behavioral of cpu is
 	component Tryrom
 		port (
 				clka : in std_logic;
-				ena	: in std_logic;
 				addra : in std_logic_vector(10 downto 0);
 				douta : out std_logic_vector(7 downto 0)
 		);
 	end component;
-	
+attribute box_type : string ;
+attribute box_type of Tryrom : component is "black_box" ;
 	component Clock
 		port(
 			rst	: in STD_LOGIC;
@@ -962,7 +962,7 @@ begin
 	u23 : VGA_Controller
 	port map(
 		reset 		=> rst,
-		clk_in 		=> clk_board,
+		clk_in 		=> clk_button,
 		r0 			=> showreg_r0,
 		r1 			=> showreg_r1,
 		r2 			=> showreg_r2,
@@ -988,7 +988,6 @@ begin
 	u24 : Tryrom
 	port map(
 		clka => clk_board,
-		ena  => '0',
 		addra => TryromAddr,
 		douta => TryromData
 		);
@@ -1005,7 +1004,7 @@ begin
 		led(15 downto 8) <= ID_inst(15 downto 8) ;
 --		led(7 downto 4) <= RegSrcA(3 downto 0) ;
 --		led(3 downto 0) <= RegDst(3 downto 0) ;
-		led(7 downto 0) <= PCMuxOut(7 downto 0) ;
+		led(7 downto 0) <= showreg_r0(7 downto 0);
  	end process ;
 	
 	process (clk0,PCStall,EX_BranchJudge,EX_Jump)

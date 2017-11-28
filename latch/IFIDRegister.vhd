@@ -39,7 +39,6 @@ entity IFIDRegister is
 		IF_PC		: in STD_LOGIC_VECTOR(15 downto 0);
 		IF_inst		: in STD_LOGIC_VECTOR(15 downto 0);
 		IF_RPC		: in STD_LOGIC_VECTOR(15 downto 0);
-		IFIDStall 	: in STD_LOGIC;
 		-- output
 		ID_PC		: out STD_LOGIC_VECTOR(15 downto 0);
 		ID_inst		: out STD_LOGIC_VECTOR(15 downto 0);

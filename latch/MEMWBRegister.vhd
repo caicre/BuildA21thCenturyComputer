@@ -56,8 +56,8 @@ begin
 	process(clk, rst)
 	begin
 		if(rst = '0') then
-			WB_MemToRead <= (others => '0');
-			WB_RegWrite <= (others => '0');
+			WB_MemToRead <= '0';
+			WB_RegWrite <= '0';
 			WB_rdata <= (others => '0');
 			WB_RegDst <= (others => '0');
 			WB_ALURes <= (others => '0');
