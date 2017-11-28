@@ -36,7 +36,7 @@ entity clockForClock is
 end clockForClock;
 
 architecture Behavioral of clockForClock is
-
+	signal count : natural range 0 to 6 := 0;
 begin
 	process(clk, rst)
 	begin
