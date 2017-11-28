@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------------
---ÐèÒªÌí¼ÓWB, MEM, EXEµÄ¿ØÖÆÐÅºÅ
+--ï¿½ï¿½Òªï¿½ï¿½ï¿½WB, MEM, EXEï¿½Ä¿ï¿½ï¿½ï¿½ï¿½Åºï¿½
 -- Company: 
 -- Engineer: 
 -- 
@@ -33,7 +33,8 @@ entity IDEXRegister is
 	port(
 		clk 		: in STD_LOGIC;
 		rst 		: in STD_LOGIC;
-		IDEXFlush: in STD_LOGIC;
+		-- control signal 
+		IDEXFlush	: in STD_LOGIC;
 		-- input control signal
 		ID_RegDst	: in STD_LOGIC_VECTOR(3 downto 0);
 		ID_ALUOp	: in STD_LOGIC_VECTOR(3 downto 0);
@@ -80,52 +81,70 @@ end IDEXRegister;
 
 architecture Behavioral of IDEXRegister is
 
-component LATCH_16BIT
-	port(CLK: in STD_LOGIC;
-			RST: in STD_LOGIC;
-			 D : in  STD_LOGIC_VECTOR (15 downto 0);
-          Q : out  STD_LOGIC_VECTOR (15 downto 0)) ;
-end component;
-
-component LATCH_4BIT
-	port(CLK: in STD_LOGIC;
-			RST: in STD_LOGIC;
-			 D : in  STD_LOGIC_VECTOR (3 downto 0);
-          Q : out  STD_LOGIC_VECTOR (3 downto 0));
-end component;
-
-component LATCH_2BIT
-	port(CLK: in STD_LOGIC;
-			RST: in STD_LOGIC;
-			 D : in  STD_LOGIC_VECTOR (1 downto 0);
-          Q : out  STD_LOGIC_VECTOR (1 downto 0));
-end component;
-
-component LATCH_1BIT
-	port(CLK: in STD_LOGIC;
-			RST: in STD_LOGIC;
-			D: in STD_LOGIC;
-			Q: out STD_LOGIC);
-end component;
-
 begin
-	u0:LATCH_4BIT port map(clk, rst, ID_RegDst, EX_RegDst);
-	u1:LATCH_4BIT port map(clk, rst, ID_ALUOp, EX_ALUOp);
-	u2:LATCH_1BIT port map(clk, rst, ID_ALUSrcB, EX_ALUSrcB);
-	u3:LATCH_2BIT port map(clk, rst, ID_ALURes, EX_ALURes);
-	u4:LATCH_1BIT port map(clk, rst, ID_Jump, EX_Jump);
-	u5:LATCH_2BIT port map(clk, rst, ID_BranchOp, EX_BranchOp);
-	u6:LATCH_1BIT port map(clk, rst, ID_Branch, EX_Branch);
-	u7:LATCH_1BIT port map(clk, rst, ID_MemRead, EX_MemRead);
-	u8:LATCH_1BIT port map(clk, rst, ID_MemWrite, EX_MemWrite);
-	u9:LATCH_1BIT port map(clk, rst, ID_MemToRead, EX_MemToRead);
-	u10:LATCH_1BIT port map(clk, rst, ID_RegWrite, EX_RegWrite);
-	u11:LATCH_16BIT port map(clk, rst, ID_PC, EX_PC);
-	u12:LATCH_16BIT port map(clk, rst, ID_reg1, EX_reg1);
-	u13:LATCH_16BIT port map(clk, rst, ID_reg2, EX_reg2);
-	u14:LATCH_4BIT port map(clk, rst, ID_raddr1, EX_raddr1);
-	u15:LATCH_4BIT port map(clk, rst, ID_raddr2, EX_raddr2);
-	u16:LATCH_16BIT port map(clk, rst, ID_imm, EX_imm);
-	u17:LATCH_16BIT port map(clk, rst, ID_RPC, EX_RPC);
+	process(clk, rst)
+	begin
+		if(rst = '0') then
+			EX_RegDst <= (others => '0');
+			EX_ALUOp <= (others => '0');
+			EX_ALUSrcB <= (others => '0');
+			EX_ALURes <= (others => '0');
+			EX_Jump <= (others => '0');
+			EX_BranchOp <= (others => '0');
+			EX_Branch <= (others => '0');
+			EX_MemRead <= (others => '0');
+			EX_MemWrite <= (others => '0');
+			EX_MemToRead <= (others => '0');
+			EX_RegWrite <= (others => '0');
+			EX_PC <= (others => '0');
+			EX_reg1 <= (others => '0');
+			EX_reg2 <= (others => '0');
+			EX_raddr1 <= (others => '0');
+			EX_raddr2 <= (others => '0');
+			EX_imm <= (others => '0');
+			EX_RPC <= (others => '0');
+		elsif(clk'event and clk='1') then
+			if(IDEXFlush = '1') then
+				EX_RegDst <= (others => '0');
+				EX_ALUOp <= (others => '0');
+				EX_ALUSrcB <= (others => '0');
+				EX_ALURes <= (others => '0');
+				EX_Jump <= (others => '0');
+				EX_BranchOp <= (others => '0');
+				EX_Branch <= (others => '0');
+				EX_MemRead <= (others => '0');
+				EX_MemWrite <= (others => '0');
+				EX_MemToRead <= (others => '0');
+				EX_RegWrite <= (others => '0');
+				EX_PC <= (others => '0');
+				EX_reg1 <= (others => '0');
+				EX_reg2 <= (others => '0');
+				EX_raddr1 <= (others => '0');
+				EX_raddr2 <= (others => '0');
+				EX_imm <= (others => '0');
+				EX_RPC <= (others => '0');
+			else
+				EX_RegDst <= ID_RegDst;
+				EX_ALUOp <= ID_ALUOp;
+				EX_ALUSrcB <= ID_ALUSrcB;
+				EX_ALURes <= ID_ALURes;
+				EX_Jump <= ID_Jump;
+				EX_BranchOp <= ID_BranchOp;
+				EX_Branch <= ID_Branch;
+				EX_MemRead <= ID_MemRead;
+				EX_MemWrite <= ID_MemWrite;
+				EX_MemToRead <= ID_MemToRead;
+				EX_RegWrite <= ID_RegWrite;
+				EX_PC <= ID_PC;
+				EX_reg1 <= ID_reg1;
+				EX_reg2 <= ID_reg2;
+				EX_raddr1 <= ID_raddr1;
+				EX_raddr2 <= ID_radd2;
+				EX_imm <= ID_imm;
+				EX_RPC <= ID_RPC;
+			end if;
+		end if;
+	end process;
+	
 end Behavioral;
 

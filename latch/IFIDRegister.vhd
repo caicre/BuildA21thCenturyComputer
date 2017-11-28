@@ -33,6 +33,8 @@ entity IFIDRegister is
     Port ( 
 		rst 		: in STD_LOGIC;
 		clk 		: in STD_LOGIC;
+		-- control signal
+		IFIDStall	: in STD_LOGIC;
 		-- input
 		IF_PC		: in STD_LOGIC_VECTOR(15 downto 0);
 		IF_inst		: in STD_LOGIC_VECTOR(15 downto 0);
@@ -47,16 +49,22 @@ end IFIDRegister;
 
 architecture Behavioral of IFIDRegister is
 
-component LATCH_16BIT
-	port(CLK: in STD_LOGIC;
-			RST: in STD_LOGIC;
-			 D : in  STD_LOGIC_VECTOR (15 downto 0);
-          Q : out  STD_LOGIC_VECTOR (15 downto 0));
-end component;
-
 begin
-	u0:LATCH_16BIT port map(clk, rst, IF_PC, ID_PC);
-	u1:LATCH_16BIT port map(clk, rst, IF_inst, ID_inst);
-	u2:LATCH_16BIT port map(clk, rst, IF_RPC, ID_RPC);
+	process(clk, rst)
+	begin
+		if(rst = '0') then
+			ID_PC <= (others => '0');
+			ID_inst <= (others => '0');
+			ID_RPC <= (others => '0');
+		elsif(clk'event and clk='1') then
+			if(IFIDStall = '1') then
+				null;
+			else
+				ID_PC <= IF_PC;
+				ID_inst <= IF_inst;
+				ID_RPC <= IF_RPC;
+			end if;
+		end if;
+	end process;
 end Behavioral;
 
