@@ -35,8 +35,6 @@ entity EXMEMRegister is
 		rst			: in STD_LOGIC;
 		-- input control signal
 		EX_RegDst 	: in STD_LOGIC_VECTOR(3 downto 0);
-		EX_BranchOp	: in STD_LOGIC_VECTOR(1 downto 0);
-		EX_Branch	: in STD_LOGIC;
 		EX_MemRead	: in STD_LOGIC;
 		EX_MemWrite	: in STD_LOGIC;
 		EX_MemToRead: in STD_LOGIC;
@@ -46,8 +44,6 @@ entity EXMEMRegister is
 		EX_reg2		: in STD_LOGIC_VECTOR(15 downto 0);
 		-- output control signal
 		MEM_RegDst 	: out STD_LOGIC_VECTOR(3 downto 0);
-		MEM_BranchOp:	out STD_LOGIC_VECTOR(1 downto 0);
-		MEM_Branch	:	out STD_LOGIC;
 		MEM_MemRead	:	out STD_LOGIC;
 		MEM_MemWrite:	out STD_LOGIC;
 		MEM_MemToRead:	out STD_LOGIC;
