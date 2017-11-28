@@ -4,10 +4,10 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity cpu is
 	port(
 		rst			: in STD_LOGIC;
-		clk 			: in STD_LOGIC;
-		--clk_board	: in STD_LOGIC;
-		--clk_button	: in STD_LOGIC;
-		--clksignal	: in STD_LOGIC;
+		--clk 			: in STD_LOGIC;
+		clk_board	: in STD_LOGIC;
+		clk_button	: in STD_LOGIC;
+		clksignal	: in STD_LOGIC;
 
 		-- Serial Port
 		dataReady	: in STD_LOGIC;
@@ -117,8 +117,8 @@ architecture Behavioral of cpu is
 			rst 		: in STD_LOGIC;		
 
 			-- input control signal
-			MemWrite 	: in STD_LOGIC;		--'1':ï¿½
-			MemRead 	: in STD_LOGIC;		--'1':ï¿½
+			MemWrite 	: in STD_LOGIC;		--'1':ï¿
+			MemRead 	: in STD_LOGIC;		--'1':ï¿
 			
 			-- RAM1							--ä¸ºä¸²ï¿½BF00~BF03)
 			Ram1_OE 	: out STD_LOGIC;
@@ -462,6 +462,14 @@ architecture Behavioral of cpu is
 	--    External Devices           
 	----------------------------
 
+	component fontRom
+		port (
+				clka : in std_logic;
+				addra : in std_logic_vector(10 downto 0);
+				douta : out std_logic_vector(7 downto 0)
+		);
+	end component;
+
 	component VGA_Controller
 		port (
 			reset		: in  std_logic;
@@ -482,7 +490,7 @@ architecture Behavioral of cpu is
 			romData 	: in std_logic_vector(7 downto 0);
 
 			--VGA Side
-			hs, vs		: out std_logic;		--ÐÐÍ¬²½¡¢³¡Í¬²½ÐÅºÅ
+			hs, vs		: out std_logic;		--ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½Åºï¿½
 			oRed		: out std_logic_vector (2 downto 0);
 			oGreen		: out std_logic_vector (2 downto 0);
 			oBlue		: out std_logic_vector (2 downto 0)
@@ -628,13 +636,14 @@ architecture Behavioral of cpu is
 	signal WB_wdata 	: STD_LOGIC_VECTOR(15 downto 0);
 
 	-- vga
-	signal hs,vs		: STD_LOGIC;
+	signal fontRomAddr : std_logic_vector(10 downto 0);
+	signal fontRomData : std_logic_vector(7 downto 0);
 
 	signal show1 : std_logic ;
 	signal show2 : std_logic ;
 	signal show3 : std_logic ;
 	
-	--signal clk : std_logic ;
+	signal clk : std_logic ;
 
 
 begin
@@ -955,9 +964,9 @@ begin
 	);
 
 	u23 : VGA_Controller
-	port (
+	port map(
 		reset 		=> rst,
-		clk_in 		=> clk0,
+		clk_in 		=> clk_board,
 		r0 			=> showreg_r0,
 		r1 			=> showreg_r1,
 		r2 			=> showreg_r2,
@@ -971,8 +980,8 @@ begin
 		Tdata 		=> showreg_T,
 		SPdata 		=> showreg_SP,
 		IHdata 		=> showreg_IH,
-		romAddr 	=>
-		romData 	=>
+		romAddr 	=> fontRomAddr,
+		romData 	=> fontRomData,
 		hs 			=> hs,
 		vs 			=> vs,
 		oRed 		=> redOut,
@@ -980,14 +989,21 @@ begin
 		oBlue 		=> blueOut
 	);
 	
---	process (clk_board,rst,clk_button,clksignal)
---	begin
---		if rst = '0' then clk <= '0' ;
---		elsif clksignal = '0' then clk <= clk_board ;
---		else clk <= clk_button ;
---		end if ;
---	end process ;
-	process (ID_inst,RegSrcA,WB_RegDst,RegDst)
+	u24 : fontRom
+	port map(
+		clka => clk_board,
+		addra => fontRomAddr,
+		douta => fontRomData
+		);
+	
+	process (clk_board,rst,clk_button,clksignal)
+	begin
+		if rst = '0' then clk <= '0' ;
+		elsif clksignal = '0' then clk <= clk_board ;
+		else clk <= clk_button ;
+		end if ;
+	end process ;
+	process (ID_inst,RegSrcA,WB_RegDst,RegDst,PCMuxOut)
 	begin
 		led(15 downto 8) <= ID_inst(15 downto 8) ;
 --		led(7 downto 4) <= RegSrcA(3 downto 0) ;
