@@ -45,6 +45,14 @@ end cpu;
 
 architecture Behavioral of cpu is
 
+	component clockForClock
+		port (
+			clk : in  STD_LOGIC;
+			rst : in	STD_LOGIC;
+			clkForClock : out  STD_LOGIC
+		);
+	end component;
+
 	component Tryrom
 		port (
 				clka : in std_logic;
@@ -638,6 +646,7 @@ attribute box_type of Tryrom : component is "black_box" ;
 	signal TryromData : std_logic_vector(7 downto 0);
 	
 	signal clk : std_logic ;
+	signal clkForClock : std_logic;
 
 
 begin
@@ -645,7 +654,7 @@ begin
 	u0 : Clock
 	port map(
 		rst 		=> rst,
-		clk 		=> clk,
+		clk 		=> clkForClock,
 		clk0 		=> clk0,
 		clk1 		=> clk1,
 		clk2 		=> clk2,
@@ -986,6 +995,13 @@ begin
 		clka => clk_board,
 		addra => TryromAddr,
 		douta => TryromData
+		);
+		
+	u25 : clockForClock
+	port map(
+			clk => clk;
+			rst => rst;
+			clkForClock => clkForClock;
 		);
 	
 	process (clk_board,rst,clk_button,clksignal)
