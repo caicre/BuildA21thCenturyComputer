@@ -636,10 +636,6 @@ attribute box_type of Tryrom : component is "black_box" ;
 	-- vga
 	signal TryromAddr : std_logic_vector(10 downto 0);
 	signal TryromData : std_logic_vector(7 downto 0);
-
-	signal show1 : std_logic ;
-	signal show2 : std_logic ;
-	signal show3 : std_logic ;
 	
 	signal clk : std_logic ;
 
@@ -962,7 +958,7 @@ begin
 	u23 : VGA_Controller
 	port map(
 		reset 		=> rst,
-		clk_in 		=> clk_button,
+		clk_in 		=> clk_board,
 		r0 			=> showreg_r0,
 		r1 			=> showreg_r1,
 		r2 			=> showreg_r2,
@@ -980,7 +976,7 @@ begin
 		romData 	=> TryromData,
 		hs 			=> hs,
 		vs 			=> vs,
-		oRed 		=> redOut,
+		oRed 			=> redOut,
 		oGreen 		=> greenOut,
 		oBlue 		=> blueOut
 	);
@@ -999,12 +995,21 @@ begin
 		else clk <= clk_button ;
 		end if ;
 	end process ;
-	process (ID_inst,RegSrcA,WB_RegDst,RegDst,PCMuxOut)
+	process (showreg_r0,showreg_r1,ALUMuxResult,ID_immOut)
 	begin
-		led(15 downto 8) <= ID_inst(15 downto 8) ;
+--		led(15 downto 8) <= ID_inst(15 downto 8) ;
 --		led(7 downto 4) <= RegSrcA(3 downto 0) ;
 --		led(3 downto 0) <= RegDst(3 downto 0) ;
-		led(7 downto 0) <= showreg_r0(7 downto 0);
+--		led(7 downto 0) <= showreg_r0(7 downto 0);
+--		led(15 downto 13) <= show1 ;
+--		led(12 downto 10) <= show2 ;
+--		led(9 downto 7) <= show3 ;
+--		led(6) <= hshow ;
+--		led(5) <= vshow ;
+		led(15 downto 12) <= ID_immOut(3 downto 0) ;
+		led(11 downto 8) <= ALUMuxResult(3 downto 0) ;
+		led(7 downto 4) <= showreg_r1(3 downto 0) ;
+		led(3 downto 0) <= showreg_r0(3 downto 0) ;
  	end process ;
 	
 	process (clk0,PCStall,EX_BranchJudge,EX_Jump)

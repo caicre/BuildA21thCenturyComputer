@@ -39,6 +39,6 @@ end WriteDataMux;
 architecture Behavioral of WriteDataMux is
 
 begin
-	wdata <= rdata when MemToReg = '0' else ALUResult ;
+	wdata <= ALUResult when MemToReg = '0' else rdata ;
 end Behavioral;
 
