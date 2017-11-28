@@ -35,8 +35,6 @@ entity EXMEMRegister is
 		rst			: in STD_LOGIC;
 		-- input control signal
 		EX_RegDst 	: in STD_LOGIC_VECTOR(3 downto 0);
-		EX_BranchOp	: in STD_LOGIC_VECTOR(1 downto 0);
-		EX_Branch	: in STD_LOGIC;
 		EX_MemRead	: in STD_LOGIC;
 		EX_MemWrite	: in STD_LOGIC;
 		EX_MemToRead: in STD_LOGIC;
@@ -46,8 +44,6 @@ entity EXMEMRegister is
 		EX_reg2		: in STD_LOGIC_VECTOR(15 downto 0);
 		-- output control signal
 		MEM_RegDst 	: out STD_LOGIC_VECTOR(3 downto 0);
-		MEM_BranchOp:	out STD_LOGIC_VECTOR(1 downto 0);
-		MEM_Branch	:	out STD_LOGIC;
 		MEM_MemRead	:	out STD_LOGIC;
 		MEM_MemWrite:	out STD_LOGIC;
 		MEM_MemToRead:	out STD_LOGIC;
@@ -90,9 +86,7 @@ component LATCH_1BIT
 end component;
 
 begin
-	u0:LATCH_2BIT port map(clk, rst, EX_BranchOp, MEM_BranchOp);
 	u1:LATCH_4BIT port map(clk, rst, EX_RegDst, MEM_RegDst);
-	u2:LATCH_1BIT port map(clk, rst, EX_Branch, MEM_Branch);
 	u3:LATCH_1BIT port map(clk, rst, EX_MemRead, MEM_MemRead);
 	u4:LATCH_1BIT port map(clk, rst, EX_MemWrite, MEM_MemWrite);
 	u5:LATCH_1BIT port map(clk, rst, EX_MemToRead, MEM_MemToRead);

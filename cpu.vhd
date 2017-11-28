@@ -45,6 +45,14 @@ end cpu;
 
 architecture Behavioral of cpu is
 
+	component fontRom
+		port (
+				clka : in std_logic;
+				addra : in std_logic_vector(10 downto 0);
+				douta : out std_logic_vector(7 downto 0)
+		);
+	end component;
+	
 	component Clock
 		port(
 			rst	: in STD_LOGIC;
@@ -117,8 +125,8 @@ architecture Behavioral of cpu is
 			rst 		: in STD_LOGIC;		
 
 			-- input control signal
-			MemWrite 	: in STD_LOGIC;		--'1':ï¿
-			MemRead 	: in STD_LOGIC;		--'1':ï¿
+			MemWrite 	: in STD_LOGIC;		--'1':ï¿½
+			MemRead 	: in STD_LOGIC;		--'1':ï¿½
 			
 			-- RAM1							--ä¸ºä¸²ï¿½BF00~BF03)
 			Ram1_OE 	: out STD_LOGIC;
@@ -401,8 +409,6 @@ architecture Behavioral of cpu is
 			rst 		: in STD_LOGIC;
 			-- input control signal
 			EX_RegDst 	: in STD_LOGIC_VECTOR(3 downto 0);
-			EX_BranchOp	: in STD_LOGIC_VECTOR(1 downto 0);
-			EX_Branch 	: in STD_LOGIC;
 			EX_MemRead	: in STD_LOGIC;
 			EX_MemWrite	: in STD_LOGIC;
 			EX_MemToRead: in STD_LOGIC;
@@ -463,14 +469,6 @@ architecture Behavioral of cpu is
 	----------------------------
 	--    External Devices           
 	----------------------------
-
-	component fontRom
-		port (
-				clka : in std_logic;
-				addra : in std_logic_vector(10 downto 0);
-				douta : out std_logic_vector(7 downto 0)
-		);
-	end component;
 
 	component VGA_Controller
 		port (
@@ -921,8 +919,6 @@ begin
 		clk 		=> clk1,
 		rst 		=> rst,
 		EX_RegDst 	=> EX_RegDst,
-		EX_BranchOp => EX_BranchOp,
-		EX_Branch 	=> EX_Branch,
 		EX_MemRead 	=> EX_MemRead,
 		EX_MemWrite => EX_MemWrite,
 		EX_MemToRead=> EX_MemToRead,

@@ -33,6 +33,7 @@ entity IDEXRegister is
 	port(
 		clk 		: in STD_LOGIC;
 		rst 		: in STD_LOGIC;
+		IDEXFlush: in STD_LOGIC;
 		-- input control signal
 		ID_RegDst	: in STD_LOGIC_VECTOR(3 downto 0);
 		ID_ALUOp	: in STD_LOGIC_VECTOR(3 downto 0);
