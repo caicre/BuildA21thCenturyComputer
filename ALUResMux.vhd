@@ -40,15 +40,9 @@ end ALUResMux;
 architecture Behavioral of ALUResMux is
 
 begin
-    process (ALURes, ALUResult, PC, RPC)
-    begin 
-        case ALURes is
-            when "00" => ALUMuxResult <= ALUResult ;
-            when "01" => ALUMuxResult <= PC ;
-            when "10" => ALUMuxResult <= RPC ;
-				when others => 
-        end case ;
-    end process ;
+    ALUMuxResult <= RPC when ALURes = "10" else
+                    PC when ALURes = "01" else
+                    ALUResult ;
 
 end Behavioral;
 

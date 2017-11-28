@@ -39,7 +39,7 @@ end LATCH_1BIT;
 architecture Behavioral of LATCH_1BIT is
 
 begin
-	process(CLK, D)
+	process(RST, CLK, D)
 	begin
 		if RST = '0'
 			then Q <= '0';

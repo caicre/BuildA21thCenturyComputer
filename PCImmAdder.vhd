@@ -38,9 +38,6 @@ end PCImmAdder;
 architecture Behavioral of PCImmAdder is
 
 begin
-	process(PCIn,imm)
-	begin
 		PCOut <= PCIn + CONV_INTEGER(imm) ;
-	end process ;
 end Behavioral;
 

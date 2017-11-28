@@ -37,7 +37,6 @@ entity HazardDetectionUnit is
 		-- input
 		raddr1 		: in STD_LOGIC_VECTOR(3 downto 0);
 		raddr2 		: in STD_LOGIC_VECTOR(3 downto 0);
-		MEM_PCStall : in STD_LOGIC;
 		-- output
 		PCStall		: out STD_LOGIC;
 		IFIDStall 	: out STD_LOGIC;
@@ -59,10 +58,6 @@ begin
 				PCStall <= '1';
 				IFIDStall <= '1';
 				IDEXFlush <= '1';
-			elsif(MEM_PCStall) then
-				PCStall <= '1';
-				IFIDStall <= '0';
-				IDEXFlush <= '0';
 			else
 				PCStall <= '0';
 				IFIDStall <= '0';

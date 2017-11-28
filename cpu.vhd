@@ -4,7 +4,10 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity cpu is
 	port(
 		rst			: in STD_LOGIC;
-		clk			: in STD_LOGIC;
+		clk 			: in STD_LOGIC;
+		--clk_board	: in STD_LOGIC;
+		--clk_button	: in STD_LOGIC;
+		--clksignal	: in STD_LOGIC;
 
 		-- Serial Port
 		dataReady	: in STD_LOGIC;
@@ -44,7 +47,7 @@ architecture Behavioral of cpu is
 
 	component Clock
 		port(
-			rst		: in STD_LOGIC;
+			rst	: in STD_LOGIC;
 			clk 	: in STD_LOGIC;
 			clk0	: out STD_LOGIC;
 			clk1 	: out STD_LOGIC;
@@ -80,6 +83,7 @@ architecture Behavioral of cpu is
 		port(
 			-- control signal
 			EX_ALUSrcB	: in STD_LOGIC;
+			EX_MemWrite : in STD_LOGIC;
 			MEM_RegDst	: in STD_LOGIC_VECTOR(3 downto 0);
 			WB_RegDst	: in STD_LOGIC_VECTOR(3 downto 0);
 			-- input
@@ -87,7 +91,8 @@ architecture Behavioral of cpu is
 			EX_raddr2 	: in STD_LOGIC_VECTOR(3 downto 0);
 			-- output
 			ForwardA	: out STD_LOGIC_VECTOR(1 downto 0);
-			ForwardB 	: out STD_LOGIC_VECTOR(1 downto 0)
+			ForwardB 	: out STD_LOGIC_VECTOR(1 downto 0);
+			ForwardWriteMem : out STD_LOGIC_VECTOR(1 downto 0) 
 		);
 	end component;
 
@@ -112,8 +117,8 @@ architecture Behavioral of cpu is
 			rst 		: in STD_LOGIC;		
 
 			-- input control signal
-			MemWrite 	: in STD_LOGIC;		--'1':ï¿
-			MemRead 	: in STD_LOGIC;		--'1':ï¿
+			MemWrite 	: in STD_LOGIC;		--'1':ï¿½
+			MemRead 	: in STD_LOGIC;		--'1':ï¿½
 			
 			-- RAM1							--ä¸ºä¸²ï¿½BF00~BF03)
 			Ram1_OE 	: out STD_LOGIC;
@@ -222,7 +227,20 @@ architecture Behavioral of cpu is
 			wdata 		: in STD_LOGIC_VECTOR(15 downto 0);
 			-- output
 			reg1 		: out STD_LOGIC_VECTOR(15 downto 0);
-			reg2 		: out STD_LOGIC_VECTOR(15 downto 0)
+			reg2 		: out STD_LOGIC_VECTOR(15 downto 0);
+			
+			showreg_r0  : out STD_LOGIC_VECTOR(15 downto 0);
+			showreg_r1  : out STD_LOGIC_VECTOR(15 downto 0);
+			showreg_r2  : out STD_LOGIC_VECTOR(15 downto 0);
+			showreg_r3  : out STD_LOGIC_VECTOR(15 downto 0);
+			showreg_r4  : out STD_LOGIC_VECTOR(15 downto 0);
+			showreg_r5  : out STD_LOGIC_VECTOR(15 downto 0);
+			showreg_r6  : out STD_LOGIC_VECTOR(15 downto 0);
+			showreg_r7  : out STD_LOGIC_VECTOR(15 downto 0);
+			showreg_T  : out STD_LOGIC_VECTOR(15 downto 0);
+			showreg_IH  : out STD_LOGIC_VECTOR(15 downto 0);
+			showreg_SP  : out STD_LOGIC_VECTOR(15 downto 0);
+			showreg_RA  : out STD_LOGIC_VECTOR(15 downto 0)
 		);
 	end component;
 
@@ -314,7 +332,18 @@ architecture Behavioral of cpu is
 			src2		: out STD_LOGIC_VECTOR(15 downto 0)
 		);
 	end component;
-
+	component WriteMemMux
+		port(
+			-- control signal
+			ForwardWriteMem	: in STD_LOGIC_VECTOR(1 downto 0);
+			-- input
+			reg2		: in STD_LOGIC_VECTOR(15 downto 0);
+			MEM_ALURes	: in STD_LOGIC_VECTOR(15 downto 0);
+			WB_ALURes	: in STD_LOGIC_VECTOR(15 downto 0);
+			-- output
+			MemWriteData		: out STD_LOGIC_VECTOR(15 downto 0)
+		);
+	end component;
 	component ALU
 		port(
 			-- input
@@ -489,6 +518,7 @@ architecture Behavioral of cpu is
 	-- ForwardingUnit
 	signal ForwardA		: STD_LOGIC_VECTOR(1 downto 0);
 	signal ForwardB 	: STD_LOGIC_VECTOR(1 downto 0);
+	signal ForwardWriteMem 	: STD_LOGIC_VECTOR(1 downto 0);
 
 	-- HazardDetectionUnit
 	signal PCStall 		: STD_LOGIC;
@@ -520,6 +550,19 @@ architecture Behavioral of cpu is
 	signal ID_reg1 		: STD_LOGIC_VECTOR(15 downto 0);
 	signal ID_reg2 		: STD_LOGIC_VECTOR(15 downto 0);
 
+	signal showreg_r0 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal showreg_r1 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal showreg_r2 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal showreg_r3 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal showreg_r4 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal showreg_r5 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal showreg_r6 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal showreg_r7 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal showreg_T 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal showreg_SP 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal showreg_IH 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal showreg_RA 	: STD_LOGIC_VECTOR(15 downto 0);
+
 	-- ImmUnit
 	signal ID_immOut 		: STD_LOGIC_VECTOR(15 downto 0);
 --ID_
@@ -538,6 +581,7 @@ architecture Behavioral of cpu is
 	signal EX_PC 		: STD_LOGIC_VECTOR(15 downto 0);
 	signal EX_reg1 		: STD_LOGIC_VECTOR(15 downto 0);
 	signal EX_reg2 		: STD_LOGIC_VECTOR(15 downto 0);
+	signal EX_MemWriteData 		: STD_LOGIC_VECTOR(15 downto 0);
 	signal EX_raddr1 	: STD_LOGIC_VECTOR(3 downto 0);
 	signal EX_raddr2	: STD_LOGIC_VECTOR(3 downto 0);
 	signal EX_imm 		: STD_LOGIC_VECTOR(15 downto 0);
@@ -585,6 +629,14 @@ architecture Behavioral of cpu is
 
 	-- vga
 	signal hs,vs		: STD_LOGIC;
+
+	signal show1 : std_logic ;
+	signal show2 : std_logic ;
+	signal show3 : std_logic ;
+	
+	--signal clk : std_logic ;
+
+
 begin
 
 	u0 : Clock
@@ -600,7 +652,7 @@ begin
 	u1 : Controller
 	port map(
 		rst 		=> rst,
-		inst 		=> EX_inst,
+		inst 		=> ID_inst,
 		RegSrcA		=> RegSrcA,
 		RegSrcB 	=> RegSrcB,
 		ImmSrc		=> ImmSrc,
@@ -621,20 +673,22 @@ begin
 	u2 : ForwardingUnit
 	port map(
 		EX_ALUSrcB	=> EX_ALUSrcB,
-		MEM_RegDst	=> EX_RegDst,
-		WB_RegDst	=> MEM_RegDst,
+		EX_MemWrite => EX_MemWrite,
+		MEM_RegDst	=> MEM_RegDst,
+		WB_RegDst	=> WB_RegDst,
 		EX_raddr1 	=> EX_raddr1,
 		EX_raddr2	=> EX_raddr2,
 		ForwardA	=> ForwardA,
-		ForwardB	=> ForwardB
+		ForwardB	=> ForwardB,
+		ForwardWriteMem => ForwardWriteMem
 	);
 
 	u3 : HazardDetectionUnit
 	port map(
 		EX_MemRead 	=> EX_MemRead,
 		EX_RegDst 	=> EX_RegDst,
-		raddr1 		=> EX_raddr1,
-		raddr2 		=> EX_raddr2,
+		raddr1 		=> RegSrcA,
+		raddr2 		=> RegSrcB,
 		PCStall 	=> PCStall,
 		IFIDStall 	=> IFIDStall,
 		IDEXFlush 	=> IDEXFlush
@@ -656,10 +710,10 @@ begin
 		rdata 		=> rdata, --HERE was MEM_rdata
 		Ram2_OE 	=> Ram2_OE,
 		Ram2_WE 	=> Ram2_WE,
-		Ram2_EN 	=> Ram2_EN,
+		Ram2_EN 	=> Ram2_EN,	
 		Ram2_Addr 	=> Ram2_Addr,
 		Ram2_Data 	=> Ram2_Data,
-		PC 			=> IF_PC,
+		PC 			=> PCMuxOut,
 		inst 		=> IF_inst, --HERE was IF_inst, not right
 		data_ready 	=> dataReady, 
 		tbre 		=> tbre,
@@ -673,7 +727,7 @@ begin
 		clk 		=> clk1,
 		rst 		=> rst,
 		PCIn 		=> PCMuxOut,
-		PCOut 		=> IF_PC
+		PCOut 	=> IF_PC
 	);
 
 	u5 : PCAdder
@@ -722,7 +776,20 @@ begin
 		waddr 		=> WB_RegDst,
 		wdata 		=> WB_wdata,
 		reg1 		=> ID_reg1, 
-		reg2 		=> ID_reg2
+		reg2 		=> ID_reg2,
+		showreg_r0  => showreg_r0,
+		showreg_r1  => showreg_r1,
+		showreg_r2  => showreg_r2,
+		showreg_r3  => showreg_r3,
+		showreg_r4  => showreg_r4,
+		showreg_r5  => showreg_r5,
+		showreg_r6  => showreg_r6,
+		showreg_r7  => showreg_r7,
+		showreg_SP  => showreg_SP,
+		showreg_IH  => showreg_IH,
+		showreg_T  => showreg_T,
+		showreg_RA  => showreg_RA
+
 	);
 
 	u11 : ImmUnit
@@ -794,6 +861,15 @@ begin
 		imm 		=> EX_imm,
 		src2 		=> ALUSrc2
 	);
+	
+	u145 : WriteMemMux
+	port map(
+		ForwardWriteMem	=> ForwardWriteMem,
+		reg2 		=> EX_reg2,
+		MEM_ALURes	=> MEM_ALURes,
+		WB_ALURes 	=> WB_wdata,
+		MemWriteData	=> EX_MemWriteData
+	);
 
 	u15 : ALU
 	port map(
@@ -842,7 +918,7 @@ begin
 		EX_MemToRead=> EX_MemToRead,
 		EX_RegWrite => EX_RegWrite,
 		EX_ALURes 	=> ALUMuxResult,
-		EX_reg2 	=> EX_reg2,
+		EX_reg2 	=> EX_MemWriteData,
 		MEM_RegDst 	=> MEM_RegDst,
 		MEM_BranchOp=> MEM_BranchOp,
 		MEM_Branch  => MEM_Branch,
@@ -904,17 +980,28 @@ begin
 		oBlue 		=> blueOut
 	);
 	
-	process (IF_inst)
+--	process (clk_board,rst,clk_button,clksignal)
+--	begin
+--		if rst = '0' then clk <= '0' ;
+--		elsif clksignal = '0' then clk <= clk_board ;
+--		else clk <= clk_button ;
+--		end if ;
+--	end process ;
+	process (ID_inst,RegSrcA,WB_RegDst,RegDst)
 	begin
-		led <= IF_inst ;
-	end process ;
+		led(15 downto 8) <= ID_inst(15 downto 8) ;
+--		led(7 downto 4) <= RegSrcA(3 downto 0) ;
+--		led(3 downto 0) <= RegDst(3 downto 0) ;
+		led(7 downto 0) <= PCMuxOut(7 downto 0) ;
+ 	end process ;
 	
-	process (clk0,clk1,clk2,clk3)
+	process (clk0,PCStall,EX_BranchJudge,EX_Jump)
 	begin
 		showclk(0) <= clk0 ;
-		showclk(1) <= clk1 ;
-		showclk(2) <= clk2 ;
-		showclk(3) <= clk3 ;
+		showclk(1) <= PCStall ;
+		showclk(2) <= EX_BranchJudge ;
+		showclk(3) <= EX_Jump ;
+
 	end process ;
 	
 	
