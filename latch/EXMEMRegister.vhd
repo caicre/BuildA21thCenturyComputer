@@ -61,43 +61,29 @@ end EXMEMRegister;
 
 architecture Behavioral of EXMEMRegister is
 
-component LATCH_16BIT
-	port(CLK: in STD_LOGIC;
-			RST: in STD_LOGIC;
-			 D : in  STD_LOGIC_VECTOR (15 downto 0);
-          Q : out  STD_LOGIC_VECTOR (15 downto 0));
-end component;
-
-component LATCH_4BIT
-	port(CLK: in STD_LOGIC;
-			RST: in STD_LOGIC;
-			 D : in  STD_LOGIC_VECTOR (3 downto 0);
-          Q : out  STD_LOGIC_VECTOR (3 downto 0));
-end component;
-
-component LATCH_2BIT
-	port(CLK: in STD_LOGIC;
-			RST: in STD_LOGIC;
-			 D : in  STD_LOGIC_VECTOR (1 downto 0);
-          Q : out  STD_LOGIC_VECTOR (1 downto 0));
-end component;
-
-component LATCH_1BIT
-	port(CLK: in STD_LOGIC;
-			RST: in STD_LOGIC;
-			D: in STD_LOGIC;
-			Q: out STD_LOGIC);
-end component;
-
 begin
-	u0:LATCH_2BIT port map(clk, rst, EX_BranchOp, MEM_BranchOp);
-	u1:LATCH_4BIT port map(clk, rst, EX_RegDst, MEM_RegDst);
-	u2:LATCH_1BIT port map(clk, rst, EX_Branch, MEM_Branch);
-	u3:LATCH_1BIT port map(clk, rst, EX_MemRead, MEM_MemRead);
-	u4:LATCH_1BIT port map(clk, rst, EX_MemWrite, MEM_MemWrite);
-	u5:LATCH_1BIT port map(clk, rst, EX_MemToRead, MEM_MemToRead);
-	u6:LATCH_1BIT port map(clk, rst, EX_RegWrite, MEM_RegWrite);
-	u7:LATCH_16BIT port map(clk, rst, EX_ALURes, MEM_ALURes);
-	u8:LATCH_16BIT port map(clk, rst, EX_reg2, MEM_reg2);
-	
+	process(clk, rst)
+	begin
+		if(rst = '0') then
+			MEM_RegDst <= (others => '0');
+			MEM_BranchOp <= (others => '0');
+			MEM_Branch <= (others => '0');
+			MEM_MemRead <= (others => '0');
+			MEM_MemWrite <= (others => '0');
+			MEM_MemToRead <= (others => '0');
+			MEM_RegWrite <= (others => '0');
+			MEM_ALURes <= (others => '0');
+			MEM_reg2 <= (others => '0');
+		elsif(clk'event and clk='1') then
+			MEM_RegDst <= EX_RegDst;
+			MEM_BranchOp <= EX_BranchOp;
+			MEM_Branch <= EX_Branch;
+			MEM_MemRead <= EX_MemRead;
+			MEM_MemWrite <= EX_MemWrite;
+			MEM_MemToRead <= EX_MemToRead;
+			MEM_RegWrite <= EX_RegWrite;
+			MEM_ALURes <= EX_ALURes;
+			MEM_reg2 <= EX_reg2;
+		end if;
+	end process;
 end Behavioral;
