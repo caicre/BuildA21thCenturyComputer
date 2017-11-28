@@ -32,7 +32,7 @@ entity cpu is
 		
 		-- LED
 		led			: out STD_LOGIC_VECTOR(15 downto 0);
-		showclk		: out STD_LOGIC_VECTOR(3 downto 0);
+		showclk		: out STD_LOGIC_VECTOR(6 downto 0);
 
 		-- VGA
 		hs, vs 		: out STD_LOGIC;
@@ -968,7 +968,7 @@ begin
 		r6 			=> showreg_r6,
 		r7 			=> showreg_r7,
 		PC 			=> IF_PC,
-		CM 			=> IF_inst,
+		CM 			=> ID_inst,
 		Tdata 		=> showreg_T,
 		SPdata 		=> showreg_SP,
 		IHdata 		=> showreg_IH,
@@ -995,7 +995,7 @@ begin
 		else clk <= clk_button ;
 		end if ;
 	end process ;
-	process (showreg_r0,showreg_r1,ALUMuxResult,ID_immOut)
+	process (RegSrcA,RegSrcB,ALUMuxResult,ID_immOut)
 	begin
 --		led(15 downto 8) <= ID_inst(15 downto 8) ;
 --		led(7 downto 4) <= RegSrcA(3 downto 0) ;
@@ -1006,19 +1006,19 @@ begin
 --		led(9 downto 7) <= show3 ;
 --		led(6) <= hshow ;
 --		led(5) <= vshow ;
-		led(15 downto 12) <= ID_immOut(3 downto 0) ;
-		led(11 downto 8) <= ALUMuxResult(3 downto 0) ;
-		led(7 downto 4) <= showreg_r1(3 downto 0) ;
-		led(3 downto 0) <= showreg_r0(3 downto 0) ;
+		led(15 downto 12) <= RegSrcA(3 downto 0) ;
+		led(11 downto 8) <= RegSrcB(3 downto 0) ;
+		led(7 downto 4) <= ID_immOut(3 downto 0) ;
+		led(3 downto 0) <= ALUMuxResult(3 downto 0) ;
  	end process ;
 	
-	process (clk0,PCStall,EX_BranchJudge,EX_Jump)
+	process (EX_BranchJudge,Branch,BranchOp,Jump,ALURes)
 	begin
-		showclk(0) <= clk0 ;
-		showclk(1) <= PCStall ;
-		showclk(2) <= EX_BranchJudge ;
-		showclk(3) <= EX_Jump ;
-
+		showclk(0) <= EX_BranchJudge ;
+		showclk(1) <= Branch ;
+		showclk(3 downto 2) <= BranchOp ;
+		showclk(4) <= Jump ;
+		showclk(6 downto 5) <= ALURes ;
 	end process ;
 	
 	

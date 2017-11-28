@@ -100,7 +100,7 @@ begin
 					when R3_ADDR => r3 <= wdata ;
 					when R4_ADDR => r4 <= wdata ;
 					when R5_ADDR => r5 <= wdata ;
-					when R6_ADDR => r5 <= wdata ;
+					when R6_ADDR => r6 <= wdata ;
 					when R7_ADDR => r7 <= wdata ;
 					when REG_SP => SP <= wdata ;
 					when REG_T  => T  <= wdata ;

@@ -169,7 +169,7 @@ begin
 					ImmSrc <= "001";
 					ExtendOp <= '1';
 					RegDst <= rx;
-					ALUOp <= "1010";
+					ALUOp <= "1001";
 					ALUSrcB <= '1';
 					ALURes <= "00";
 					Jump <= '0';
@@ -435,7 +435,7 @@ begin
 							ImmSrc <= "000";
 							ExtendOp <= '0';
 							RegDst <= REG_T;
-							ALUOp <= "1000";
+							ALUOp <= "0111";
 							ALUSrcB <= '0';
 							ALURes <= "00";
 							Jump <= '0';
@@ -467,7 +467,7 @@ begin
 							ImmSrc <= "000";
 							ExtendOp <= '0';
 							RegDst <= REG_T;
-							ALUOp <= "1001";
+							ALUOp <= "1000";
 							ALUSrcB <= '0';
 							ALURes <= "00";
 							Jump <= '0';
