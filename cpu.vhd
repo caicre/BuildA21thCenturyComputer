@@ -20,16 +20,22 @@ entity cpu is
 		Ram1_Addr	: out STD_LOGIC_VECTOR(17 downto 0);
 		Ram1_Data	: inout STD_LOGIC_VECTOR(15 downto 0);
 
-		--RAM2
+		-- RAM2
 		Ram2_OE		: out STD_LOGIC;
 		Ram2_WE		: out STD_LOGIC;
 		Ram2_EN		: out STD_LOGIC;
 		Ram2_Addr	: out STD_LOGIC_VECTOR(17 downto 0);
-		Ram2_Data	: inout STD_LOGIC_VECTOR(15 downto 0) ;
+		Ram2_Data	: inout STD_LOGIC_VECTOR(15 downto 0);
 		
-		--LED
-		led			: out STD_LOGIC_VECTOR(15 downto 0) ;
-		showclk		: out STD_LOGIC_VECTOR(3 downto 0)
+		-- LED
+		led			: out STD_LOGIC_VECTOR(15 downto 0);
+		showclk		: out STD_LOGIC_VECTOR(3 downto 0);
+
+		-- VGA
+		hs, vs 		: out STD_LOGIC;
+		redOut		: out STD_LOGIC_VECTOR(2 downto 0);
+		greenOut 	: out STD_LOGIC_VECTOR(2 downto 0);
+		blueOut 	: out STD_LOGIC_VECTOR(2 downto 0)
 		
 	);
 end cpu;
@@ -424,6 +430,37 @@ architecture Behavioral of cpu is
 	end component;
 
 	----------------------------
+	--    External Devices           
+	----------------------------
+
+	component VGA_Controller
+		port (
+			reset		: in  std_logic;
+			CLK_in		: in  std_logic;
+
+			-- data
+			r0, r1, r2, r3, r4,r5,r6,r7 : in std_logic_vector(15 downto 0);
+
+
+			PC 			: in std_logic_vector(15 downto 0);
+			CM 			: in std_logic_vector(15 downto 0);
+			Tdata 		: in std_logic_vector(15 downto 0);
+			SPdata 		: in std_logic_vector(15 downto 0);
+			IHdata 		: in std_logic_vector(15 downto 0);
+			
+			-- font rom
+			romAddr 	: out std_logic_vector(10 downto 0);
+			romData 	: in std_logic_vector(7 downto 0);
+
+			--VGA Side
+			hs, vs		: out std_logic;		--行同步、场同步信号
+			oRed		: out std_logic_vector (2 downto 0);
+			oGreen		: out std_logic_vector (2 downto 0);
+			oBlue		: out std_logic_vector (2 downto 0)
+		);		
+	end component;
+
+	----------------------------
 	--         signals            
 	----------------------------
 	-- Clock
@@ -546,7 +583,8 @@ architecture Behavioral of cpu is
 	-- WriteDataMux
 	signal WB_wdata 	: STD_LOGIC_VECTOR(15 downto 0);
 
-
+	-- vga
+	signal hs,vs		: STD_LOGIC;
 begin
 
 	u0 : Clock
@@ -838,6 +876,32 @@ begin
 		rdata 		=> WB_rdata,
 		ALUresult 	=> WB_ALURes,
 		wdata 		=> WB_wdata
+	);
+
+	u23 : VGA_Controller
+	port (
+		reset 		=> rst,
+		clk_in 		=> clk0,
+		r0 			=> showreg_r0,
+		r1 			=> showreg_r1,
+		r2 			=> showreg_r2,
+		r3 			=> showreg_r3,
+		r4 			=> showreg_r4,
+		r5 			=> showreg_r5,
+		r6 			=> showreg_r6,
+		r7 			=> showreg_r7,
+		PC 			=> IF_PC,
+		CM 			=> IF_inst,
+		Tdata 		=> showreg_T,
+		SPdata 		=> showreg_SP,
+		IHdata 		=> showreg_IH,
+		romAddr 	=>
+		romData 	=>
+		hs 			=> hs,
+		vs 			=> vs,
+		oRed 		=> redOut,
+		oGreen 		=> greenOut,
+		oBlue 		=> blueOut
 	);
 	
 	process (IF_inst)
