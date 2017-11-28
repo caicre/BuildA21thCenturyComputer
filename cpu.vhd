@@ -45,9 +45,10 @@ end cpu;
 
 architecture Behavioral of cpu is
 
-	component fontRom
+	component Tryrom
 		port (
 				clka : in std_logic;
+				ena	: in std_logic;
 				addra : in std_logic_vector(10 downto 0);
 				douta : out std_logic_vector(7 downto 0)
 		);
@@ -125,8 +126,8 @@ architecture Behavioral of cpu is
 			rst 		: in STD_LOGIC;		
 
 			-- input control signal
-			MemWrite 	: in STD_LOGIC;		--'1':ï¿½
-			MemRead 	: in STD_LOGIC;		--'1':ï¿½
+			MemWrite 	: in STD_LOGIC;		--'1':ï¿
+			MemRead 	: in STD_LOGIC;		--'1':ï¿
 			
 			-- RAM1							--ä¸ºä¸²ï¿½BF00~BF03)
 			Ram1_OE 	: out STD_LOGIC;
@@ -633,8 +634,8 @@ architecture Behavioral of cpu is
 	signal WB_wdata 	: STD_LOGIC_VECTOR(15 downto 0);
 
 	-- vga
-	signal fontRomAddr : std_logic_vector(10 downto 0);
-	signal fontRomData : std_logic_vector(7 downto 0);
+	signal TryromAddr : std_logic_vector(10 downto 0);
+	signal TryromData : std_logic_vector(7 downto 0);
 
 	signal show1 : std_logic ;
 	signal show2 : std_logic ;
@@ -975,8 +976,8 @@ begin
 		Tdata 		=> showreg_T,
 		SPdata 		=> showreg_SP,
 		IHdata 		=> showreg_IH,
-		romAddr 	=> fontRomAddr,
-		romData 	=> fontRomData,
+		romAddr 	=> TryromAddr,
+		romData 	=> TryromData,
 		hs 			=> hs,
 		vs 			=> vs,
 		oRed 		=> redOut,
@@ -984,11 +985,12 @@ begin
 		oBlue 		=> blueOut
 	);
 	
-	u24 : fontRom
+	u24 : Tryrom
 	port map(
 		clka => clk_board,
-		addra => fontRomAddr,
-		douta => fontRomData
+		ena  => '0',
+		addra => TryromAddr,
+		douta => TryromData
 		);
 	
 	process (clk_board,rst,clk_button,clksignal)
