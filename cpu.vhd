@@ -201,6 +201,8 @@ architecture Behavioral of cpu is
 		port(
 			clk 		: in STD_LOGIC;
 			rst 		: in STD_LOGIC;
+			-- control signal
+			IFIDStall 	: in STD_LOGIC;
 			-- input
 			IF_PC		: in STD_LOGIC_VECTOR(15 downto 0);
 			IF_inst		: in STD_LOGIC_VECTOR(15 downto 0);
@@ -260,6 +262,8 @@ architecture Behavioral of cpu is
 		port(
 			clk 		: in STD_LOGIC;
 			rst 		: in STD_LOGIC;
+			-- control signal
+			IDEXFlush 	: in STD_LOGIC;
 			-- input control signal
 			ID_RegDst	: in STD_LOGIC_VECTOR(3 downto 0);
 			ID_ALUOp	: in STD_LOGIC_VECTOR(3 downto 0);
@@ -408,8 +412,6 @@ architecture Behavioral of cpu is
 			EX_reg2		: in STD_LOGIC_VECTOR(15 downto 0);
 			-- output control signal
 			MEM_RegDst 	: out STD_LOGIC_VECTOR(3 downto 0);
-			MEM_BranchOp: out STD_LOGIC_VECTOR(1 downto 0);
-			MEM_Branch 	: out STD_LOGIC;
 			MEM_MemRead	: out STD_LOGIC;
 			MEM_MemWrite: out STD_LOGIC;
 			MEM_MemToRead: out STD_LOGIC;
@@ -581,11 +583,10 @@ architecture Behavioral of cpu is
 	signal EX_PC 		: STD_LOGIC_VECTOR(15 downto 0);
 	signal EX_reg1 		: STD_LOGIC_VECTOR(15 downto 0);
 	signal EX_reg2 		: STD_LOGIC_VECTOR(15 downto 0);
-	signal EX_MemWriteData 		: STD_LOGIC_VECTOR(15 downto 0);
+	signal EX_MemWriteData: STD_LOGIC_VECTOR(15 downto 0);
 	signal EX_raddr1 	: STD_LOGIC_VECTOR(3 downto 0);
 	signal EX_raddr2	: STD_LOGIC_VECTOR(3 downto 0);
 	signal EX_imm 		: STD_LOGIC_VECTOR(15 downto 0);
-	signal EX_inst 	: STD_LOGIC_VECTOR(15 downto 0);
 	signal EX_RPC 		: STD_LOGIC_VECTOR(15 downto 0);
 
 	-- ALUSrcMux1
@@ -608,8 +609,6 @@ architecture Behavioral of cpu is
 
 	-- EXMEMRegister
 	signal MEM_RegDst 	: STD_LOGIC_VECTOR(3 downto 0);
-	signal MEM_BranchOp	: STD_LOGIC_VECTOR(1 downto 0);
-	signal MEM_Branch 	: STD_LOGIC;
 	signal MEM_MemRead 	: STD_LOGIC;
 	signal MEM_MemWrite : STD_LOGIC;
 	signal MEM_MemToRead: STD_LOGIC;
@@ -758,12 +757,13 @@ begin
 	port map(
 		clk 		=> clk1,
 		rst 		=> rst,
-		IF_PC 	=> IF_NPC,
+		IFIDStall 	=> IFIDStall,
+		IF_PC 		=> IF_NPC,
 		IF_inst 	=> IF_inst,
-		IF_RPC	=> IF_RPC,
+		IF_RPC		=> IF_RPC,
 		ID_PC		=> ID_PC,
-		ID_inst	=> ID_inst,
-		ID_RPC 	=> ID_RPC
+		ID_inst		=> ID_inst,
+		ID_RPC 		=> ID_RPC
 	);
 
 	u10 : Registers
@@ -787,7 +787,7 @@ begin
 		showreg_r7  => showreg_r7,
 		showreg_SP  => showreg_SP,
 		showreg_IH  => showreg_IH,
-		showreg_T  => showreg_T,
+		showreg_T  	=> showreg_T,
 		showreg_RA  => showreg_RA
 
 	);
@@ -804,6 +804,7 @@ begin
 	port map(
 		clk 		=> clk1,
 		rst 		=> rst,
+		IDEXFlush 	=> IDEXFlush,
 		ID_RegDst 	=> RegDst,
 		ID_ALUOp 	=> ALUOp,
 		ID_ALUSrcB 	=> ALUSrcB,
@@ -920,8 +921,6 @@ begin
 		EX_ALURes 	=> ALUMuxResult,
 		EX_reg2 	=> EX_MemWriteData,
 		MEM_RegDst 	=> MEM_RegDst,
-		MEM_BranchOp=> MEM_BranchOp,
-		MEM_Branch  => MEM_Branch,
 		MEM_MemRead => MEM_MemRead,
 		MEM_MemWrite=> MEM_MemWrite,
 		MEM_MemToRead=>MEM_MemToRead,
