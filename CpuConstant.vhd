@@ -65,7 +65,7 @@ package CpuConstant is
 	constant REG_RA: std_logic_vector(3 downto 0) := 	"1011";
 	constant REG_NO: std_logic_vector(3 downto 0) :=	"1111";
 
-
+	type clockState is (c0,c1,c2) ;
 
 end CpuConstant;
 

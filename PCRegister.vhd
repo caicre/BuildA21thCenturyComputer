@@ -19,7 +19,7 @@
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-
+use CpuConstant.all;
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
 --use IEEE.NUMERIC_STD.ALL;
@@ -37,14 +37,26 @@ entity PCRegister is
 end PCRegister;
 
 architecture Behavioral of PCRegister is
+	signal state : clockState := c0 ;
 begin
-
+	
 process (clk, rst)
 begin
 	if(rst = '0') then
 		PCOut <= (others => '0') ;
+		state <= c0 ;
 	elsif (clk'event and clk='1') then
-		PCOut <= PCIn ;
+		case state is 
+			when c0 =>
+				PCOut <= PCIn ;
+				state <= c1 ;
+			when c1 =>
+				state <= c2 ;
+			when c2 =>
+				state <= c0 ;
+			when others =>
+				state <= c0 ;
+		end case;
 	end if ;
 end process ;
 

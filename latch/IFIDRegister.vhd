@@ -19,7 +19,7 @@
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-
+use CpuConstant.all;
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
 --use IEEE.NUMERIC_STD.ALL;
@@ -47,7 +47,7 @@ entity IFIDRegister is
 end IFIDRegister;
 
 architecture Behavioral of IFIDRegister is
-
+	signal state : clockState := c0 ;
 begin
 	process(clk, rst)
 	begin
@@ -55,14 +55,25 @@ begin
 			ID_PC <= (others => '0');
 			ID_inst <= (others => '0');
 			ID_RPC <= (others => '0');
+			state <= c0 ;
 		elsif(clk'event and clk='1') then
-			if(IFIDStall = '1') then
-				null;
-			else
-				ID_PC <= IF_PC;
-				ID_inst <= IF_inst;
-				ID_RPC <= IF_RPC;
-			end if;
+			case state is 
+				when c0 =>
+					if(IFIDStall = '1') then
+						null;
+					else
+						ID_PC <= IF_PC;
+						ID_inst <= IF_inst;
+						ID_RPC <= IF_RPC;
+					end if;
+					state <= c1 ;
+				when c1 =>
+					state <= c2 ;
+				when c2 =>
+					state <= c0 ;
+				when others =>
+					state <= c0 ;
+			end case;
 		end if;
 	end process;
 end Behavioral;

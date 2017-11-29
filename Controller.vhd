@@ -52,7 +52,6 @@ entity Controller is
 end Controller;
 
 architecture Behavioral of Controller is
-
 begin
 	process(rst, inst)
 
@@ -596,7 +595,7 @@ begin
 							MemToReg <= '0';
 							RegWrite <= '0';
 						when PRE8_MTSP =>
-							RegSrcA <= rx;
+							RegSrcA <= ry;
 							RegSrcB <= REG_NO;
 							ImmSrc <= "000";
 							ExtendOp <= '0';

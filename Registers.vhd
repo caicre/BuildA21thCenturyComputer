@@ -74,7 +74,7 @@ architecture Behavioral of Registers is
 	signal IH : std_logic_vector(15 downto 0);
 	signal SP : std_logic_vector(15 downto 0);
 	signal RA : std_logic_vector(15 downto 0);
-	
+	signal state : clockState := c0 ;
 begin
     process (clk,rst) -- WRITE
     begin
@@ -91,24 +91,34 @@ begin
         IH <= (others => '0');			
         SP <= (others => '0');
         RA <= (others => '0');
-    elsif (clk'event and clk = '1') then -- WHICH SIGNAL?
-		 if (RegWrite = '1') then --for now, 1 is to write
-			  case waddr is
-					when R0_ADDR => r0 <= wdata ;
-					when R1_ADDR => r1 <= wdata ;
-					when R2_ADDR => r2 <= wdata ;
-					when R3_ADDR => r3 <= wdata ;
-					when R4_ADDR => r4 <= wdata ;
-					when R5_ADDR => r5 <= wdata ;
-					when R6_ADDR => r6 <= wdata ;
-					when R7_ADDR => r7 <= wdata ;
-					when REG_SP => SP <= wdata ;
-					when REG_T  => T  <= wdata ;
-					when REG_IH => IH <= wdata ;
-					when REG_RA => RA <= wdata ;
-					when others => 
-			  end case ;
-		 end if ;
+		  state <= c0 ;
+	 elsif (clk'event and clk = '1') then
+		case state is 
+			when c0 => 
+				state <= c1 ;
+			when c1 =>
+				if (RegWrite = '1') then --for now, 1 is to write
+					  case waddr is
+							when R0_ADDR => r0 <= wdata ;
+							when R1_ADDR => r1 <= wdata ;
+							when R2_ADDR => r2 <= wdata ;
+							when R3_ADDR => r3 <= wdata ;
+							when R4_ADDR => r4 <= wdata ;
+							when R5_ADDR => r5 <= wdata ;
+							when R6_ADDR => r6 <= wdata ;
+							when R7_ADDR => r7 <= wdata ;
+							when REG_SP => SP <= wdata ;
+							when REG_T  => T  <= wdata ;
+							when REG_IH => IH <= wdata ;
+							when REG_RA => RA <= wdata ;
+							when others => 
+					  end case ;
+				 end if ;
+				 state <= c2 ;
+			when c2 =>
+				state <= c0 ;
+			when others => state <= c0 ;
+		end case ;
 	 end if ;
     end process ;
 	process (raddr1, r0, r1, r2, r3, r4, r5, r6, r7, SP, IH, RA, T)

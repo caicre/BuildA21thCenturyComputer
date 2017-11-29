@@ -654,7 +654,7 @@ begin
 	u0 : Clock
 	port map(
 		rst 		=> rst,
-		clk 		=> clkForClock,
+		clk 		=> clk,
 		clk0 		=> clk0,
 		clk1 		=> clk1,
 		clk2 		=> clk2,
@@ -708,7 +708,7 @@ begin
 
 	u30 : MemoryUnit
 	port map(
-		clk 		=> clk0,
+		clk 		=> clk,
 		rst 		=> rst,
 		MemWrite 	=> MEM_MemWrite,
 		MemRead 	=> MEM_MemRead,
@@ -736,7 +736,7 @@ begin
 
 	u4 : PCRegister
 	port map(
-		clk 		=> clk1,
+		clk 		=> clk,
 		rst 		=> rst,
 		PCIn 		=> PCMuxOut,
 		PCOut 	=> IF_PC
@@ -768,7 +768,7 @@ begin
 
 	u9 : IFIDRegister
 	port map(
-		clk 		=> clk1,
+		clk 		=> clk,
 		rst 		=> rst,
 		IFIDStall 	=> IFIDStall,
 		IF_PC 		=> IF_NPC,
@@ -781,7 +781,7 @@ begin
 
 	u10 : Registers
 	port map(
-		clk 		=> clk2,
+		clk 		=> clk,
 		rst 		=> rst,
 		RegWrite 	=> WB_RegWrite,
 		raddr1 		=> RegSrcA,
@@ -815,7 +815,7 @@ begin
 
 	u12 : IDEXRegister
 	port map(
-		clk 		=> clk1,
+		clk 		=> clk,
 		rst 		=> rst,
 		IDEXFlush 	=> IDEXFlush,
 		ID_RegDst 	=> RegDst,
@@ -922,7 +922,7 @@ begin
 
 	u19 : EXMEMRegister
 	port map(
-		clk 		=> clk1,
+		clk 		=> clk,
 		rst 		=> rst,
 		EX_RegDst 	=> EX_RegDst,
 		EX_MemRead 	=> EX_MemRead,
@@ -942,7 +942,7 @@ begin
 
 	u21 : MEMWBRegister
 	port map(
-		clk 		=> clk1,
+		clk 		=> clk,
 		rst 		=> rst,
 		MEM_RegDst  => MEM_RegDst,
 		MEM_MemToRead=>MEM_MemToRead,
@@ -999,9 +999,9 @@ begin
 		
 	u25 : clockForClock
 	port map(
-			clk => clk;
-			rst => rst;
-			clkForClock => clkForClock;
+			clk => clk,
+			rst => rst,
+			clkForClock => clkForClock
 		);
 	
 	process (clk_board,rst,clk_button,clksignal)

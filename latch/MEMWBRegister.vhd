@@ -19,7 +19,7 @@
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-
+use CpuConstant.all ;
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
 --use IEEE.NUMERIC_STD.ALL;
@@ -51,7 +51,7 @@ entity MEMWBRegister is
 end MEMWBRegister;
 
 architecture Behavioral of MEMWBRegister is
-
+	signal state : clockstate := c0 ;
 begin
 	process(clk, rst)
 	begin
@@ -61,12 +61,20 @@ begin
 			WB_rdata <= (others => '0');
 			WB_RegDst <= (others => '0');
 			WB_ALURes <= (others => '0');
+			state <= c0 ;
 		elsif(clk'event and clk='1') then
-			WB_MemToRead <= MEM_MemToRead;
-			WB_RegWrite <= MEM_RegWrite;
-			WB_rdata <= MEM_rdata;
-			WB_RegDst <= MEM_RegDst;
-			WB_ALURes <= MEM_ALURes;
+			case state is
+				when c0 =>
+					WB_MemToRead <= MEM_MemToRead;
+					WB_RegWrite <= MEM_RegWrite;
+					WB_rdata <= MEM_rdata;
+					WB_RegDst <= MEM_RegDst;
+					WB_ALURes <= MEM_ALURes;
+					state <= c1 ;
+				when c1 => state <= c2 ;
+				when c2 => state <= c0 ;
+				when others => state <= c0 ;
+			end case ;
 		end if;
 	end process;
 end Behavioral;

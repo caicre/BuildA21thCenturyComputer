@@ -19,7 +19,7 @@
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-
+use CpuConstant.all;
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
 --use IEEE.NUMERIC_STD.ALL;
@@ -56,7 +56,7 @@ end EXMEMRegister;
 
 
 architecture Behavioral of EXMEMRegister is
-
+	signal state : clockState := c0 ;
 begin
 	process(clk, rst)
 	begin
@@ -68,14 +68,22 @@ begin
 			MEM_RegWrite <= '0';
 			MEM_ALURes <= (others => '0');
 			MEM_reg2 <= (others => '0');
+			state <= c0 ;
 		elsif(clk'event and clk='1') then
-			MEM_RegDst <= EX_RegDst;
-			MEM_MemRead <= EX_MemRead;
-			MEM_MemWrite <= EX_MemWrite;
-			MEM_MemToRead <= EX_MemToRead;
-			MEM_RegWrite <= EX_RegWrite;
-			MEM_ALURes <= EX_ALURes;
-			MEM_reg2 <= EX_reg2;
+			case state is
+				when c0 => 
+					state <= c1 ;
+					MEM_RegDst <= EX_RegDst;
+					MEM_MemRead <= EX_MemRead;
+					MEM_MemWrite <= EX_MemWrite;
+					MEM_MemToRead <= EX_MemToRead;
+					MEM_RegWrite <= EX_RegWrite;
+					MEM_ALURes <= EX_ALURes;
+					MEM_reg2 <= EX_reg2;
+				when c1 => state <= c2 ;
+				when c2 => state <= c0 ;
+				when others => state <= c0 ;
+			end case ;
 		end if;
 	end process;
 end Behavioral;
