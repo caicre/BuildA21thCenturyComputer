@@ -1008,6 +1008,7 @@ begin
 		);
 		
 	IFIDFlush <= '0' when (EX_BranchJudge = '0' and EX_Jump = '0') else '1' ;
+	
 	process (clk_board,rst,clk_button,clksignal)
 	begin
 		if rst = '0' then clk <= '0' ;
@@ -1032,13 +1033,13 @@ begin
 		led(3 downto 0) <= ALUMuxResult(3 downto 0) ;
  	end process ;
 	
-	process (EX_BranchJudge,Branch,BranchOp,Jump,ALURes)
+	process (EX_BranchJudge,BranchOp,EX_Jump,ForwardA,ForwardB)
 	begin
 		showclk(0) <= EX_BranchJudge ;
-		showclk(1) <= Branch ;
+		showclk(1) <= EX_Jump ;
 		showclk(3 downto 2) <= BranchOp ;
-		showclk(4) <= Jump ;
-		showclk(6 downto 5) <= ALURes ;
+		showclk(5 downto 4) <= ForwardA ;
+		showclk(6) <= ForwardB(1) or ForwardB(0) ;
 	end process ;
 	
 	
