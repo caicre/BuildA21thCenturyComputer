@@ -13,7 +13,7 @@ entity clock is
 end clock;
 
 architecture Behavioral of clock is
-	signal count : natural range 0 to 3 := 0;
+	signal count : natural range 0 to 4 := 0;
 begin
 	process(clk, rst)
 	begin
@@ -38,13 +38,17 @@ begin
 					clk1 <= '0';
 					clk2 <= '0';
 					clk3 <= '1';
+				when 3 =>
+					clk1 <= '0';
+					clk2 <= '0';
+					clk3 <= '0';
 				when others =>
 					clk1 <= '0';
 					clk2 <= '0';
 					clk3 <= '0';					
 			end case;
 
-			if (count = 2) then
+			if (count = 3) then
 				count <= 0;
 			else 
 				count <= count + 1;

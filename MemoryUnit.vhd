@@ -121,7 +121,9 @@ begin
 				rdn <= '1';
 				
 				case mem_state is
-					when s0 =>												--准备读指令
+					when s0 =>	
+						mem_state <= s1;
+					when s1 =>												--准备读指令
 					--	if PCKeep = '0' then
 					--		Ram2_Addr(15 downto 0) <= PCMuxOut;
 					--	elsif PCKeep ='1' then
@@ -132,8 +134,8 @@ begin
 						Ram2_OE <= '0';
 						Ram2_Addr(15 downto 0) <= PC;
 						Ram2_Data <= (others => 'Z');
-						mem_state <= s1;
-					when s1 =>												--读指令, 准备读写内存/串口
+						mem_state <= s2;
+					when s2 =>												--读指令, 准备读写内存/串口
 						Ram2_OE <= '1';
 						inst <= Ram2_Data;
 						if(MemWrite = '1') then
@@ -164,9 +166,9 @@ begin
 								Ram2_OE <= '0';
 							end if;
 						end if;
-						mem_state <= s2;
+						mem_state <= s3;
 						
-					when s2 =>
+					when s3 =>
 						if(MemWrite = '1') then			
 							if(addr = x"BF00") then		--写串口数据
 								wrn <= '1';
