@@ -35,9 +35,13 @@ entity MemoryUnit is
 	port(
 			clk 		: in STD_LOGIC;
 			rst 		: in STD_LOGIC;
+			
+			
 			-- input control signal
 			MemWrite : in STD_LOGIC;		--'1':写
 			MemRead 	: in STD_LOGIC;		--'1':读
+			IsMem		: in STD_LOGIC;		--'0': 只有IF操作 '1': 只有MEM操作(IF,ID,EX要停顿)
+			
 			-- RAM1								--为串口(BF00~BF03)
 			Ram1_OE 		: out STD_LOGIC;
 			Ram1_WE 		: out STD_LOGIC;
@@ -66,23 +70,24 @@ entity MemoryUnit is
 			tbre			: in STD_LOGIC;
 			tsre			: in STD_LOGIC;
 			wrn			: out STD_LOGIC;
-			rdn			: out STD_LOGIC
-				);
+			rdn			: out STD_LOGIC;
+	);
 end MemoryUnit;
 
 architecture Behavioral of MemoryUnit is
 
 type state is (s0, s1, s2, s3, s4, s5);
 signal mem_state : state;
---signal rflag : std_logic := '0';		--rflag='1'代表把串口数据线（ram1_data）置高阻，用于节省状态的控制
+signal rflag : std_logic := '0';		--rflag='1'代表把串口数据线（ram1_data）置高阻，用于节省状态的控制
+
+shared variable Ram_Addr : std_logic_vector(15 downto 0) := (others => '0');	--随IF或MEM而改变的输入信号
+shared variable Ram_Data : std_logic_vector(15 downto 0) := (others => '0');	--随IF或MEM而改变的输入信号
 
 --flash
 signal flash_state : state;
 signal flash_finished : std_logic := '0';
 signal current_addr : std_logic_vector(15 downto 0) := (others => '0');
 shared variable cnt : integer := 0;	--用于原来的频率降低为适合FLASH的频率
-
-signal rflag : std_logic := '0';		--rflag='1'代表把串口数据线（ram1_data）置高阻，用于节省状态的控制
 
 begin
 	process(clk, rst)
@@ -104,7 +109,6 @@ begin
 			inst <= (others => '0');
 			
 			mem_state <= s0;
-			flash_state <= s0;
 			
 			current_addr <= (others => '0');
 			
@@ -120,75 +124,98 @@ begin
 				wrn <= '1';
 				rdn <= '1';
 				
-				case mem_state is
-					when s0 =>												--准备读指令
-					--	if PCKeep = '0' then
-					--		Ram2_Addr(15 downto 0) <= PCMuxOut;
-					--	elsif PCKeep ='1' then
-					--		Ram2_(15 downto 0) <= PCOut;
-					--	end if;
-						wrn <= '1';
-						rdn <= '1';
-						Ram2_OE <= '0';
-						Ram2_Addr(15 downto 0) <= PC;
-						Ram2_Data <= (others => 'Z');
-						mem_state <= s1;
-					when s1 =>												--读指令, 准备读写内存/串口
-						Ram2_OE <= '1';
-						inst <= Ram2_Data;
-						if(MemWrite = '1') then
-							rflag <= '0';
-							if(addr = x"BF00") then	--准备写串口数据
-								Ram1_data(7 downto 0) <= wdata(7 downto 0);
+				if(IsMem = '1') then			--若MEM, 输入信号为addr, wdata
+					Ram_Addr := addr;
+					Ram_Data := wdata;
+				else								--若IF, 输入信号为PC
+					Ram_Addr := PC;
+			--		if PCKeep = '0' then		--PCMUX, 这个应该在哪里实现????
+			--			ram2_addr(15 downto 0) <= PCMuxOut;
+			--		elsif PCKeep = '1' then
+			--			ram2_addr(15 downto 0) <= PCOut;
+			--		end if;
+				end if;
+				
+				if(MemWrite = '1') then	--RAM2/串口写入
+					
+					case mem_state is
+						when s0 =>
+							if(Ram_Addr = x"BF00") then --串口准备写入
+								rflag <= '0';		--???
 								wrn <= '0';
-							else					--准备写内存
-								Ram2_Addr(15 downto 0) <= addr;
-								Ram2_Data <= wdata;
+								--Ram1_Addr(15 downto 0) <= Ram_Addr;
+								Ram1_Data(7 downto 0) <= Ram_Data(7 downto 0);
+							else								 --RAM2准备写入
+								wrn <= '1';
+								rdn <= '1';
 								Ram2_WE <= '0';
+								Ram2_Addr(15 downto 0) <= Ram_Addr;
+								Ram2_Data <= Ram_Data;
 							end if;
-						elsif(MemRead = '1') then
-							if(addr = x"BF01") then --准备读串口状态
+							mem_state <= s1;
+						
+						when s1 =>
+							if(Ram_Addr = x"BF00") then --串口写入
+								wrn <= '1';
+							else								 --RAM2写入
+								Ram2_WE <= '1';
+							end if;
+							mem_state <= s0;
+						
+						when others =>
+							mem_state <= s0;
+					end case;
+					
+				elsif(MemRead = '1') then --RAM2/串口读取
+					case mem_state is
+						when s0 =>
+							if(Ram_Addr = x"BF01") then --准备读串口状态
 								rdata(15 downto 2) <= (others => '0');
 								rdata(1) <= data_ready;
 								rdata(0) <= tsre and tbre;
 								if(rflag = '0') then --读串口状态时意味着接下来可能要读/写串口数据
-									Ram1_Data <= (others => 'Z');--故预先把ram1_data置为高阻
+								Ram1_Data <= (others => 'Z');--故预先把ram1_data置为高阻
 									rflag <= '1'; --如果接下来要读，则可直接把rdn置'0'，省一个状态；要写，则rflag='0'，正常走写串口的流程
 								end if;
-							elsif (addr = x"BF00") then	--准备读串口数据
+								
+							elsif(Ram_Addr = x"BF00") then --准备读串口数据
 								rflag <= '0';
 								rdn <= '0';
-							else						--准备读内存
-								Ram2_Data <= (others => 'Z');
-								Ram2_Addr(15 downto 0) <= addr;
-								Ram2_OE <= '0';
-							end if;
-						end if;
-						mem_state <= s2;
-						
-					when s2 =>
-						if(MemWrite = '1') then			
-							if(addr = x"BF00") then		--写串口数据
+								--在这里不加Ram1_Data<= 'Z...'的原因是此赋值是rdn<='1'和一起的, 而不是rdn<='0', 所以准备读串口时要完成此赋值
+								
+							else 									 --准备读RAM2
 								wrn <= '1';
-							else						--写内存
-								Ram2_WE <= '1';
-							end if; 
-						elsif(MemRead = '1') then
-							if (addr = x"BF01") then	--读串口状态（已读出）
+								rdn <= '1';
+								Ram2_OE <= '0';
+								Ram2_Addr(15 downto 0) <= Ram_Addr;
+								Ram2_Data <= (others => 'Z');							
+							end if;
+							mem_state <= s1;
+						
+						when s1 =>
+							if(Ram_Addr = x"BF01") then		--读串口状态(已读)
 								null;
-							elsif(addr = x"BF00") then	--读串口数据
+							elsif(Ram_Addr = x"BF00") then	--读串口数据
 								rdn <= '1';
 								rdata(15 downto 8) <= (others => '0');
 								rdata(7 downto 0) <= Ram1_Data(7 downto 0);
-							else						--读内存
+							else										--读内存
 								Ram2_OE <= '1';
-								rdata <= Ram2_Data;
-							end if;
-						end if;
-						mem_state <= s0;
-					when others =>
-						mem_state <= s0;
-				end case;
+								if(IsMem = '1') then	--若MEM, 输出信号为rdata
+									rdata <= Ram2_Data;
+								else						--若IF, 输出信号为inst
+									inst <= Ram2_Data;
+								end if;
+							end if;	
+							mem_state <= s0;
+							
+						when others =>
+							mem_state <= s0;
+					end case;
+					
+				end if; --RAM2写/读
+			else
 		end if;	--rst and clk's raise
 	end process;
+	
 end Behavioral;
