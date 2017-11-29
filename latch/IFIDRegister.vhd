@@ -35,6 +35,7 @@ entity IFIDRegister is
 		clk 		: in STD_LOGIC;
 		-- control signal
 		IFIDStall	: in STD_LOGIC;
+		IFIDFlush	: in STD_LOGIC;
 		-- input
 		IF_PC		: in STD_LOGIC_VECTOR(15 downto 0);
 		IF_inst		: in STD_LOGIC_VECTOR(15 downto 0);
@@ -61,6 +62,10 @@ begin
 				when c0 =>
 					if(IFIDStall = '1') then
 						null;
+					elsif(IFIDFlush = '1') then
+						ID_PC <= (others => '0');
+						ID_inst <= "0000100000000000";
+						ID_RPC <= (others => '0');
 					else
 						ID_PC <= IF_PC;
 						ID_inst <= IF_inst;

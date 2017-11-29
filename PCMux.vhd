@@ -43,10 +43,10 @@ end PCMux;
 
 architecture Behavioral of PCMux is
 begin
-	PCOut <= PC when PCStall = '1' else
-			 reg1 when PCStall = '0' and Jump = '1' else 
-			 PCAddImm when PCStall = '0' and Jump = '0' and branchJudge = '1' else
-			 NPC ;
+	PCOut <= PCAddImm when (PCStall = '0' and Jump = '0' and branchJudge = '1') else
+				PC when PCStall = '1' else
+				reg1 when (PCStall = '0' and Jump = '1') else 
+				NPC ;
 
 end Behavioral;
 

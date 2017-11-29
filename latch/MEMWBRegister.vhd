@@ -59,7 +59,7 @@ begin
 			WB_MemToRead <= '0';
 			WB_RegWrite <= '0';
 			WB_rdata <= (others => '0');
-			WB_RegDst <= (others => '0');
+			WB_RegDst <= (others => '1');
 			WB_ALURes <= (others => '0');
 			state <= c0 ;
 		elsif(clk'event and clk='1') then

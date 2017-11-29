@@ -43,6 +43,6 @@ architecture Behavioral of ALUSrcMux2 is
 begin
     src2 <= WB_ALURes when ForwardB = "10" else
             MEM_ALURes when ForwardB = "01" else
-            imm when ForwardB = "00" and ALUSrcB = '1' else
+            imm when (ForwardB = "00" and ALUSrcB = '1') else
             reg2 ;
 end Behavioral;

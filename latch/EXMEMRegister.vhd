@@ -61,7 +61,7 @@ begin
 	process(clk, rst)
 	begin
 		if(rst = '0') then
-			MEM_RegDst <= (others => '0');
+			MEM_RegDst <= (others => '1');
 			MEM_MemRead <= '0';
 			MEM_MemWrite <= '0';
 			MEM_MemToRead <= '0';

@@ -65,11 +65,11 @@ begin
 		rz(2 downto 0) := inst(4 downto 2);
 
 	if (rst = '0') then
-			RegSrcA 	<= "0000";
-			RegSrcB 	<= "0000";
+			RegSrcA 	<= REG_NO;
+			RegSrcB 	<= REG_NO;
 			ImmSrc 	<= "000";
 			ExtendOp <= '0';
-			RegDst 	<= "0000";
+			RegDst 	<= REG_NO;
 			ALUOp 	<= "0000";
 			ALUSrcB 	<= '0';
 			ALURes 	<= "00";

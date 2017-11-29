@@ -220,6 +220,7 @@ attribute box_type of Tryrom : component is "black_box" ;
 			rst 		: in STD_LOGIC;
 			-- control signal
 			IFIDStall 	: in STD_LOGIC;
+			IFIDFlush 	: in STD_LOGIC;
 			-- input
 			IF_PC		: in STD_LOGIC_VECTOR(15 downto 0);
 			IF_inst		: in STD_LOGIC_VECTOR(15 downto 0);
@@ -559,6 +560,7 @@ attribute box_type of Tryrom : component is "black_box" ;
 	signal PCMuxOut 	: STD_LOGIC_VECTOR(15 downto 0);
 
 	-- IFIDRegister
+	signal IFIDFlush	: STD_LOGIC ;
 	signal ID_PC 		: STD_LOGIC_VECTOR(15 downto 0);
 	signal ID_inst		: STD_LOGIC_VECTOR(15 downto 0);
 	signal ID_RPC		: STD_LOGIC_VECTOR(15 downto 0);
@@ -771,6 +773,7 @@ begin
 		clk 		=> clk,
 		rst 		=> rst,
 		IFIDStall 	=> IFIDStall,
+		IFIDFlush	=> IFIDFlush,
 		IF_PC 		=> IF_NPC,
 		IF_inst 	=> IF_inst,
 		IF_RPC		=> IF_RPC,
@@ -1003,7 +1006,8 @@ begin
 			rst => rst,
 			clkForClock => clkForClock
 		);
-	
+		
+	IFIDFlush <= '0' when (EX_BranchJudge = '0' and EX_Jump = '0') else '1' ;
 	process (clk_board,rst,clk_button,clksignal)
 	begin
 		if rst = '0' then clk <= '0' ;

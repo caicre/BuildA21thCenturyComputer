@@ -85,7 +85,7 @@ begin
 	process(clk, rst)
 	begin
 		if(rst = '0') then
-			EX_RegDst <= (others => '0');
+			EX_RegDst <= (others => '1');
 			EX_ALUOp <= (others => '0');
 			EX_ALUSrcB <= '0' ;
 			EX_ALURes <= (others => '0');
@@ -99,8 +99,8 @@ begin
 			EX_PC <= (others => '0');
 			EX_reg1 <= (others => '0');
 			EX_reg2 <= (others => '0');
-			EX_raddr1 <= (others => '0');
-			EX_raddr2 <= (others => '0');
+			EX_raddr1 <= (others => '1');
+			EX_raddr2 <= (others => '1');
 			EX_imm <= (others => '0');
 			EX_RPC <= (others => '0');
 			state <= c0 ;
@@ -108,7 +108,7 @@ begin
 			case state is
 				when c0=>
 					if(IDEXFlush = '1') then
-						EX_RegDst <= (others => '0');
+						EX_RegDst <= (others => '1');
 						EX_ALUOp <= (others => '0');
 						EX_ALUSrcB <= '0' ;
 						EX_ALURes <= (others => '0');
@@ -122,8 +122,8 @@ begin
 						EX_PC <= (others => '0');
 						EX_reg1 <= (others => '0');
 						EX_reg2 <= (others => '0');
-						EX_raddr1 <= (others => '0');
-						EX_raddr2 <= (others => '0');
+						EX_raddr1 <= (others => '1');
+						EX_raddr2 <= (others => '1');
 						EX_imm <= (others => '0');
 						EX_RPC <= (others => '0');
 					else

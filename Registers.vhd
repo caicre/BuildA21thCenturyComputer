@@ -62,35 +62,35 @@ end Registers;
 
 architecture Behavioral of Registers is
 
-	signal r0 : std_logic_vector(15 downto 0);
-	signal r1 : std_logic_vector(15 downto 0);
-	signal r2 : std_logic_vector(15 downto 0);
-	signal r3 : std_logic_vector(15 downto 0);
-	signal r4 : std_logic_vector(15 downto 0);
-	signal r5 : std_logic_vector(15 downto 0);
-	signal r6 : std_logic_vector(15 downto 0);
-	signal r7 : std_logic_vector(15 downto 0);
-	signal T : std_logic_vector(15 downto 0);
-	signal IH : std_logic_vector(15 downto 0);
-	signal SP : std_logic_vector(15 downto 0);
-	signal RA : std_logic_vector(15 downto 0);
+	shared variable r0 : std_logic_vector(15 downto 0);
+	shared variable r1 : std_logic_vector(15 downto 0);
+	shared variable r2 : std_logic_vector(15 downto 0);
+	shared variable r3 : std_logic_vector(15 downto 0);
+	shared variable r4 : std_logic_vector(15 downto 0);
+	shared variable r5 : std_logic_vector(15 downto 0);
+	shared variable r6 : std_logic_vector(15 downto 0);
+	shared variable r7 : std_logic_vector(15 downto 0);
+	shared variable T : std_logic_vector(15 downto 0);
+	shared variable IH : std_logic_vector(15 downto 0);
+	shared variable SP : std_logic_vector(15 downto 0);
+	shared variable RA : std_logic_vector(15 downto 0);
 	signal state : clockState := c0 ;
 begin
     process (clk,rst) -- WRITE
     begin
     if(rst='0') then
-        r0 <= (others => '0');
-        r1 <= (others => '0');
-        r2 <= (others => '0');
-        r3 <= (others => '0');
-        r4 <= (others => '0');
-        r5 <= (others => '0');
-        r6 <= (others => '0');
-        r7 <= (others => '0');
-        T  <= (others => '0');
-        IH <= (others => '0');			
-        SP <= (others => '0');
-        RA <= (others => '0');
+        r0 := (others => '0');
+        r1 := (others => '0');
+        r2 := (others => '0');
+        r3 := (others => '0');
+        r4 := (others => '0');
+        r5 := (others => '0');
+        r6 := (others => '0');
+        r7 := (others => '0');
+        T  := (others => '0');
+        IH := (others => '0');			
+        SP := (others => '0');
+        RA := (others => '0');
 		  state <= c0 ;
 	 elsif (clk'event and clk = '1') then
 		case state is 
@@ -99,18 +99,18 @@ begin
 			when c1 =>
 				if (RegWrite = '1') then --for now, 1 is to write
 					  case waddr is
-							when R0_ADDR => r0 <= wdata ;
-							when R1_ADDR => r1 <= wdata ;
-							when R2_ADDR => r2 <= wdata ;
-							when R3_ADDR => r3 <= wdata ;
-							when R4_ADDR => r4 <= wdata ;
-							when R5_ADDR => r5 <= wdata ;
-							when R6_ADDR => r6 <= wdata ;
-							when R7_ADDR => r7 <= wdata ;
-							when REG_SP => SP <= wdata ;
-							when REG_T  => T  <= wdata ;
-							when REG_IH => IH <= wdata ;
-							when REG_RA => RA <= wdata ;
+							when R0_ADDR => r0 := wdata ;
+							when R1_ADDR => r1 := wdata ;
+							when R2_ADDR => r2 := wdata ;
+							when R3_ADDR => r3 := wdata ;
+							when R4_ADDR => r4 := wdata ;
+							when R5_ADDR => r5 := wdata ;
+							when R6_ADDR => r6 := wdata ;
+							when R7_ADDR => r7 := wdata ;
+							when REG_SP => SP := wdata ;
+							when REG_T  => T  := wdata ;
+							when REG_IH => IH := wdata ;
+							when REG_RA => RA := wdata ;
 							when others => 
 					  end case ;
 				 end if ;
@@ -121,7 +121,7 @@ begin
 		end case ;
 	 end if ;
     end process ;
-	process (raddr1, r0, r1, r2, r3, r4, r5, r6, r7, SP, IH, RA, T)
+	process (raddr1,state)
 	begin
     if    (raddr1 = R0_ADDR) then 
         reg1 <= r0 ; 
@@ -149,7 +149,7 @@ begin
         reg1 <= T  ;
     end if ;
     end process ;
-    process (raddr2, r0, r1, r2, r3, r4, r5, r6, r7, SP, IH, RA, T)
+    process (raddr2, state)
 	begin
     if    (raddr2 = R0_ADDR) then 
         reg2 <= r0 ; 
