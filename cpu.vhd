@@ -1016,21 +1016,21 @@ begin
 		else clk <= clk_button ;
 		end if ;
 	end process ;
-	process (RegSrcA,RegSrcB,ALUMuxResult,ID_immOut)
+	process (EX_RegDst, IF_inst, clk)
 	begin
---		led(15 downto 8) <= ID_inst(15 downto 8) ;
---		led(7 downto 4) <= RegSrcA(3 downto 0) ;
---		led(3 downto 0) <= RegDst(3 downto 0) ;
+		led(15 downto 12) <= EX_RegDst(3 downto 0) ;
+		--led(11 downto 8) <= ID_inst(3 downto 0) ;
+		led(11 downto 0) <= IF_inst(11 downto 0) ;
 --		led(7 downto 0) <= showreg_r0(7 downto 0);
 --		led(15 downto 13) <= show1 ;
 --		led(12 downto 10) <= show2 ;
 --		led(9 downto 7) <= show3 ;
 --		led(6) <= hshow ;
 --		led(5) <= vshow ;
-		led(15 downto 12) <= RegSrcA(3 downto 0) ;
-		led(11 downto 8) <= RegSrcB(3 downto 0) ;
-		led(7 downto 4) <= ID_immOut(3 downto 0) ;
-		led(3 downto 0) <= ALUMuxResult(3 downto 0) ;
+		--led(15 downto 12) <= RegSrcA(3 downto 0) ;
+		--led(11 downto 8) <= RegSrcB(3 downto 0) ;
+		--led(7 downto 4) <= ID_immOut(3 downto 0) ;
+		--led(3 downto 0) <= ALUMuxResult(3 downto 0) ;
  	end process ;
 	
 	process (EX_BranchJudge,BranchOp,EX_Jump,ForwardA,ForwardB)

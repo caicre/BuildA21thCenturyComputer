@@ -133,7 +133,7 @@ begin
 				when PRE5_BEQZ =>
 					RegSrcA <= rx;
 					RegSrcB <= REG_NO;
-					ImmSrc <= "000";
+					ImmSrc <= "001";
 					ExtendOp <= '0';
 					RegDst <= REG_NO;
 					ALUOp <= "0000";
@@ -149,7 +149,7 @@ begin
 				when PRE5_BNEZ =>
 					RegSrcA <= rx;
 					RegSrcB <= REG_NO;
-					ImmSrc <= "000";
+					ImmSrc <= "001";
 					ExtendOp <= '0';
 					RegDst <= REG_NO;
 					ALUOp <= "0000";
@@ -229,7 +229,7 @@ begin
 				when PRE5_SW_SP =>
 					RegSrcA <= REG_SP;
 					RegSrcB <= rx;
-					ImmSrc <= "010";
+					ImmSrc <= "001";
 					ExtendOp <= '0';
 					RegDst <= REG_NO;
 					ALUOp <= "0001";
@@ -549,7 +549,7 @@ begin
 						when PRE8_SW_RS =>
 							RegSrcA <= REG_SP;
 							RegSrcB <= REG_RA;
-							ImmSrc <= "010";
+							ImmSrc <= "001";
 							ExtendOp <= '0';
 							RegDst <= REG_NO;
 							ALUOp <= "0001";
@@ -581,7 +581,7 @@ begin
 						when PRE8_BTEQZ =>
 							RegSrcA <= REG_T;
 							RegSrcB <= REG_NO;
-							ImmSrc <= "000";
+							ImmSrc <= "001";
 							ExtendOp <= '0';
 							RegDst <= REG_NO;
 							ALUOp <= "0000";
