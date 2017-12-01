@@ -37,8 +37,8 @@ entity BranchUnit is
         BranchOp    : in STD_LOGIC_VECTOR(1 downto 0);
         -- input
         reg1        : in STD_LOGIC_VECTOR(15 downto 0);
-        MEM_ALURes  : in STD_LOGIC_VECTOR(15 downto 0);
-        WB_ALURes   : in STD_LOGIC_VECTOR(15 downto 0);
+        MEM_ALUResult  : in STD_LOGIC_VECTOR(15 downto 0);
+        WB_ALUResult   : in STD_LOGIC_VECTOR(15 downto 0);
         -- output
         BranchJudge : out STD_LOGIC
     );
@@ -47,15 +47,15 @@ end BranchUnit;
 architecture Behavioral of BranchUnit is
 
 begin
-    process (Branch,BranchOp, ForwardA, reg1, MEM_ALURes, WB_ALURes)
+    process (Branch,BranchOp, ForwardA, reg1, MEM_ALUResult, WB_ALUResult)
         variable reg        : STD_LOGIC_VECTOR(15 downto 0);
         variable zero       : STD_LOGIC_VECTOR(15 downto 0) := (others => '0');
     begin
         if (Branch = '1') then
             case ForwardA is
                 when "00" => reg := reg1;
-                when "01" => reg := MEM_ALURes;
-                when "10" => reg := WB_ALURes;
+                when "01" => reg := MEM_ALUResult;
+                when "10" => reg := WB_ALUResult;
 					 when others => 
             end case;
             case BranchOp is

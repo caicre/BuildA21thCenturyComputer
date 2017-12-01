@@ -60,7 +60,7 @@ begin
 			WB_RegWrite <= '0';
 			WB_rdata <= (others => '0');
 			WB_RegDst <= (others => '1');
-			WB_ALURes <= (others => '0');
+			WB_ALUResult <= (others => '0');
 			state <= c0 ;
 		elsif(clk'event and clk='1') then
 			case state is
@@ -69,7 +69,7 @@ begin
 					WB_RegWrite <= MEM_RegWrite;
 					WB_rdata <= MEM_rdata;
 					WB_RegDst <= MEM_RegDst;
-					WB_ALURes <= MEM_ALURes;
+					WB_ALUResult <= MEM_ALUResult;
 					state <= c1 ;
 				when c1 => state <= c2 ;
 				when c2 => state <= c0 ;

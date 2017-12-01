@@ -40,7 +40,7 @@ entity EXMEMRegister is
 		EX_MemToRead: in STD_LOGIC;
 		EX_RegWrite	: in STD_LOGIC;
 		-- input
-		EX_ALURes	: in STD_LOGIC_VECTOR(15 downto 0);
+		EX_ALUResult	: in STD_LOGIC_VECTOR(15 downto 0);
 		EX_reg2		: in STD_LOGIC_VECTOR(15 downto 0);
 		-- output control signal
 		MEM_RegDst 	: out STD_LOGIC_VECTOR(3 downto 0);
@@ -66,7 +66,7 @@ begin
 			MEM_MemWrite <= '0';
 			MEM_MemToRead <= '0';
 			MEM_RegWrite <= '0';
-			MEM_ALURes <= (others => '0');
+			MEM_ALUResult <= (others => '0');
 			MEM_reg2 <= (others => '0');
 			state <= c0 ;
 		elsif(clk'event and clk='1') then
@@ -78,7 +78,7 @@ begin
 					MEM_MemWrite <= EX_MemWrite;
 					MEM_MemToRead <= EX_MemToRead;
 					MEM_RegWrite <= EX_RegWrite;
-					MEM_ALURes <= EX_ALURes;
+					MEM_ALUResult <= EX_ALUResult;
 					MEM_reg2 <= EX_reg2;
 				when c1 => state <= c2 ;
 				when c2 => state <= c0 ;

@@ -12,7 +12,7 @@ end WriteMemMux;
 architecture Behavioral of WriteMemMux is
 
 begin
-    MemWriteData <= WB_ALURes when ForwardWriteMem = "10" else
-                MEM_ALURes when ForwardWriteMem = "01" else
+    MemWriteData <= WB_ALUResult when ForwardWriteMem = "10" else
+                MEM_ALUResult when ForwardWriteMem = "01" else
                 reg2 ;
 end Behavioral;

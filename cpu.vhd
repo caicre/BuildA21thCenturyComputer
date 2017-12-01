@@ -333,8 +333,8 @@ attribute box_type of Tryrom : component is "black_box" ;
 			ForwardA	: in STD_LOGIC_VECTOR(1 downto 0);
 			-- input
 			reg1		: in STD_LOGIC_VECTOR(15 downto 0);
-			MEM_ALURes	: in STD_LOGIC_VECTOR(15 downto 0);
-			WB_ALURes	: in STD_LOGIC_VECTOR(15 downto 0);
+			MEM_ALUResult	: in STD_LOGIC_VECTOR(15 downto 0);
+			WB_ALUResult	: in STD_LOGIC_VECTOR(15 downto 0);
 			-- output
 			src1		: out STD_LOGIC_VECTOR(15 downto 0)
 		);
@@ -347,8 +347,8 @@ attribute box_type of Tryrom : component is "black_box" ;
 			ALUSrcB		: in STD_LOGIC ;
 			-- input
 			reg2		: in STD_LOGIC_VECTOR(15 downto 0);
-			MEM_ALURes	: in STD_LOGIC_VECTOR(15 downto 0);
-			WB_ALURes	: in STD_LOGIC_VECTOR(15 downto 0);
+			MEM_ALUResult	: in STD_LOGIC_VECTOR(15 downto 0);
+			WB_ALUResult	: in STD_LOGIC_VECTOR(15 downto 0);
 			imm 		: in STD_LOGIC_VECTOR(15 downto 0) ;
 			-- output
 			src2		: out STD_LOGIC_VECTOR(15 downto 0)
@@ -360,8 +360,8 @@ attribute box_type of Tryrom : component is "black_box" ;
 			ForwardWriteMem	: in STD_LOGIC_VECTOR(1 downto 0);
 			-- input
 			reg2		: in STD_LOGIC_VECTOR(15 downto 0);
-			MEM_ALURes	: in STD_LOGIC_VECTOR(15 downto 0);
-			WB_ALURes	: in STD_LOGIC_VECTOR(15 downto 0);
+			MEM_ALUResult	: in STD_LOGIC_VECTOR(15 downto 0);
+			WB_ALUResult	: in STD_LOGIC_VECTOR(15 downto 0);
 			-- output
 			MemWriteData		: out STD_LOGIC_VECTOR(15 downto 0)
 		);
@@ -406,8 +406,8 @@ attribute box_type of Tryrom : component is "black_box" ;
 			BranchOp 	: in STD_LOGIC_VECTOR(1 downto 0);
 			-- input
 			reg1 		: in STD_LOGIC_VECTOR(15 downto 0);
-			MEM_ALURes 	: in STD_LOGIC_VECTOR(15 downto 0);
-			WB_ALURes 	: in STD_LOGIC_VECTOR(15 downto 0);
+			MEM_ALUResult 	: in STD_LOGIC_VECTOR(15 downto 0);
+			WB_ALUResult 	: in STD_LOGIC_VECTOR(15 downto 0);
 			-- output
 			BranchJudge : out STD_LOGIC
 		);
@@ -424,7 +424,7 @@ attribute box_type of Tryrom : component is "black_box" ;
 			EX_MemToRead: in STD_LOGIC;
 			EX_RegWrite : in STD_LOGIC;
 			-- input
-			EX_ALURes	: in STD_LOGIC_VECTOR(15 downto 0);
+			EX_ALUResult	: in STD_LOGIC_VECTOR(15 downto 0);
 			EX_reg2		: in STD_LOGIC_VECTOR(15 downto 0);
 			-- output control signal
 			MEM_RegDst 	: out STD_LOGIC_VECTOR(3 downto 0);
@@ -433,7 +433,7 @@ attribute box_type of Tryrom : component is "black_box" ;
 			MEM_MemToRead: out STD_LOGIC;
 			MEM_RegWrite: out STD_LOGIC;
 			-- output
-			MEM_ALURes	: out STD_LOGIC_VECTOR(15 downto 0);
+			MEM_ALUResult	: out STD_LOGIC_VECTOR(15 downto 0);
 			MEM_reg2	: out STD_LOGIC_VECTOR(15 downto 0)
 		);
 	end component;
@@ -451,14 +451,14 @@ attribute box_type of Tryrom : component is "black_box" ;
 			MEM_RegWrite: in STD_LOGIC;
 			-- input
 			MEM_rdata 	: in STD_LOGIC_VECTOR(15 downto 0);
-			MEM_ALURes	: in STD_LOGIC_VECTOR(15 downto 0);
+			MEM_ALUResult	: in STD_LOGIC_VECTOR(15 downto 0);
 			-- output control signal
 			WB_RegDst 	: out STD_LOGIC_VECTOR(3 downto 0);
 			WB_MemToRead: out STD_LOGIC;
 			WB_RegWrite : out STD_LOGIC;
 			-- output
 			WB_rdata 	: out STD_LOGIC_VECTOR(15 downto 0);
-			WB_ALURes	: out STD_LOGIC_VECTOR(15 downto 0)
+			WB_ALUResult	: out STD_LOGIC_VECTOR(15 downto 0)
 		);
 	end component;
 	----------------------------
@@ -630,7 +630,7 @@ attribute box_type of Tryrom : component is "black_box" ;
 	signal MEM_MemWrite : STD_LOGIC;
 	signal MEM_MemToRead: STD_LOGIC;
 	signal MEM_RegWrite : STD_LOGIC;
-	signal MEM_ALURes 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal MEM_ALUResult 	: STD_LOGIC_VECTOR(15 downto 0);
 	signal MEM_reg2 	: STD_LOGIC_VECTOR(15 downto 0);
 
 	-- MEMWBRegister
@@ -638,7 +638,7 @@ attribute box_type of Tryrom : component is "black_box" ;
 	signal WB_MemToRead : STD_LOGIC;
 	signal WB_RegWrite 	: STD_LOGIC;
 	signal WB_rdata 	: STD_LOGIC_VECTOR(15 downto 0);
-	signal WB_ALURes 	: STD_LOGIC_VECTOR(15 downto 0);
+	signal WB_ALUResult 	: STD_LOGIC_VECTOR(15 downto 0);
 
 	-- WriteDataMux
 	signal WB_wdata 	: STD_LOGIC_VECTOR(15 downto 0);
@@ -864,7 +864,7 @@ begin
 		ForwardA		=> ForwardA,
 		reg1 			=> EX_reg1,
 		MEM_ALUResult	=> MEM_ALUResult,
-		WB_ALURessult 	=> WB_wdata,
+		WB_ALUResult 	=> WB_wdata,
 		src1			=> ALUSrc1
 	);
 

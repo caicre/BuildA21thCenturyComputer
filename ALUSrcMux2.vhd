@@ -33,16 +33,16 @@ entity ALUSrcMux2 is
     Port ( ForwardB     : in  STD_LOGIC_VECTOR(1  downto 0);
            ALUSrcB      : in  STD_LOGIC ;
            reg2         : in  STD_LOGIC_VECTOR(15 downto 0);
-           MEM_ALURes   : in  STD_LOGIC_VECTOR(15 downto 0);
-           WB_ALURes    : in  STD_LOGIC_VECTOR(15 downto 0);
+           MEM_ALUResult   : in  STD_LOGIC_VECTOR(15 downto 0);
+           WB_ALUResult    : in  STD_LOGIC_VECTOR(15 downto 0);
            imm          : in  STD_LOGIC_VECTOR(15 downto 0);
            src2         : out STD_LOGIC_VECTOR(15 downto 0));
 end ALUSrcMux2;
 
 architecture Behavioral of ALUSrcMux2 is
 begin
-    src2 <= WB_ALURes when ForwardB = "10" else
-            MEM_ALURes when ForwardB = "01" else
+    src2 <= WB_ALUResult when ForwardB = "10" else
+            MEM_ALUResult when ForwardB = "01" else
             imm when (ForwardB = "00" and ALUSrcB = '1') else
             reg2 ;
 end Behavioral;

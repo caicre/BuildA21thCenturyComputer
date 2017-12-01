@@ -40,8 +40,8 @@ end ALUSrcMux1;
 architecture Behavioral of ALUSrcMux1 is
 
 begin
-    src1 <= WB_ALURes when ForwardA = "10" else
-            MEM_ALURes when ForwardA = "01" else
+    src1 <= WB_ALUResult when ForwardA = "10" else
+            MEM_ALUResult when ForwardA = "01" else
             reg1 ;
 end Behavioral;
 
