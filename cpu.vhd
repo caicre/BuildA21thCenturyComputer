@@ -719,7 +719,7 @@ begin
 		Ram1_EN 	=> Ram1_EN,
 		Ram1_Addr 	=> Ram1_Addr,
 		Ram1_Data 	=> Ram1_Data,
-		addr 		=> MEM_ALURes,
+		addr 		=> MEM_ALUResult,
 		wdata 		=> MEM_reg2,
 		rdata 		=> rdata, --HERE was MEM_rdata
 		Ram2_OE 	=> Ram2_OE,
@@ -988,7 +988,7 @@ begin
 		romData 	=> TryromData,
 		hs 			=> hs,
 		vs 			=> vs,
-		oRed 			=> redOut,
+		oRed 		=> redOut,
 		oGreen 		=> greenOut,
 		oBlue 		=> blueOut
 	);
