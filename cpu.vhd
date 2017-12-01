@@ -38,8 +38,17 @@ entity cpu is
 		hs, vs 		: out STD_LOGIC;
 		redOut		: out STD_LOGIC_VECTOR(2 downto 0);
 		greenOut 	: out STD_LOGIC_VECTOR(2 downto 0);
-		blueOut 	: out STD_LOGIC_VECTOR(2 downto 0)
+		blueOut 	: out STD_LOGIC_VECTOR(2 downto 0);
 		
+		-- FLASH								--监控程序
+		FLASH_ADDR 	: out STD_LOGIC_VECTOR(22 downto 0);
+		FLASH_DATA	: inout STD_LOGIC_VECTOR(15 downto 0);
+		FLASH_BYTE	: out STD_LOGIC := '1';		--flash操作模式, 常置'1'
+		FLASH_VPEN	: out STD_LOGIC := '1';		--flash写保护, 常置'1'
+		FLASH_RP		: out STD_LOGIC := '1';		--'1'表示flash工作, 常置'1'
+		FLASH_CE		: out STD_LOGIC := '0';		--flash使能
+		FLASH_OE		: out STD_LOGIC := '1';		--flash读使能, '0'有效, 每次都操作后值'1'
+		FLASH_WE		: out STD_LOGIC := '1'		--flash写使能
 	);
 end cpu;
 
@@ -165,8 +174,21 @@ attribute box_type of Tryrom : component is "black_box" ;
 			tbre			: in STD_LOGIC;
 			tsre			: in STD_LOGIC;
 			wrn			: out STD_LOGIC;
-			rdn			: out STD_LOGIC
+			rdn			: out STD_LOGIC;
 			
+			--FLASH								--监控程序
+			FLASH_ADDR 	: out STD_LOGIC_VECTOR(22 downto 0);
+			FLASH_DATA	: inout STD_LOGIC_VECTOR(15 downto 0);
+			FLASH_BYTE	: out STD_LOGIC := '1';		--flash操作模式, 常置'1'
+			FLASH_VPEN	: out STD_LOGIC := '1';		--flash写保护, 常置'1'
+			FLASH_RP		: out STD_LOGIC := '1';		--'1'表示flash工作, 常置'1'
+			FLASH_CE		: out STD_LOGIC := '0';		--flash使能
+			FLASH_OE		: out STD_LOGIC := '1';		--flash读使能, '0'有效, 每次都操作后值'1'
+			FLASH_WE		: out STD_LOGIC := '1';		--flash写使能
+			
+			--output
+			FLASH_FINISH: out STD_LOGIC := '0'		--'0':未完成	'1':完成读监控程序到RAM2
+																--这要转给控制器, 要把PC?IF?停顿
 		);
 	end component;
 
@@ -209,8 +231,9 @@ attribute box_type of Tryrom : component is "black_box" ;
 			PCAddImm	: in STD_LOGIC_VECTOR(15 downto 0);
 			reg1 	    : in STD_LOGIC_VECTOR(15 downto 0);
 			--
-			PCOut		: out STD_LOGIC_VECTOR(15 downto 0)
-
+			PCOut		: out STD_LOGIC_VECTOR(15 downto 0);
+			
+			FLASH_FINISH: in STD_LOGIC
 		);
 	end component;
 
@@ -650,6 +673,7 @@ attribute box_type of Tryrom : component is "black_box" ;
 	signal clk : std_logic ;
 	signal clkForClock : std_logic;
 
+	signal FLASH_FINISH: STD_LOGIC;
 
 begin
 
@@ -733,7 +757,16 @@ begin
 		tbre 		=> tbre,
 		tsre 		=> tsre,
 		wrn 		=> wrn,
-		rdn 		=> rdn
+		rdn 		=> rdn,
+		FLASH_ADDR 	=> FLASH_ADDR,
+		FLASH_DATA	=> FLASH_DATA,
+		FLASH_BYTE	=> FLASH_BYTE,
+		FLASH_VPEN	=> FLASH_VPEN,
+		FLASH_RP		=> FLASH_RP,
+		FLASH_CE		=> FLASH_CE,
+		FLASH_OE		=> FLASH_OE,
+		FLASH_WE		=> FLASH_WE,
+		FLASH_FINISH => FLASH_FINISH
 	);
 
 	u4 : PCRegister
@@ -765,7 +798,8 @@ begin
 		NPC 		=> IF_NPC,
 		PCAddImm 	=> EX_PCAddImm,
 		reg1 		=> EX_reg1,
-		PCOut 		=> PCMuxOut
+		PCOut 		=> PCMuxOut,
+		FLASH_FINISH => FLASH_FINISH
 	);
 
 	u9 : IFIDRegister
