@@ -49,7 +49,7 @@ entity EXMEMRegister is
 		MEM_MemToRead:	out STD_LOGIC;
 		MEM_RegWrite:	out STD_LOGIC;
 		-- output
-		MEM_ALURes	: out STD_LOGIC_VECTOR(15 downto 0);
+		MEM_ALUResult	: out STD_LOGIC_VECTOR(15 downto 0);
 		MEM_reg2	: out STD_LOGIC_VECTOR(15 downto 0)
 	);
 end EXMEMRegister;

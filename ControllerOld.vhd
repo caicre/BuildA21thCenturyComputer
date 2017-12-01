@@ -61,9 +61,9 @@ begin
 				when PRE5_B =>
 					controlerSignal <= (REG_NO, REG_NO, "0000", REG_NO, "0000", "0000", "0000000");
 				when PRE5_BEQZ =>
-					controlerSignal <= (rx, REG_NO, "0000", REG_NO, "0000", "0000", "0110000");
+					controlerSignal <= (rx, REG_NO, "0010", REG_NO, "0000", "0000", "0110000");
 				when PRE5_BNEZ =>
-					controlerSignal <= (rx, REG_NO, "0000", REG_NO, "0000", "0000", "1010000");
+					controlerSignal <= (rx, REG_NO, "0010", REG_NO, "0000", "0000", "1010000");
 				when PRE5_LI =>
 					controlerSignal <= (REG_NO, REG_NO, "0011", rx, "1010", "1000", "0000001");
 				when PRE5_LW =>
@@ -73,7 +73,7 @@ begin
 				when PRE5_SW =>
 					controlerSignal <= (rx, ry, "0100", REG_NO, "0001", "1000", "0000100");
 				when PRE5_SW_SP =>
-					controlerSignal <= (REG_SP, rx, "0100", REG_NO, "0001", "1000", "0000100");
+					controlerSignal <= (REG_SP, rx, "0010", REG_NO, "0001", "1000", "0000100");
 				when PRE5_MFIH =>
 					controlerSignal <= (REG_IH, REG_NO, "0000", rx, "0000", "0000", "0000001");
 				when PRE5_MOVE =>
@@ -125,11 +125,11 @@ begin
 				when "01100" =>
 					case inst(15 downto 7) is
 						when PRE8_SW_RS =>
-							controlerSignal <= (REG_SP, REG_RA, "0100", REG_NO, "0001", "1000", "0000100");
+							controlerSignal <= (REG_SP, REG_RA, "0010", REG_NO, "0001", "1000", "0000100");
 						when PRE8_ADDSP =>
 							controlerSignal <= (REG_SP, REG_NO, "0010", REG_SP, "00011000", "0000001");
 						when PRE8_BTEQZ =>
-							controlerSignal <= (REG_T, REG_NO, "0000", REG_NO, "0000", "0000", "0110000");
+							controlerSignal <= (REG_T, REG_NO, "0010", REG_NO, "0000", "0000", "0110000");
 						when PRE8_MTSP =>
 							controlerSignal <= (rx, REG_NO, "0000", REG_SP, "0000", "0000", "0000001");
 						when others =>

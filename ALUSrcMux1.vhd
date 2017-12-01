@@ -30,11 +30,11 @@ use IEEE.STD_LOGIC_1164.ALL;
 --use UNISIM.VComponents.all;
 
 entity ALUSrcMux1 is
-    Port ( ForwardA     : in  STD_LOGIC_VECTOR(1  downto 0);
-           reg1         : in  STD_LOGIC_VECTOR(15 downto 0);
-           MEM_ALURes   : in  STD_LOGIC_VECTOR(15 downto 0);
-           WB_ALURes    : in  STD_LOGIC_VECTOR(15 downto 0);
-           src1         : out STD_LOGIC_VECTOR(15 downto 0));
+    Port ( ForwardA    		: in  STD_LOGIC_VECTOR(1  downto 0);
+           reg1         	: in  STD_LOGIC_VECTOR(15 downto 0);
+           MEM_ALUResult	: in  STD_LOGIC_VECTOR(15 downto 0);
+           WB_ALUResult    	: in  STD_LOGIC_VECTOR(15 downto 0);
+           src1         	: out STD_LOGIC_VECTOR(15 downto 0));
 end ALUSrcMux1;
 
 architecture Behavioral of ALUSrcMux1 is

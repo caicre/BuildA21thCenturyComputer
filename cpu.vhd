@@ -861,30 +861,30 @@ begin
 
 	u13 : ALUSrcMux1
 	port map(
-		ForwardA	=> ForwardA,
-		reg1 		=> EX_reg1,
-		MEM_ALURes	=> MEM_ALURes,
-		WB_ALURes 	=> WB_wdata,
-		src1		=> ALUSrc1
+		ForwardA		=> ForwardA,
+		reg1 			=> EX_reg1,
+		MEM_ALUResult	=> MEM_ALUResult,
+		WB_ALURessult 	=> WB_wdata,
+		src1			=> ALUSrc1
 	);
 
 	u14 : ALUSrcMux2
 	port map(
-		ForwardB 	=> ForwardB,
-		ALUSrcB 	=> EX_ALUSrcB,
-		reg2 		=> EX_reg2,
-		MEM_ALURes 	=> MEM_ALURes,
-		WB_ALURes 	=> WB_ALURes,
-		imm 		=> EX_imm,
-		src2 		=> ALUSrc2
+		ForwardB 		=> ForwardB,
+		ALUSrcB 		=> EX_ALUSrcB,
+		reg2 			=> EX_reg2,
+		MEM_ALUResult 	=> MEM_ALUResult,
+		WB_ALUResult 	=> WB_ALUResult,
+		imm 			=> EX_imm,
+		src2 			=> ALUSrc2
 	);
 	
 	u145 : WriteMemMux
 	port map(
 		ForwardWriteMem	=> ForwardWriteMem,
-		reg2 		=> EX_reg2,
-		MEM_ALURes	=> MEM_ALURes,
-		WB_ALURes 	=> WB_wdata,
+		reg2 			=> EX_reg2,
+		MEM_ALUResult	=> MEM_ALUResult,
+		WB_ALUResult 	=> WB_wdata,
 		MemWriteData	=> EX_MemWriteData
 	);
 
@@ -918,29 +918,29 @@ begin
 		Branch 		=> EX_Branch,
 		BranchOp 	=> EX_BranchOp,
 		reg1 		=> EX_reg1,
-		MEM_ALURes 	=> MEM_ALURes,
-		WB_ALURes	=> WB_ALURes,
+		MEM_ALUResult 	=> MEM_ALUResult,
+		WB_ALUResult	=> WB_ALUResult,
 		BranchJudge => EX_BranchJudge
 	);
 
 	u19 : EXMEMRegister
 	port map(
-		clk 		=> clk,
-		rst 		=> rst,
-		EX_RegDst 	=> EX_RegDst,
-		EX_MemRead 	=> EX_MemRead,
-		EX_MemWrite => EX_MemWrite,
-		EX_MemToRead=> EX_MemToRead,
-		EX_RegWrite => EX_RegWrite,
-		EX_ALURes 	=> ALUMuxResult,
-		EX_reg2 	=> EX_MemWriteData,
-		MEM_RegDst 	=> MEM_RegDst,
-		MEM_MemRead => MEM_MemRead,
-		MEM_MemWrite=> MEM_MemWrite,
-		MEM_MemToRead=>MEM_MemToRead,
-		MEM_RegWrite=> MEM_RegWrite,
-		MEM_ALURes	=> MEM_ALURes,
-		MEM_reg2 	=> MEM_reg2
+		clk 			=> clk,
+		rst 			=> rst,
+		EX_RegDst 		=> EX_RegDst,
+		EX_MemRead 		=> EX_MemRead,
+		EX_MemWrite 	=> EX_MemWrite,
+		EX_MemToRead	=> EX_MemToRead,
+		EX_RegWrite 	=> EX_RegWrite,
+		EX_ALUResult 	=> ALUMuxResult,
+		EX_reg2 		=> EX_MemWriteData,
+		MEM_RegDst 		=> MEM_RegDst,
+		MEM_MemRead 	=> MEM_MemRead,
+		MEM_MemWrite	=> MEM_MemWrite,
+		MEM_MemToRead	=>MEM_MemToRead,
+		MEM_RegWrite	=> MEM_RegWrite,
+		MEM_ALUResult	=> MEM_ALUResult,
+		MEM_reg2 		=> MEM_reg2
 	);
 
 	u21 : MEMWBRegister
@@ -951,19 +951,19 @@ begin
 		MEM_MemToRead=>MEM_MemToRead,
 		MEM_RegWrite=> MEM_RegWrite,
 		MEM_rdata	=> rdata,
-		MEM_ALURes 	=> MEM_ALURes,
+		MEM_ALUResult 	=> MEM_ALUResult,
 		WB_RegDst	=> WB_RegDst,
 		WB_MemToRead=> WB_MemToRead,
 		WB_RegWrite => WB_RegWrite,
 		WB_rdata 	=> WB_rdata,
-		WB_ALURes	=> WB_ALURes
+		WB_ALUResult	=> WB_ALUResult
 	);
 
 	u22 : WriteDataMux
 	port map(
 		MemToReg 	=> WB_MemToRead,
 		rdata 		=> WB_rdata,
-		ALUresult 	=> WB_ALURes,
+		ALUresult 	=> WB_ALUResult,
 		wdata 		=> WB_wdata
 	);
 
