@@ -89,7 +89,7 @@ begin
 					when kb_7=> outputcode <= "00110111";	
 					when kb_8=> outputcode <= "00111000";	
 					when kb_9=> outputcode <= "00111001";
-					when kb_space=> outputcode <= "11111110";
+					when kb_space=> outputcode <= "00100000";
 					when kb_dot=> outputcode <= "00101110" ;
 					when kb_comma=> outputcode <= "00101100";
 					when kb_exclaim=> outputcode <= "00100001";
