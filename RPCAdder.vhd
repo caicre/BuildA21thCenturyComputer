@@ -37,7 +37,7 @@ end RPCAdder;
 architecture Behavioral of RPCAdder is
 
 begin
-		RPC <= PC + 2 ;
+		RPC <= PC + 1;
 
 
 end Behavioral;

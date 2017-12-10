@@ -37,16 +37,18 @@ entity PCMux is
            NPC 		: in  STD_LOGIC_VECTOR(15 downto 0);
            PCAddImm 		: in  STD_LOGIC_VECTOR(15 downto 0);
            reg1 		: in  STD_LOGIC_VECTOR(15 downto 0);
-           PCOut 		: out  STD_LOGIC_VECTOR(15 downto 0)
+           PCOut 		: out  STD_LOGIC_VECTOR(15 downto 0);
+			  
+			  FLASH_FINISH: in STD_LOGIC
 	) ;
 end PCMux;
 
 architecture Behavioral of PCMux is
 begin
-	PCOut <= PCAddImm when (PCStall = '0' and Jump = '0' and branchJudge = '1') else
+	PCOut <= (others => '0') when FLASH_FINISH = '0' else
+				PCAddImm when (PCStall = '0' and Jump = '0' and branchJudge = '1') else
 				PC when PCStall = '1' else
 				reg1 when (PCStall = '0' and Jump = '1') else 
 				NPC ;
-
 end Behavioral;
 

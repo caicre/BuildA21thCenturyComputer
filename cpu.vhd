@@ -38,20 +38,52 @@ entity cpu is
 		hs, vs 		: out STD_LOGIC;
 		redOut		: out STD_LOGIC_VECTOR(2 downto 0);
 		greenOut 	: out STD_LOGIC_VECTOR(2 downto 0);
-		blueOut 	: out STD_LOGIC_VECTOR(2 downto 0)
+		blueOut 	: out STD_LOGIC_VECTOR(2 downto 0);
 		
+		-- PS2
+		ps_clk		: in STD_LOGIC;
+		ps_data		: in STD_LOGIC;
+		
+--		-- FLASH								--监控程序
+		FLASH_ADDR 	: out STD_LOGIC_VECTOR(22 downto 0);
+		FLASH_DATA	: inout STD_LOGIC_VECTOR(15 downto 0);
+		FLASH_BYTE	: out STD_LOGIC := '1';		--flash操作模式, 常置'1'
+		FLASH_VPEN	: out STD_LOGIC := '1';		--flash写保护, 常置'1'
+		FLASH_RP		: out STD_LOGIC := '1';		--'1'表示flash工作, 常置'1'
+		FLASH_CE		: out STD_LOGIC := '0';		--flash使能
+		FLASH_OE		: out STD_LOGIC := '1';		--flash读使能, '0'有效, 每次都操作后值'1'
+		FLASH_WE		: out STD_LOGIC := '1'		--flash写使能
 	);
 end cpu;
 
 architecture Behavioral of cpu is
 
-	component clockForClock
-		port (
-			clk : in  STD_LOGIC;
-			rst : in	STD_LOGIC;
-			clkForClock : out  STD_LOGIC
+	component HFCLOCK PORT 
+	(
+		CLKIN_IN : in std_logic; 
+		CLKFX_OUT : out std_logic;
+		CLK0_OUT : out std_logic
+	);
+	end component ;
+	
+	COMPONENT KeyboardDecoder
+	PORT(
+		scancode : IN std_logic_vector(7 downto 0);          
+		outputcode : OUT std_logic_vector(7 downto 0);
+		clk : in std_logic;
+		rst : in std_logic
 		);
-	end component;
+	END COMPONENT;
+
+	COMPONENT Keyboard
+	PORT(
+		rst : IN std_logic;
+		clkin : IN std_logic;
+		datain : IN std_logic;
+		fclk : IN std_logic;          
+		scancode : OUT std_logic_vector(7 downto 0)
+		);
+	END COMPONENT;
 
 	component Tryrom
 		port (
@@ -62,14 +94,23 @@ architecture Behavioral of cpu is
 	end component;
 attribute box_type : string ;
 attribute box_type of Tryrom : component is "black_box" ;
-	component Clock
+--	component Clock
+--		port(
+--			rst	: in STD_LOGIC;
+--			clk 	: in STD_LOGIC;
+--			clk0	: out STD_LOGIC;
+--			clk1 	: out STD_LOGIC;
+--			clk2	: out STD_LOGIC;
+--			clk3 	: out STD_LOGIC
+--		);
+--	end component;
+	
+	component MemController
 		port(
-			rst	: in STD_LOGIC;
-			clk 	: in STD_LOGIC;
-			clk0	: out STD_LOGIC;
-			clk1 	: out STD_LOGIC;
-			clk2	: out STD_LOGIC;
-			clk3 	: out STD_LOGIC
+			MemRead	: in STD_LOGIC;
+			MemWrite : in STD_LOGIC;
+			
+			isMem		: out STD_LOGIC
 		);
 	end component;
 
@@ -98,6 +139,7 @@ attribute box_type of Tryrom : component is "black_box" ;
 
 	component ForwardingUnit
 		port(
+			rst			: in std_Logic;
 			-- control signal
 			EX_ALUSrcB	: in STD_LOGIC;
 			EX_MemWrite : in STD_LOGIC;
@@ -121,6 +163,8 @@ attribute box_type of Tryrom : component is "black_box" ;
 			-- input
 			raddr1 		: in STD_LOGIC_VECTOR(3 downto 0);
 			raddr2 		: in STD_LOGIC_VECTOR(3 downto 0);
+			isMem	: in STD_LOGIC;
+			
 			-- output
 			PCStall		: out STD_LOGIC;
 			IFIDStall 	: out STD_LOGIC;
@@ -136,6 +180,7 @@ attribute box_type of Tryrom : component is "black_box" ;
 			-- input control signal
 			MemWrite 	: in STD_LOGIC;		--'1':锟
 			MemRead 	: in STD_LOGIC;		--'1':锟
+			isMem 	: in STD_LOGIC;
 			
 			-- RAM1							--涓轰覆锟紹F00~BF03)
 			Ram1_OE 	: out STD_LOGIC;
@@ -165,8 +210,21 @@ attribute box_type of Tryrom : component is "black_box" ;
 			tbre			: in STD_LOGIC;
 			tsre			: in STD_LOGIC;
 			wrn			: out STD_LOGIC;
-			rdn			: out STD_LOGIC
+			rdn			: out STD_LOGIC;
 			
+			-- FLASH								--监控程序
+			FLASH_ADDR 	: out STD_LOGIC_VECTOR(22 downto 0);
+			FLASH_DATA	: inout STD_LOGIC_VECTOR(15 downto 0);
+			FLASH_BYTE	: out STD_LOGIC := '1';		--flash操作模式, 常置'1'
+			FLASH_VPEN	: out STD_LOGIC := '1';		--flash写保护, 常置'1'
+			FLASH_RP		: out STD_LOGIC := '1';		--'1'表示flash工作, 常置'1'
+			FLASH_CE		: out STD_LOGIC := '0';		--flash使能
+			FLASH_OE		: out STD_LOGIC := '1';		--flash读使能, '0'有效, 每次都操作后值'1'
+			FLASH_WE		: out STD_LOGIC := '1';		--flash写使能
+			
+			--output
+			FLASH_FINISH: out STD_LOGIC := '0'		--'0':未完成	'1':完成读监控程序到RAM2
+																--这要转给控制器, 要把PC?IF?停顿
 		);
 	end component;
 
@@ -209,8 +267,9 @@ attribute box_type of Tryrom : component is "black_box" ;
 			PCAddImm	: in STD_LOGIC_VECTOR(15 downto 0);
 			reg1 	    : in STD_LOGIC_VECTOR(15 downto 0);
 			--
-			PCOut		: out STD_LOGIC_VECTOR(15 downto 0)
-
+			PCOut		: out STD_LOGIC_VECTOR(15 downto 0);
+			
+			FLASH_FINISH: in STD_LOGIC
 		);
 	end component;
 
@@ -446,6 +505,8 @@ attribute box_type of Tryrom : component is "black_box" ;
 			clk 		: in STD_LOGIC;
 			rst 		: in STD_LOGIC;
 			-- input control signal
+			MEM_MemRead : in STD_LOGIC;
+			MEM_MemWrite: in STD_LOGIC;
 			MEM_RegDst 	: in STD_LOGIC_VECTOR(3 downto 0);
 			MEM_MemToRead: in STD_LOGIC;
 			MEM_RegWrite: in STD_LOGIC;
@@ -455,6 +516,7 @@ attribute box_type of Tryrom : component is "black_box" ;
 			-- output control signal
 			WB_RegDst 	: out STD_LOGIC_VECTOR(3 downto 0);
 			WB_MemToRead: out STD_LOGIC;
+			WB_LWSW : out STD_LOGIC;
 			WB_RegWrite : out STD_LOGIC;
 			-- output
 			WB_rdata 	: out STD_LOGIC_VECTOR(15 downto 0);
@@ -494,6 +556,7 @@ attribute box_type of Tryrom : component is "black_box" ;
 			Tdata 		: in std_logic_vector(15 downto 0);
 			SPdata 		: in std_logic_vector(15 downto 0);
 			IHdata 		: in std_logic_vector(15 downto 0);
+			inputcode	: in std_logic_vector(7 downto 0);
 			
 			-- font rom
 			romAddr 	: out std_logic_vector(10 downto 0);
@@ -506,15 +569,33 @@ attribute box_type of Tryrom : component is "black_box" ;
 			oBlue		: out std_logic_vector (2 downto 0)
 		);		
 	end component;
+	
+	COMPONENT TryDCM
+	PORT(
+		CLKIN_IN : IN std_logic;
+		RST_IN : IN std_logic;          
+		CLKFX_OUT : OUT std_logic;
+		CLKIN_IBUFG_OUT : OUT std_logic;
+		CLK0_OUT : OUT std_logic
+		);
+	END COMPONENT;
+
+	COMPONENT RstController
+	PORT(
+		rst: IN std_logic;
+		FLASH_FINISH : IN std_logic;          
+		rst_out : OUT std_logic
+		);
+	END COMPONENT;	
 
 	----------------------------
 	--         signals            
 	----------------------------
 	-- Clock
-	signal clk0 		: STD_LOGIC;
-	signal clk1 		: STD_LOGIC;
-	signal clk2 		: STD_LOGIC;
-	signal clk3 		: STD_LOGIC;
+--	signal clk0 		: STD_LOGIC;
+--	signal clk1 		: STD_LOGIC;
+--	signal clk2 		: STD_LOGIC;
+--	signal clk3 		: STD_LOGIC;
 
 	-- Controller
 	signal RegSrcA		: STD_LOGIC_VECTOR(3 downto 0);
@@ -546,6 +627,7 @@ attribute box_type of Tryrom : component is "black_box" ;
 	-- MemoryUnit
 	signal rdata 		: STD_LOGIC_VECTOR(15 downto 0);
 	signal IF_inst 		: STD_LOGIC_VECTOR(15 downto 0) ;
+	signal EX_isMem	: STD_LOGIC;
 
 	-- PCRegister
 	signal IF_PC 	 	: STD_LOGIC_VECTOR(15 downto 0);
@@ -637,6 +719,7 @@ attribute box_type of Tryrom : component is "black_box" ;
 	signal WB_RegDst	: STD_LOGIC_VECTOR(3 downto 0);
 	signal WB_MemToRead : STD_LOGIC;
 	signal WB_RegWrite 	: STD_LOGIC;
+	signal WB_LWSW : STD_LOGIC;
 	signal WB_rdata 	: STD_LOGIC_VECTOR(15 downto 0);
 	signal WB_ALUResult 	: STD_LOGIC_VECTOR(15 downto 0);
 
@@ -647,25 +730,38 @@ attribute box_type of Tryrom : component is "black_box" ;
 	signal TryromAddr : std_logic_vector(10 downto 0);
 	signal TryromData : std_logic_vector(7 downto 0);
 	
+	-- ps2
+	signal scancode	: std_logic_vector(7 downto 0);
+	signal inputcode	: std_logic_vector(7 downto 0);
+	
 	signal clk : std_logic ;
-	signal clkForClock : std_logic;
+	signal clk_out : std_logic ;
+	signal clk50 : std_logic ;
 
+	signal FLASH_FINISH: STD_LOGIC;
+	signal rst_out: STD_LOGIC;
 
 begin
 
-	u0 : Clock
-	port map(
-		rst 		=> rst,
-		clk 		=> clk,
-		clk0 		=> clk0,
-		clk1 		=> clk1,
-		clk2 		=> clk2,
-		clk3 		=> clk3
+	Inst_HFCLOCK: HFCLOCK PORT MAP(
+		CLKIN_IN => clk_board,
+		CLKFX_OUT => clk_out,
+		CLK0_OUT => clk50
 	);
+
+--	u0 : Clock
+--	port map(
+--		rst 		=> rst,
+--		clk 		=> clk,
+--		clk0 		=> clk0,
+--		clk1 		=> clk1,
+--		clk2 		=> clk2,
+--		clk3 		=> clk3
+--	);
 	
 	u1 : Controller
 	port map(
-		rst 		=> rst,
+		rst 		=> rst_out,
 		inst 		=> ID_inst,
 		RegSrcA		=> RegSrcA,
 		RegSrcB 	=> RegSrcB,
@@ -686,6 +782,7 @@ begin
 
 	u2 : ForwardingUnit
 	port map(
+		rst			=> rst,
 		EX_ALUSrcB	=> EX_ALUSrcB,
 		EX_MemWrite => EX_MemWrite,
 		MEM_RegDst	=> MEM_RegDst,
@@ -703,7 +800,8 @@ begin
 		EX_RegDst 	=> EX_RegDst,
 		raddr1 		=> RegSrcA,
 		raddr2 		=> RegSrcB,
-		PCStall 	=> PCStall,
+		isMem			=> EX_isMem,
+		PCStall 		=> PCStall,
 		IFIDStall 	=> IFIDStall,
 		IDEXFlush 	=> IDEXFlush
 	);
@@ -712,15 +810,16 @@ begin
 	port map(
 		clk 		=> clk,
 		rst 		=> rst,
-		MemWrite 	=> MEM_MemWrite,
-		MemRead 	=> MEM_MemRead,
+		MemWrite 	=> EX_MemWrite,
+		MemRead 	=> EX_MemRead,
+		isMem		=> EX_isMem,
 		Ram1_OE 	=> Ram1_OE,
 		Ram1_WE 	=> Ram1_WE,
 		Ram1_EN 	=> Ram1_EN,
 		Ram1_Addr 	=> Ram1_Addr,
 		Ram1_Data 	=> Ram1_Data,
-		addr 		=> MEM_ALUResult,
-		wdata 		=> MEM_reg2,
+		addr 		=> ALUMuxResult,
+		wdata 		=> EX_MemWriteData,
 		rdata 		=> rdata, --HERE was MEM_rdata
 		Ram2_OE 	=> Ram2_OE,
 		Ram2_WE 	=> Ram2_WE,
@@ -733,13 +832,22 @@ begin
 		tbre 		=> tbre,
 		tsre 		=> tsre,
 		wrn 		=> wrn,
-		rdn 		=> rdn
+		rdn 		=> rdn,
+		FLASH_ADDR 	=> FLASH_ADDR,
+		FLASH_DATA	=> FLASH_DATA,
+		FLASH_BYTE	=> FLASH_BYTE,
+		FLASH_VPEN	=> FLASH_VPEN,
+		FLASH_RP		=> FLASH_RP,
+		FLASH_CE		=> FLASH_CE,
+		FLASH_OE		=> FLASH_OE,
+		FLASH_WE		=> FLASH_WE,
+		FLASH_FINISH => FLASH_FINISH
 	);
 
 	u4 : PCRegister
 	port map(
 		clk 		=> clk,
-		rst 		=> rst,
+		rst 		=> rst_out,
 		PCIn 		=> PCMuxOut,
 		PCOut 	=> IF_PC
 	);
@@ -752,7 +860,7 @@ begin
 
 	u6 : RPCAdder
 	port map(
-		PC 			=> IF_PC,
+		PC 			=> PCMuxOut,
 		RPC 		=> IF_RPC
 	);
 
@@ -765,13 +873,14 @@ begin
 		NPC 		=> IF_NPC,
 		PCAddImm 	=> EX_PCAddImm,
 		reg1 		=> EX_reg1,
-		PCOut 		=> PCMuxOut
+		PCOut 		=> PCMuxOut,
+		FLASH_FINISH => Flash_Finish
 	);
 
 	u9 : IFIDRegister
 	port map(
 		clk 		=> clk,
-		rst 		=> rst,
+		rst 		=> rst_out,
 		IFIDStall 	=> IFIDStall,
 		IFIDFlush	=> IFIDFlush,
 		IF_PC 		=> IF_NPC,
@@ -785,7 +894,7 @@ begin
 	u10 : Registers
 	port map(
 		clk 		=> clk,
-		rst 		=> rst,
+		rst 		=> rst_out,
 		RegWrite 	=> WB_RegWrite,
 		raddr1 		=> RegSrcA,
 		raddr2 		=> RegSrcB,
@@ -819,7 +928,7 @@ begin
 	u12 : IDEXRegister
 	port map(
 		clk 		=> clk,
-		rst 		=> rst,
+		rst 		=> rst_out,
 		IDEXFlush 	=> IDEXFlush,
 		ID_RegDst 	=> RegDst,
 		ID_ALUOp 	=> ALUOp,
@@ -926,7 +1035,7 @@ begin
 	u19 : EXMEMRegister
 	port map(
 		clk 			=> clk,
-		rst 			=> rst,
+		rst 			=> rst_out,
 		EX_RegDst 		=> EX_RegDst,
 		EX_MemRead 		=> EX_MemRead,
 		EX_MemWrite 	=> EX_MemWrite,
@@ -946,12 +1055,15 @@ begin
 	u21 : MEMWBRegister
 	port map(
 		clk 		=> clk,
-		rst 		=> rst,
+		rst 		=> rst_out,
+		MEM_MemRead 	=> MEM_MemRead,
+		MEM_MemWrite	=> MEM_MemWrite,
 		MEM_RegDst  => MEM_RegDst,
 		MEM_MemToRead=>MEM_MemToRead,
 		MEM_RegWrite=> MEM_RegWrite,
 		MEM_rdata	=> rdata,
 		MEM_ALUResult 	=> MEM_ALUResult,
+		WB_LWSW		=> WB_LWSW,
 		WB_RegDst	=> WB_RegDst,
 		WB_MemToRead=> WB_MemToRead,
 		WB_RegWrite => WB_RegWrite,
@@ -970,7 +1082,7 @@ begin
 	u23 : VGA_Controller
 	port map(
 		reset 		=> rst,
-		clk_in 		=> clk_board,
+		clk_in 		=> clk50,
 		r0 			=> showreg_r0,
 		r1 			=> showreg_r1,
 		r2 			=> showreg_r2,
@@ -981,9 +1093,10 @@ begin
 		r7 			=> showreg_r7,
 		PC 			=> IF_PC,
 		CM 			=> ID_inst,
-		Tdata 		=> showreg_T,
-		SPdata 		=> showreg_SP,
-		IHdata 		=> showreg_IH,
+		Tdata 		=> ALUMuxResult,
+		SPdata 		=> EX_reg2,
+		IHdata 		=> rdata,
+		inputcode 	=> inputcode,
 		romAddr 	=> TryromAddr,
 		romData 	=> TryromData,
 		hs 			=> hs,
@@ -995,33 +1108,57 @@ begin
 	
 	u24 : Tryrom
 	port map(
-		clka => clk_board,
+		clka => clk50,
 		addra => TryromAddr,
 		douta => TryromData
 		);
 		
-	u25 : clockForClock
+	u26 : MemController
 	port map(
-			clk => clk,
+			MemRead => EX_MemRead,
+			MemWrite => EX_MemWrite,
+			isMem => EX_isMem
+		);
+	
+	u27: RstController
+	port map(
 			rst => rst,
-			clkForClock => clkForClock
+			FLASH_FINISH => FLASH_FINISH,
+			rst_out => rst_out
 		);
 		
-	IFIDFlush <= '0' when (EX_BranchJudge = '0' and EX_Jump = '0') else '1' ;
+	Inst_KeyboardDecoder: KeyboardDecoder 
+	PORT MAP(
+		clk => clk50 ,
+		rst => rst ,
+		scancode => scancode,
+		outputcode => inputcode
+	);
+	Inst_Keyboard: Keyboard 
+	PORT MAP(
+		rst => rst,
+		clkin => ps_clk,
+		datain => ps_data,
+		fclk => clk50,
+		scancode => scancode
+	);
 	
-	process (clk_board,rst,clk_button,clksignal)
+	IFIDFlush <= (EX_BranchJudge or EX_Jump) and (not WB_LWSW) ;
+	
+	process (clk_out,rst,clk_button,clksignal)
 	begin
 		if rst = '0' then clk <= '0' ;
-		elsif clksignal = '0' then clk <= clk_board ;
+		elsif clksignal = '0' then clk <= clk_out ;
 		else clk <= clk_button ;
 		end if ;
 	end process ;
-	process (EX_RegDst, IF_inst, clk)
+	process (clk)
 	begin
-		led(15 downto 12) <= EX_RegDst(3 downto 0) ;
-		--led(11 downto 8) <= ID_inst(3 downto 0) ;
-		led(11 downto 0) <= IF_inst(11 downto 0) ;
---		led(7 downto 0) <= showreg_r0(7 downto 0);
+		led(15) <= EX_isMem;
+		led(14) <= clk;
+		led(13) <= PCStall;
+		led(12 downto 8) <= IF_inst(4 downto 0);
+		led(7 downto 0) <= PCMuxOut(15 downto 8);
 --		led(15 downto 13) <= show1 ;
 --		led(12 downto 10) <= show2 ;
 --		led(9 downto 7) <= show3 ;

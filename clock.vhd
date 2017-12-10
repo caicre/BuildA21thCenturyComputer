@@ -34,17 +34,13 @@ begin
 					clk1 <= '0';
 					clk2 <= '1';
 					clk3 <= '0';
-				when 2 =>
-					clk1 <= '0';
-					clk2 <= '0';
-					clk3 <= '1';
 				when others =>
 					clk1 <= '0';
 					clk2 <= '0';
 					clk3 <= '0';					
 			end case;
 
-			if (count = 2) then
+			if (count = 1) then
 				count <= 0;
 			else 
 				count <= count + 1;

@@ -50,9 +50,9 @@ begin
 				end if;
 			when "1000" => -- sltu
 				if (src1 < src2) then
-					result <= "0000000000000000";
-				else
 					result <= "0000000000000001";
+				else
+					result <= "0000000000000000";
 				end if;
 			when "1001" => -- li, src2
 				result <= src2;

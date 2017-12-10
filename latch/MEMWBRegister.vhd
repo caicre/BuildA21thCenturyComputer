@@ -34,6 +34,8 @@ entity MEMWBRegister is
 		clk 			: in STD_LOGIC;
 		rst 			: in STD_LOGIC;
 		-- input control signal
+		MEM_MemRead	: in STD_LOGIC;
+		MEM_MemWrite: in STD_LOGIC;
 		MEM_MemToRead	: in STD_LOGIC;
 		MEM_RegWrite	: in STD_LOGIC;
 		-- input
@@ -41,6 +43,7 @@ entity MEMWBRegister is
 		MEM_ALUResult	: in STD_LOGIC_VECTOR(15 downto 0);
 		MEM_RegDst		: in STD_LOGIC_VECTOR(3 downto 0);
 		-- output control signal
+		WB_LWSW			: out STD_LOGIC;
 		WB_MemToRead	: out STD_LOGIC;
 		WB_RegWrite 	: out STD_LOGIC;
 		-- output
@@ -61,6 +64,7 @@ begin
 			WB_rdata <= (others => '0');
 			WB_RegDst <= (others => '1');
 			WB_ALUResult <= (others => '0');
+			WB_LWSW <= '0';
 			state <= c0 ;
 		elsif(clk'event and clk='1') then
 			case state is
@@ -70,9 +74,14 @@ begin
 					WB_rdata <= MEM_rdata;
 					WB_RegDst <= MEM_RegDst;
 					WB_ALUResult <= MEM_ALUResult;
+					WB_LWSW <= MEM_MemRead or MEM_MemWrite ;
 					state <= c1 ;
-				when c1 => state <= c2 ;
-				when c2 => state <= c0 ;
+				when c1 => 
+					state <= c0 ;
+				when c2 =>
+					state <= c3;
+				when c3 =>
+					state <= c0;
 				when others => state <= c0 ;
 			end case ;
 		end if;

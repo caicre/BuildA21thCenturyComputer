@@ -37,6 +37,7 @@ entity HazardDetectionUnit is
 		-- input
 		raddr1 		: in STD_LOGIC_VECTOR(3 downto 0);
 		raddr2 		: in STD_LOGIC_VECTOR(3 downto 0);
+		isMem			: in STD_LOGIC;
 		-- output
 		PCStall		: out STD_LOGIC;
 		IFIDStall 	: out STD_LOGIC;
@@ -46,29 +47,25 @@ end HazardDetectionUnit;
 architecture Behavioral of HazardDetectionUnit is
 
 begin
-	process(EX_MemRead, EX_RegDst, raddr1, raddr2)
-	begin
-		if (EX_MemRead = '1') then
-			--if(raddr1 = "1111" and raddr2 = "1111") then	--这是为什么?
-			--	PCStall <= '0';
-			--	IFIDStall <= '0';
-			--	IDEXFlush <= '0';
-			--els
-			if(EX_RegDst = raddr1 or EX_RegDst = raddr2) then
-				PCStall <= '1';
-				IFIDStall <= '1';
-				IDEXFlush <= '1';
-			else
-				PCStall <= '0';
-				IFIDStall <= '0';
-				IDEXFlush <= '0';
-			end if;
-		else
-			PCStall <= '0';
-			IFIDStall <= '0';
-			IDEXFlush <= '0';
-		end if;
-	end process;
+	PCStall <= '1' when ((EX_MemRead = '1' and ((EX_RegDst = raddr1) or (EX_RegDst = raddr2))) or (isMem='1')) else '0' ;
+	IFIDStall <= '1' when ((EX_MemRead = '1') and ((EX_RegDst = raddr1) or (EX_RegDst = raddr2))) else '0' ;
+	IDEXFlush <= '1' when ((EX_MemRead = '1') and ((EX_RegDst = raddr1) or (EX_RegDst = raddr2))) else '0' ;
+--	process(EX_MemRead, EX_RegDst, raddr1, raddr2, isMem)
+--	begin
+--		if (EX_MemRead = '1' and (EX_RegDst = raddr1 or EX_RegDst = raddr2)) then
+--			PCStall <= '1';
+--			IFIDStall <= '1';
+--			IDEXFlush <= '1';
+--		elsif isMem = '1' then
+--			PCStall <= '1';
+--			IFIDStall <= '0';
+--			IDEXFlush <= '0'; -- 同时 isMem = '1' 会产生IFIDFlush = 1
+--		else
+--			PCStall <= '0';
+--			IFIDStall <= '0';
+--			IDEXFlush <= '0';
+--		end if;
+--	end process;
 
 end Behavioral;
 

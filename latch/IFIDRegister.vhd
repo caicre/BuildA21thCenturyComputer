@@ -73,9 +73,11 @@ begin
 					end if;
 					state <= c1 ;
 				when c1 =>
-					state <= c2 ;
-				when c2 =>
 					state <= c0 ;
+				when c2 =>
+					state <= c3;
+				when c3 =>
+					state <= c0;
 				when others =>
 					state <= c0 ;
 			end case;

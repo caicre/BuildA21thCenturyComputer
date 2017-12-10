@@ -47,37 +47,46 @@ end BranchUnit;
 architecture Behavioral of BranchUnit is
 
 begin
-    process (Branch,BranchOp, ForwardA, reg1, MEM_ALUResult, WB_ALUResult)
-        variable reg        : STD_LOGIC_VECTOR(15 downto 0);
-        variable zero       : STD_LOGIC_VECTOR(15 downto 0) := (others => '0');
-    begin
-        if (Branch = '1') then
-            case ForwardA is
-                when "00" => reg := reg1;
-                when "01" => reg := MEM_ALUResult;
-                when "10" => reg := WB_ALUResult;
-					 when others => 
-            end case;
-            case BranchOp is
-                when "00" => BranchJudge <= '1';
-                when "01" => 
-                    if (reg = zero) then 
-                        BranchJudge <= '1';
-                    else 
-                        BranchJudge <= '0';
-                    end if;
-                when "10" =>
-                    if (reg /= zero) then
-                        BranchJudge <= '1';
-                    else 
-                        BranchJudge <= '0';
-                    end if;
-					 when others => 
-            end case ;
-        else 
-            BranchJudge <= '0';
-        end if;
-    end process ;
-
+	BranchJudge <= '1' when (Branch = '1' and 
+									((BranchOp = "00") or 
+										(BranchOp = "01" and ((ForwardA="00" and reg1 = "0000000000000000") or 
+																	(ForwardA="01" and MEM_ALUResult = "0000000000000000") or
+																	(ForwardA="10" and WB_ALUResult = "0000000000000000"))) or 
+										(BranchOp = "10" and ((ForwardA="00" and reg1 /= "0000000000000000") or 
+																	(ForwardA="01" and MEM_ALUResult /= "0000000000000000") or
+																	(ForwardA="10" and WB_ALUResult /= "0000000000000000"))))) 
+							else '0' ;
+--    process (Branch,BranchOp, ForwardA, reg1, MEM_ALUResult, WB_ALUResult)
+--        variable reg        : STD_LOGIC_VECTOR(15 downto 0);
+--        variable zero       : STD_LOGIC_VECTOR(15 downto 0) := (others => '0');
+--    begin
+--        if (Branch = '1') then
+--            case ForwardA is
+--                when "00" => reg := reg1;
+--                when "01" => reg := MEM_ALUResult;
+--                when "10" => reg := WB_ALUResult;
+--					 when others => 
+--            end case;
+--            case BranchOp is
+--                when "00" => BranchJudge <= '1';
+--                when "01" => 
+--                    if (reg = zero) then 
+--                        BranchJudge <= '1';
+--                    else 
+--                        BranchJudge <= '0';
+--                    end if;
+--                when "10" =>
+--                    if (reg /= zero) then
+--                        BranchJudge <= '1';
+--                    else 
+--                        BranchJudge <= '0';
+--                    end if;
+--					 when others => 
+--            end case ;
+--        else 
+--            BranchJudge <= '0';
+--        end if;
+--    end process ;
+--
 end Behavioral;
 

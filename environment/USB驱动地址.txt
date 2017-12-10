@@ -1,0 +1,5 @@
+USB-232(usb2.0-ser!)数据线驱动地址（第二个）
+
+http://www.computerhope.com/forum/index.php/topic,81904.0.html
+
+http://www.winchiphead.com/download/CH341/CH341SER.ZIP

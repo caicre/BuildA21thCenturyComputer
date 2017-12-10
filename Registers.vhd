@@ -114,68 +114,51 @@ begin
 							when others => 
 					  end case ;
 				 end if ;
-				 state <= c2 ;
-			when c2 =>
-				state <= c0 ;
+				 state <= c0 ;
+				when c3 =>
+					state <= c0;
+				when c2 =>
+					state <= c3;
 			when others => state <= c0 ;
 		end case ;
 	 end if ;
     end process ;
-	process (raddr1,state)
+	process (raddr1, state)
 	begin
-    if    (raddr1 = R0_ADDR) then 
-        reg1 <= r0 ; 
-    elsif (raddr1 = R1_ADDR) then
-        reg1 <= r1 ;
-    elsif (raddr1 = R2_ADDR) then
-        reg1 <= r2 ;
-    elsif (raddr1 = R3_ADDR) then
-        reg1 <= r3 ;
-    elsif (raddr1 = R4_ADDR) then
-        reg1 <= r4 ;
-    elsif (raddr1 = R5_ADDR) then
-        reg1 <= r5 ;
-    elsif (raddr1 = R6_ADDR) then
-        reg1 <= r6 ;
-    elsif (raddr1 = R7_ADDR) then
-        reg1 <= r7 ;
-    elsif (raddr1 = REG_SP) then
-        reg1 <= SP ;     
-    elsif (raddr1 = REG_IH) then
-        reg1 <= IH ;
-    elsif (raddr1 = REG_RA) then
-        reg1 <= RA ;
-    elsif (raddr1 = REG_T ) then
-        reg1 <= T  ;
-    end if ;
-    end process ;
-    process (raddr2, state)
+		case raddr1 is
+			when R0_ADDR => reg1 <= r0 ;
+			when R1_ADDR => reg1 <= r1 ;
+			when R2_ADDR => reg1 <= r2 ;
+			when R3_ADDR => reg1 <= r3 ;
+			when R4_ADDR => reg1 <= r4 ;
+			when R5_ADDR => reg1 <= r5 ;
+			when R6_ADDR => reg1 <= r6 ;
+			when R7_ADDR => reg1 <= r7 ;
+			when REG_SP => reg1 <= SP ;
+			when REG_IH => reg1 <= IH ;
+			when REG_RA => reg1 <= RA ;
+			when REG_T => reg1 <= T ;
+			when others => 
+		end case ;
+	end process ;
+
+    process (raddr2)
 	begin
-    if    (raddr2 = R0_ADDR) then 
-        reg2 <= r0 ; 
-    elsif (raddr2 = R1_ADDR) then
-        reg2 <= r1 ;
-    elsif (raddr2 = R2_ADDR) then
-        reg2 <= r2 ;
-    elsif (raddr2 = R3_ADDR) then
-        reg2 <= r3 ;
-    elsif (raddr2 = R4_ADDR) then
-        reg2 <= r4 ;
-    elsif (raddr2 = R5_ADDR) then
-        reg2 <= r5 ;
-    elsif (raddr2 = R6_ADDR) then
-        reg2 <= r6 ;
-    elsif (raddr2 = R7_ADDR) then
-        reg2 <= r7 ;
-    elsif (raddr2 = REG_SP) then
-        reg2 <= SP ;     
-    elsif (raddr2 = REG_IH) then
-        reg2 <= IH ;
-    elsif (raddr2 = REG_RA) then
-        reg2 <= RA ;
-    elsif (raddr2 = REG_T ) then
-        reg2 <= T  ;
-    end if ;
+		case raddr2 is
+			when R0_ADDR => reg2 <= r0 ;
+			when R1_ADDR => reg2 <= r1 ;
+			when R2_ADDR => reg2 <= r2 ;
+			when R3_ADDR => reg2 <= r3 ;
+			when R4_ADDR => reg2 <= r4 ;
+			when R5_ADDR => reg2 <= r5 ;
+			when R6_ADDR => reg2 <= r6 ;
+			when R7_ADDR => reg2 <= r7 ;
+			when REG_SP  => reg2 <= SP ;
+			when REG_IH  => reg2 <= IH ;
+			when REG_RA  => reg2 <= RA ;
+			when REG_T   => reg2 <= T ;
+			when others => 
+		end case ;
 	end process ;
 
     showreg_r0 <= r0 ;
@@ -190,5 +173,6 @@ begin
     showreg_SP <= SP ;
     showreg_RA <= RA ;
     showreg_IH <= IH ;
+	 
 end Behavioral;
 

@@ -30,10 +30,10 @@ use IEEE.STD_LOGIC_1164.ALL;
 --use UNISIM.VComponents.all;
 
 entity ALUResMux is
-    Port ( ALURes       : in  STD_LOGIC_VECTOR(1 DOWNTO 0);
+    Port ( ALURes       	: in  STD_LOGIC_VECTOR(1 DOWNTO 0);
            ALUResult       : in  STD_LOGIC_VECTOR(15 DOWNTO 0);
-           PC           : in  STD_LOGIC_VECTOR(15 DOWNTO 0);
-           RPC          : in  STD_LOGIC_VECTOR(15 DOWNTO 0);
+           PC           	: in  STD_LOGIC_VECTOR(15 DOWNTO 0);
+           RPC          	: in  STD_LOGIC_VECTOR(15 DOWNTO 0);
            ALUMuxResult    : out  STD_LOGIC_VECTOR(15 DOWNTO 0) );
 end ALUResMux;
 
