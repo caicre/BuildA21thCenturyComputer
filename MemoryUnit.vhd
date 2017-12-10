@@ -69,6 +69,7 @@ entity MemoryUnit is
 			wrn			: out STD_LOGIC;
 			rdn			: out STD_LOGIC;
 			
+<<<<<<< HEAD
 			--FLASH								--???????
 			FLASH_ADDR 	: out STD_LOGIC_VECTOR(22 downto 0);
 			FLASH_DATA	: inout STD_LOGIC_VECTOR(15 downto 0);
@@ -82,6 +83,21 @@ entity MemoryUnit is
 			--output
 			FLASH_FINISH: out STD_LOGIC := '0'		--'0':δ????	'1':??????????????RAM2
 																--????????????, ???PC?IF????
+=======
+			--FLASH								--监控程序
+			FLASH_ADDR 	: out STD_LOGIC_VECTOR(22 downto 0);
+			FLASH_DATA	: inout STD_LOGIC_VECTOR(15 downto 0);
+			FLASH_BYTE	: out STD_LOGIC := '1';		--flash操作模式, 常置'1'
+			FLASH_VPEN	: out STD_LOGIC := '1';		--flash写保护, 常置'1'
+			FLASH_RP		: out STD_LOGIC := '1';		--'1'表示flash工作, 常置'1'
+			FLASH_CE		: out STD_LOGIC := '0';		--flash使能
+			FLASH_OE		: out STD_LOGIC := '1';		--flash读使能, '0'有效, 每次都操作后值'1'
+			FLASH_WE		: out STD_LOGIC := '1';		--flash写使能
+			
+			--output
+			FLASH_FINISH: out STD_LOGIC := '0'		--'0':未完成	'1':完成读监控程序到RAM2
+																--这要转给控制器, 要把PC?IF?停顿
+>>>>>>> 799e6cf0a4a6e85ec5e8bebcb629207b39b6b1f0
 				);
 end MemoryUnit;
 
@@ -89,12 +105,17 @@ architecture Behavioral of MemoryUnit is
 
 type state is (s0, s1, s2, s3, s4, s5);
 signal mem_state : state;
+<<<<<<< HEAD
 signal rflag : std_logic := '0';		--rflag='1'????????????????ram1_data??????裬?????????????
+=======
+signal rflag : std_logic := '0';		--rflag='1'代表把串口数据线（ram1_data）置高阻，用于节省状态的控制
+>>>>>>> 799e6cf0a4a6e85ec5e8bebcb629207b39b6b1f0
 
 --flash
 signal flash_state : state;
 signal flash_finished : std_logic := '0';
 signal current_addr : std_logic_vector(15 downto 0) := (others => '0');
+<<<<<<< HEAD
 shared variable cnt : integer := 0;	--???????????????????FLASH?????
 shared variable tmp_MemRead : std_logic ;
 shared variable tmp_MemWrite : std_logic ;
@@ -103,6 +124,10 @@ shared variable tmp_PC : std_logic_vector(15 downto 0) ;
 shared variable tmp_addr : std_logic_vector(15 downto 0) ;
 shared variable tmp_wdata : std_logic_vector(15 downto 0) ;
 shared variable tmp_inst : std_logic_vector(15 downto 0) ;
+=======
+shared variable cnt : integer := 0;	--用于原来的频率降低为适合FLASH的频率
+
+>>>>>>> 799e6cf0a4a6e85ec5e8bebcb629207b39b6b1f0
 begin
 	process(clk, rst)
 	variable Ram_Addr: STD_LOGIC_VECTOR(15 downto 0);
@@ -130,6 +155,7 @@ begin
 			current_addr <= (others => '0');
 			
 		elsif (clk'event and clk = '1') then
+<<<<<<< HEAD
 			if (mem_state = s0) then
 				tmp_MemRead := MemRead ;
 				tmp_MemWrite := MemWrite ;
@@ -137,6 +163,13 @@ begin
 				tmp_PC := PC ;
 				tmp_addr := addr ;
 				tmp_wdata := wdata ;
+=======
+			if(flash_finished = '1') then
+				FLASH_BYTE <= '1';
+				FLASH_VPEN <= '1';
+				FLASH_RP <= '1';
+				FLASH_CE <= '1';
+>>>>>>> 799e6cf0a4a6e85ec5e8bebcb629207b39b6b1f0
 				Ram1_EN <= '1';
 				Ram1_OE <= '1';
 				Ram1_WE <= '1';
@@ -231,6 +264,7 @@ begin
 								rdata(7 downto 0) <= Ram1_Data(7 downto 0);
 							else										--?????
 								Ram2_OE <= '1';
+<<<<<<< HEAD
 								if(tmp_IsMem = '1') then	--??MEM, ????????rdata
 									rdata <= Ram2_Data;
 								else						--??IF, ????????inst
@@ -254,6 +288,21 @@ begin
 					
 					case flash_state is
 						when s0 =>		--WE??0
+=======
+								rdata <= Ram2_Data;
+							end if;
+						end if;
+						mem_state <= s0;
+					when others =>
+						mem_state <= s0;
+				end case;
+			else
+				if( cnt >= 1000) then
+					cnt := 0;
+					
+					case flash_state is
+						when s0 =>		--WE置0
+>>>>>>> 799e6cf0a4a6e85ec5e8bebcb629207b39b6b1f0
 							Ram2_EN <= '0';
 							Ram2_WE <= '0';
 							Ram2_OE <= '1';
@@ -269,7 +318,11 @@ begin
 							
 							flash_state <= s1;
 							
+<<<<<<< HEAD
 						when s1 =>		--???????
+=======
+						when s1 =>		--置为读模式
+>>>>>>> 799e6cf0a4a6e85ec5e8bebcb629207b39b6b1f0
 							FLASH_DATA <= x"00FF";
 							flash_state <= s2;
 							
@@ -277,13 +330,20 @@ begin
 							FLASH_WE <= '1';
 							flash_state <= s3;
 							
+<<<<<<< HEAD
 						when s3 =>		--??????
 							FLASH_ADDR <= "000000" & current_addr & '0';	--??????????????????22~1, ????????6λ(22~17)?block???, ???(16~1)?block?????.
 																			--?????????????block
+=======
+						when s3 =>		--准备读取
+							FLASH_ADDR <= "000000" & current_addr & '0';	--这是由于字模式中只用到22~1, 其中最高6位(22~17)为block地址, 之后(16~1)为block内的地址.
+																			--我们是只用第一个block
+>>>>>>> 799e6cf0a4a6e85ec5e8bebcb629207b39b6b1f0
 							FLASH_DATA <= (others => 'Z');
 							FLASH_OE <= '0';
 							flash_state <= s4;
 							
+<<<<<<< HEAD
 						when s4 =>		--???????, ???д?????
 							FLASH_OE <= '1';	
 							Ram2_WE <= '0';
@@ -292,6 +352,17 @@ begin
 							flash_state <= s5;
 						
 						when s5 =>		--д?????
+=======
+						when s4 =>		--读取完毕, 准备写入到内存
+							FLASH_OE <= '1';	
+							Ram2_WE <= '0';
+							Ram2_Addr <= "00" & current_addr;
+							--Ram2_AddrOutput <= "00" & current_addr;	--调试
+							Ram2_Data <= FLASH_DATA;
+							flash_state <= s5;
+						
+						when s5 =>		--写入到内存
+>>>>>>> 799e6cf0a4a6e85ec5e8bebcb629207b39b6b1f0
 							Ram2_WE <= '1';
 							current_addr <= current_addr + '1';
 							flash_state <= s0;
@@ -301,11 +372,19 @@ begin
 							flash_state <= s0;
 					end case;
 					
+<<<<<<< HEAD
 					if (current_addr > x"0249") then		--??????????kernel.bin???????????
 						flash_finished <= '1';
 					end if;
 				else
 					if (cnt < 100000) then
+=======
+					if (current_addr > x"0249") then		--这个地址随时kernel.bin的长度而改变??
+						flash_finished <= '1';
+					end if;
+				else
+					if (cnt < 1000) then
+>>>>>>> 799e6cf0a4a6e85ec5e8bebcb629207b39b6b1f0
 						cnt := cnt + 1;
 					end if;
 				end if;	--cnt
